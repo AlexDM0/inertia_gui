@@ -1,0 +1,356 @@
+body{
+    padding:0px;
+    margin:0px;
+    font-family: verdana;
+    font-size:12px;
+    background-color: #f5f7fa;
+}
+
+#mapContainer {
+    position:relative;
+    width:970px;
+    height:450px;
+    margin: 0px auto 0px auto;
+    background-color: #ffffff;
+    overflow:hidden;
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    cursor: pointer;
+}
+
+div.topBanner {
+    position:relative;
+    background-image: url('../images/inertia.png');
+    background-repeat: no-repeat;
+    background-position: 20px 10px;
+    background-color: #3792d8;
+    width:970px;
+    height:130px;
+    margin: 0px auto 0px auto;
+    box-shadow: 0px 0px 10px #000000;
+    z-index:5;
+}
+
+img.eu {
+    position:absolute;
+    right:20px;
+    top:9px;
+}
+
+div.topSubBanner {
+    width:100%;
+    height:180px;
+    margin: -130px auto 0px auto;
+    background-color: #d9eeff;
+}
+
+div.topSubBanner2 {
+    width:1000px;
+    height:180px;
+    margin: -110px auto 0px auto;
+    background-color: #23324e;
+}
+
+div.menuBanner {
+    position:relative;
+    width:1024px;
+    height:60px;
+    margin: -120px auto 0px auto;
+    background-color: #385380;
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    color:#ffffff;
+    line-height:50px;
+    box-shadow: 0px 0px 10px #000000;
+    z-index:5;
+}
+
+
+div.menuItem {
+    display:inline-block;
+    width:200px;
+    height:20px;
+    border-left: 1px #e0e0e0 solid;
+    border-right: 1px #e0e0e0 solid;
+    margin:-4px;
+    padding:4px;
+    font-size:12px;
+    line-height:20px;
+    text-align:center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor:pointer;
+}
+
+
+div.roomNames {
+    position: absolute;
+    font-family: verdana;
+    font-size: 12px;
+    font-weight: bold;
+    color: #3d3f3d;
+}
+
+div.inertiaContent {
+    position:relative;
+    width: 970px;
+    min-height:600px;
+    margin: 0px auto 0px auto;
+    background-color: #ffffff;
+}
+
+div.stats {
+    position:relative;
+    width: 970px;
+    margin: 0px auto 0px auto;
+    height:150px;
+    background-color: #ffffff;
+}
+
+div.centerAlign {
+    display:table;
+    margin: 0px auto 0px auto;
+}
+
+table.stats {
+    /*border: 1px #888888 solid;*/
+}
+table.stats td {
+    border-left: 1px #888888 solid;
+    width:150px;
+    height:30px;
+}
+table.stats th {
+    text-align:left;
+    height:20px;
+    border-left: 1px #888888 solid;
+    width:150px;
+}
+
+#statsDescription {
+    display:block;
+    height:25px;
+    font-weight: bold;
+    font-size:15px;
+}
+
+span.preferences {
+    color: #3876c2;
+    font-weight:normal;
+}
+
+#barGraphWrapper {
+    position:relative;
+    width: 940px;
+    margin: 0px auto 0px auto;
+    background-color: #ffffff;
+}
+
+div.smallGraph {
+    display:inline-block;
+    width:232px;
+    margin-left:15px;
+    margin-right:-15px;
+
+}
+
+div.smallGraphExp {
+    position:relative;
+    display:block;
+    width:232px;
+    height:32px;
+    margin-top:-32px;
+    top:32px;
+    /*background-color: #ff0000;*/
+    z-index:3;
+}
+
+#timelineWrapper {
+    width:940px;
+    margin: 0px auto 0px auto;
+}
+
+img.icon {
+    height:15px;
+    width:15px;
+}
+
+div.subsectionBanner1 {
+    width:100%;
+    height:100px;
+    margin: -50px auto 0px auto;
+    background-color: #d9eeff;
+}
+
+div.subsectionBanner2 {
+    width:1000px;
+    height:120px;
+    margin: -110px auto 0px auto;
+    background-color: #23324e;
+}
+
+div.subsectionBanner3 {
+    position:relative;
+    width:1024px;
+    height:40px;
+    margin: -80px auto 0px auto;
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    color:#ffffff;
+    line-height:40px;
+    background-color: #385380;
+    box-shadow: 0px 0px 10px #000000;
+    z-index:5;
+}
+
+div.bottomBanner1 {
+    width:100%;
+    height:100px;
+    margin: -50px auto 0px auto;
+    background-color: #d9eeff;
+}
+
+div.bottomBanner2 {
+    width:1000px;
+    height:120px;
+    margin: -120px auto 0px auto;
+    background-color: #23324e;
+}
+
+div.bottomBanner3 {
+    position:relative;
+    width:1024px;
+    height:50px;
+    margin: -50px auto 0px auto;
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    color:#ffffff;
+    line-height:50px;
+    background-color: #385380;
+    box-shadow: 0px 0px 10px #000000;
+    z-index:5;
+}
+
+
+a.transparent {
+ color: inherit;
+}
+
+div.explaination {
+    width:100%;
+    text-align:center;
+    font-size:16px;
+    font-weight:bold;
+    color: #385380;
+    line-height:50px;
+}
+
+
+
+.vis.timeline .item {
+    position: absolute;
+    color: #f5f5f5;
+    border-color: #23324e;
+    border-width: 1px;
+    background-color: #385380;
+    display: inline-block;
+    padding: 5px;
+}
+
+.vis.timeline .item.selected {
+    border-color: #385380;
+    color: #383838;
+    background-color: #d9eeff;
+    z-index: 999;
+}
+
+.vis.timeline .item .delete {
+    background: url('../images/deleteTimelineItem.png') no-repeat;
+    background-position: -8px 0px;
+    position: absolute;
+    height:28px;
+    top: -1px;
+    right: -24px;
+    cursor: pointer;
+}
+
+
+table.derTable {
+    padding:4px;
+}
+
+table.derTable th {
+    text-align:left;
+}
+
+table.derTable td.description{
+    width:150px;
+    height:20px;
+}
+
+
+table.derTable td.data{
+    width:100px;
+    vertical-align:middle;
+}
+
+
+table.derTable td.bigdata{
+    width:300px;
+    vertical-align:middle;
+}
+
+span.rangeLabel {
+    position:relative;
+    top:-6px;
+    font-size:12px;
+}
+
+input.rangeinputLabel {
+    width:24px;
+}
+
+table.lightingTable {
+    background-color:#ffffff;
+    padding:1px;
+}
+
+table.lightingTable th {
+    width: 80px;
+    text-align:left;
+}
+
+table.lightingTable td.description{
+    width:150px;
+    height:20px;
+    border-left: 1px #cccccc solid;
+}
+
+table.lightingTable td.smallDescription{
+    width:100px;
+    height:20px;
+    border-left: 1px #cccccc solid;
+}
+
+
+div.lightButton {
+    background-repeat: no-repeat;
+    width:80px;
+    height:20px;
+    cursor:pointer;
+}
+
+div.lightButton.on {
+    background-image: url("../images/lightbulb.png");
+}
+
+
+div.lightButton.off {
+    background-image: url("../images/lightbulb_off.png");
+}

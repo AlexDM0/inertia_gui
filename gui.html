@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <style>
+        #informationContent {
+            border: 1px #cccccc solid;
+            overflow-y:scroll;
+            height:240px;
+            background-color:#ffffff;
+        }
+
+        #informationClose {
+            position:absolute;
+            right:-10px;
+            top:-10px;
+            background-image: url("./images/close_icon.png");
+            background-repeat: no-repeat;
+            width:24px;
+            height:24px;
+            box-shadow: 0px 0px 10px #000000;
+            border-radius:12px;
+        }
+
+
+        #loadingIndicator {
+            position:relative;
+            width:100%;
+            height:450px;
+            text-align:center;
+            margin-top:230px;
+            position:relative;
+            display:inline-block;
+            font-size: 35px;
+            color: #a3a3a3;
+            font-style:italic;
+        }
+
+        img.loadingImage {
+            position:relative;
+        }
+
+        #informationDiv {
+            position:relative;
+            display:none;
+            width:570px;
+            height:270px;
+            margin: -410px auto 0px auto;
+            left:150px;
+            background-color: rgba(255,255,255,0.85);
+            border-radius:10px;
+            padding:15px;
+            box-shadow: 0px 0px 10px #000000;
+            cursor:default;
+        }
+
+        #informationHeader {
+            font-size:16px;
+            font-weight:bold;
+            color: #385380;
+        }
+    </style>
+
+    <title>INERTIA GUI</title>
+    <link href="./css/vis.css" rel="stylesheet" type="text/css" />
+    <link href="./css/visgraphstyles.css" rel="stylesheet" type="text/css" />
+    <link href="./css/global.css" rel="stylesheet" type="text/css" />
+    <script language="JavaScript" src="./js/vis.js"></script>
+    <script language="JavaScript" src="./js/three.min.js"></script>
+    <script language="JavaScript" src="./js/space.js"></script>
+    <script language="JavaScript" src="./js/gbxml.js"></script>
+    <script language="JavaScript" src="./js/webgl.js"></script>
+    <script language="JavaScript" src="./js/gui.js"></script>
+    <script language="JavaScript" src="./js/visElements.js"></script>
+
+
+</head>
+<body onload="onLoad()">
+<div class="topBanner">
+    <img class="eu" src="./images/eu.png">
+</div>
+
+<div class="topSubBanner"></div>
+<div class="topSubBanner2"></div>
+<div class="menuBanner" id="blueprint">
+    <a href="#blueprint" class="transparent"><div class="menuItem">Blueprint</div></a>
+    <a href="#details" class="transparent"><div class="menuItem">Details</div></a>
+    <a href="#calendar" class="transparent"><div class="menuItem">Calendar</div></a>
+</div>
+<div id="mapContainer">
+    <div id="loadingIndicator"><img class='loadingImage' src="./images/loading.gif" /></div>
+    <div id="informationDiv" onclick="stop(event)">
+        <div id="informationClose" onclick="hideInfoDiv()"></div>
+        <div id="informationHeader">This is the best Room</div><br />
+        <div id="informationContent">
+            CSS3 Borders
+            With CSS3, you can create rounded borders, add shadow to boxes, and use an image as a border - without using a design program, like Photoshop.
+
+            In this chapter you will learn about the following border properties:
+
+            border-radius
+            box-shadow
+            border-image
+        </div>
+
+    </div>
+</div>
+<div class="stats">
+    <div class="centerAlign">
+        <span id="statsDescription">Building Status:</span>
+        <span id="statsTable">
+            <table class="stats">
+            <tr>
+                <th>Energy</th>
+                <th>Temperature</th>
+                <th>Occupancy</th>
+                <th>Humidity</th>
+            </tr>
+            <tr>
+                <td>30 KW</td>
+                <td>30 C</td>
+                <td>20 people</td>
+                <td>25 %</td>
+            </tr>
+            </table>
+        </span>
+    </div>
+    </div>
+<div class="subsectionBanner1"></div>
+<div class="subsectionBanner2"></div>
+<div class="subsectionBanner3" id="details">Details</div>
+<div class="inertiaContent">
+    <br /><br />
+    <div class='explaination' id="detailsDescription">Detailed view of aggregated data in building.</div>
+    <br />
+    <div id="Legend"></div>
+    <div class='smallGraph' id="barGraphSubWrapper1"><div class='smallGraphExp' id="barGraphSubWrapper1Exp"></div></div>
+    <div class='smallGraph' id="barGraphSubWrapper2"><div class='smallGraphExp' id="barGraphSubWrapper2Exp"></div></div>
+    <div class='smallGraph' id="barGraphSubWrapper3"><div class='smallGraphExp' id="barGraphSubWrapper3Exp"></div></div>
+    <div class='smallGraph' id="barGraphSubWrapper4"><div class='smallGraphExp' id="barGraphSubWrapper4Exp"></div></div>
+    <div id="barGraphWrapper"></div>
+    <div id="subLegend">
+        <div class="legendElementContainer2" id="plotEnergy"><img class="icon" src="./images/lightbulb.png"/> Energy</div>
+        <div class="legendElementContainer2 hidden" id="plotCost"><img class="icon" src="./images/coins.png"/> Cost</div>
+
+    </div>
+
+</div>
+<div class="subsectionBanner1"></div>
+<div class="subsectionBanner2"></div>
+<div class="subsectionBanner3" id="calendar">Calendar</div>
+<div class="inertiaContent">
+    <br /><br />
+    <div class='explaination' id="calendarDescription">Interactive calendar: Plan meetings.</div>
+    <br />
+
+    <div id="timelineWrapper"></div>
+</div>
+<div class="bottomBanner1"></div>
+<div class="bottomBanner2"></div>
+<div class="bottomBanner3">&copy; INERTIA Project 2013</div>
+</body>
+</html>
