@@ -89,7 +89,7 @@ function parsePlanarGeometry(xml, type, spaceIdRef) {
   var childNodes = xml.childNodes;
   for (var i = 0, ii = childNodes.length; i < ii; i++) {
     var child = xml.childNodes[i];
-    if(child.nodeName === 'PolyLoop'){
+    if(child.nodeName === 'PolyLoop' && child.children){
       if (type === "UndergroundSlab") {
         geometries = geometries.concat(parseFloors(child, spaceIdRef));
       }
@@ -245,8 +245,9 @@ function parseOpenings (xml) {
 
   for (var i = 0, ii = openings.length; i < ii; i++) {
     var opening = openings[i];
-
-    geometries = geometries.concat(parseOpening(opening));
+    if (opening.children) {
+      geometries = geometries.concat(parseOpening(opening));
+    }
   }
 
   return geometries;
@@ -270,12 +271,14 @@ function parseSpace (xml) {
       ySum = 0,               // all y coordinates summed up
       zSum = 0;               // all z coordinates summed up
   for (var i = 0; i < count; i++) {
-    var point = points[i],
-        childNodes = point.children;
+    var point = points[i];
+    var childNodes = point.children;
 
-    xSum += Number(childNodes[0].childNodes[0].nodeValue);
-    ySum += Number(childNodes[1].childNodes[0].nodeValue);
-    zSum += Number(childNodes[2].childNodes[0].nodeValue);
+    if (childNodes) {
+      xSum += Number(childNodes[0].childNodes[0].nodeValue);
+      ySum += Number(childNodes[1].childNodes[0].nodeValue);
+      zSum += Number(childNodes[2].childNodes[0].nodeValue);
+    }
   }
 
   // calculate average of all points

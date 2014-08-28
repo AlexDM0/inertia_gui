@@ -82,9 +82,10 @@ function init(floors, walls, gbxmlSpaces) {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(45, (container.offsetWidth-2*borderSize)/(container.offsetHeight-2*borderSize), 0.1, 1000);
 
-  renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+  renderer = new THREE.WebGLRenderer({antialias:true, alpha:false});
+//  renderer = new THREE.CanvasRenderer({antialias:true, alpha:true});
   renderer.setSize((container.offsetWidth-2*borderSize), container.offsetHeight-2*borderSize);
-  renderer.setClearColor( 0x000000, 0);
+  renderer.setClearColor( 0xffffff, 0);
   container.insertBefore(renderer.domElement, container.children[0]);
 
   document.getElementById("loadingIndicator").style.display = "none"
@@ -93,7 +94,7 @@ function init(floors, walls, gbxmlSpaces) {
 
   for (var i = 0; i < floors.length; i++) {
     if (usedAreas.indexOf(floors[i].spaceIdRef) != -1) {
-      var material = new THREE.MeshBasicMaterial({color: 0xbbbbbb, overdraw: 0, side: THREE.DoubleSide});
+      var material = new THREE.MeshBasicMaterial({color: 0xbbbbbb, overdraw: 0});
       var geo = new THREE.Mesh(floors[i], material);
       geometry.push(geo);
       scene.add(geo);

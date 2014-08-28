@@ -41,6 +41,7 @@ function onLoad() {
     var parser = new DOMParser()
     var doc = parser.parseFromString(data, "text/xml");
     var data3D = parseGbXML(doc);
+    console.log(data3D)
     init(data3D.floors, data3D.walls, data3D.spaces);
     render();
   })

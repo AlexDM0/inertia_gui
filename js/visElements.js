@@ -36,7 +36,7 @@ function loadTimeline() {
     id: 0,
     group: "Admin_NW",
     content: 'Do not disturb',
-    start: "2014-06-11 9:00:00",
+    start: "2014-06-11 09:00:00",
     end: "2014-06-11 11:00:00",
     type: 'range'
   });
@@ -64,7 +64,7 @@ function loadTimeline() {
   var container = document.getElementById('timelineWrapper');
   var options = {
     groupOrder: 'content',  // groupOrder can be a property name or a sorting function
-    start: '2014-06-11 8:00:00',
+    start: '2014-06-11 08:00:00',
     end: '2014-06-11 18:00:00',
     stack: false,
     clickToUse: true,
@@ -195,14 +195,14 @@ function loadBarGraph() {
       }
     },
     graphHeight:300,
-    start: '2014-06-11 6:00:00',
+    start: '2014-06-11 06:00:00',
     end: '2014-06-11 18:00:00'
   };
 
   var subOptions = vis.util.deepExtend({},options);
   subOptions.graphHeight = 30;
   subOptions.legend = false;
-  subOptions.start = '2014-06-11 8:00:00';
+  subOptions.start = '2014-06-11 08:00:00';
   subOptions.end = '2014-06-11 18:00:00';
   subOptions.dataAxis.visible = false;
   subOptions.dataAxis.customRange.left.min = undefined;
@@ -248,35 +248,60 @@ function updateVis(roomId) {
   var items = [];
   var roomData = rooms[roomId].data.energy.total;
   for (var i = 0; i < roomData.length; i++) {
-    items.push({id: i, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 0})
+    if (i + 9 < 10) {
+      items.push({id: i, x:'2014-06-11 0' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 0});}
+    else {
+      items.push({id: i, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 0});}
   }
+
   roomData = rooms[roomId].data.energy.hvac;
   for (var i = 0; i < roomData.length; i++) {
-    items.push({id: i+1*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 5})
+    if (i + 9 < 10) {
+      items.push({id: i+1*roomData.length, x:'2014-06-11 0' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 5});}
+  else {
+      items.push({id: i+1*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 5});}
   }
   roomData = rooms[roomId].data.energy.lighting;
   for (var i = 0; i < roomData.length; i++) {
-    items.push({id: i+2*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 6})
+    if (i + 9 < 10) {
+      items.push({id: i+2*roomData.length, x:'2014-06-11 0' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 6});}
+else {
+      items.push({id: i+2*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 6});}
   }
   roomData = rooms[roomId].data.energy.other;
   for (var i = 0; i < roomData.length; i++) {
-    items.push({id: i+3*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 7})
+    if (i + 9 < 10) {
+      items.push({id: i+3*roomData.length, x:'2014-06-11 0' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 7});}
+    else {
+      items.push({id: i+3*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i] * multiplier, group: 7});}
   }
   roomData = rooms[roomId].data.occupancy;
   for (var i = 0; i < roomData.length; i++) {
-    items.push({id: i+4*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i], group: 1})
+    if (i + 9 < 10) {
+      items.push({id: i+4*roomData.length, x:'2014-06-11 0' + (i + 9) + ':00:00', y:roomData[i], group: 1});}
+    else {
+      items.push({id: i+4*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i], group: 1});}
   }
   roomData = rooms[roomId].data.temperature;
   for (var i = 0; i < roomData.length; i++) {
-    items.push({id: i+5*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i], group: 2})
+    if (i + 9 < 10) {
+      items.push({id: i+5*roomData.length, x:'2014-06-11 0' + (i + 9) + ':00:00', y:roomData[i], group: 2});}
+    else {
+      items.push({id: i+5*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i], group: 2});}
   }
   roomData = rooms[roomId].data.humidity;
   for (var i = 0; i < roomData.length; i++) {
-    items.push({id: i+6*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i], group: 3})
+    if (i + 9 < 10) {
+      items.push({id: i+6*roomData.length, x:'2014-06-11 0' + (i + 9) + ':00:00', y:roomData[i], group: 3});}
+    else {
+      items.push({id: i+6*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i], group: 3});}
   }
   roomData = rooms[roomId].data.luminance;
   for (var i = 0; i < roomData.length; i++) {
-    items.push({id: i+7*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i], group: 4})
+    if (i + 9 < 10) {
+      items.push({id: i+7*roomData.length, x:'2014-06-11 0' + (i + 9) + ':00:00', y:roomData[i], group: 4});}
+    else {
+      items.push({id: i+7*roomData.length, x:'2014-06-11 ' + (i + 9) + ':00:00', y:roomData[i], group: 4});}
   }
   graph2dItems.update(items);
 
