@@ -37,9 +37,9 @@ var winHalfW;
 var activeFloorNumber = 0;
 var borderSize = 0;
 var focusOnClick = [1,1,1];
-var highlightFocus = {"0":[-6,-5,20],"1":[9.7,6.7,20]};
-var normalFocus = {"0":[4.95,-2.9,28],"1":[21,6.7,28]};
-var focus = {"0":[4.95,-2.9,28],"1":[21,6.7,28]};
+var highlightFocus = {"0":[-6,-5,15],"1":[9.7,6.7,15]};
+var normalFocus = {"0":[4.95,-1.6,23],"1":[21,8,23]};
+var focus = {"0":[4.95,-1.6,23],"1":[21,8,23]};
 var theta = 0.001;
 var phi = -0.5 * Math.PI;
 var selectedRoom = undefined;
@@ -50,7 +50,10 @@ var selectedRoom = undefined;
  * @param gbxmlData
  * @param floorNumber
  */
-function init(gbxmlData, floorNumber) {
+function webglInit(gbxmlData, floorNumber) {
+  container = document.getElementById('mapContainer');
+  winDims = [container.offsetWidth, container.offsetHeight];
+  winHalfW = winDims[0] / 2;
   var rooms = gbxmlData[floorNumber];
   toggleFloorSelectors(floorNumber);
 
@@ -117,24 +120,16 @@ function selectArea(event) {
   var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize(),0,1000);
 
   var intersects = ray.intersectObjects(geometryArray);
-  console.log(intersects[0]);
 
   if ( intersects.length > 0 ) {
-    selectedRoom = intersects[0].object.spaceIdRef;
-    colorAccordingToDers();
+    clickedRoom(intersects[0].object.spaceIdRef);
     for (var i = 0; i < intersects.length; i++) {
       intersects[i].object.material.color.setHex(0xffb400);
     }
-    clickedRoom(intersects[0].object.spaceIdRef);
   }
   else {
     deselect();
-    colorAccordingToDers();
   }
-
-  focusOnClick[0] = focus[activeFloorNumber][0];
-  focusOnClick[1] = focus[activeFloorNumber][1];
-  moveView();
 }
 
 
@@ -173,8 +168,8 @@ function prepareCamera() {
   camera.lookAt(new THREE.Vector3(focus[activeFloorNumber][0],focus[activeFloorNumber][1],0));
 }
 
-function render() {
-  requestAnimationFrame(render);
+function webglRender() {
+  requestAnimationFrame(webglRender);
   prepareCamera();
   renderer.render(scene, camera);
 }
@@ -248,7 +243,7 @@ function colorAccordingToDers() {
     // if a room has been selected
     if (selectedRoom !== undefined) {
       // if the room has a DER
-      if (portalAgent.subspaces[geometryArray[i].spaceIdRef] !== undefined) {
+      if (subspaceAgents[geometryArray[i].spaceIdRef] !== undefined) {
         geometryArray[i].material.color.setHex(0xcccccc);
       }
       else {
@@ -257,7 +252,7 @@ function colorAccordingToDers() {
     }
     else {
       // if the room has a DER
-      if (portalAgent.subspaces[geometryArray[i].spaceIdRef] !== undefined) {
+      if (subspaceAgents[geometryArray[i].spaceIdRef] !== undefined) {
         geometryArray[i].material.color.setHex(0xbbbbbb);
       }
       else {

@@ -5,7 +5,7 @@
         #floorIndicator {
             position:relative;
             height:80px;
-            margin-top:-350px;
+            margin-top:-359px;
             overflow:hidden;
             width:40px;
         }
@@ -22,6 +22,7 @@
             text-align:center;
             vertical-align:middle;
             line-height:30px;
+            box-shadow: #ffffff 0px 0px 5px 1px;
         }
 
         div.floorNumber.active {
@@ -44,6 +45,20 @@
         var EVE_URL = 'http://openid.almende.org:8081/agents/';
         var htmlContainer = {};
 
+        var randomUUID = function() {
+            var S4 = function () {
+                return Math.floor(
+                        Math.random() * 0x10000 /* 65536 */
+                ).toString(16);
+            };
+            return (
+            S4() + S4() + '-' +
+            S4() + '-' +
+            S4() + '-' +
+            S4() + '-' +
+            S4() + S4() + S4()
+            );
+        }
     </script>
 
     <!-- css -->
@@ -91,11 +106,11 @@
 <div id="mapContainer">
     <div id="loadingIndicator"><img class='loadingImage' src="./images/loading.gif" /></div>
     <div id="floorIndicator">
-        <div class="floorNumber" id='floorNumber1' onclick="init(gbxmlData,1); deselect();">1</div>
-        <div class="floorNumber" id='floorNumber0' onclick="init(gbxmlData,0); deselect();">0</div>
+        <div class="floorNumber" id='floorNumber1' onclick="webglInit(gbxmlData,1); deselect();">1</div>
+        <div class="floorNumber" id='floorNumber0' onclick="webglInit(gbxmlData,0); deselect();">0</div>
     </div>
     <div id="informationDiv" onclick="event.stopPropagation();">
-        <div id="informationClose" onclick="hideInfoDiv()"></div>
+        <div id="informationClose" onclick="hideInfoDiv(); deselect();"></div>
         <div id="informationHeader">This is the best Room</div><br />
         <div id="informationContent">
 
@@ -104,24 +119,7 @@
     </div>
 </div>
 <div class="stats">
-    <div class="centerAlign">
-        <span id="statsDescription">Building Status:</span>
-        <span id="statsTable">
-            <table class="stats">
-            <tr>
-                <th>Energy</th>
-                <th>Temperature</th>
-                <th>Occupancy</th>
-                <th>Humidity</th>
-            </tr>
-            <tr>
-                <td>30 KW</td>
-                <td>30 C</td>
-                <td>20 people</td>
-                <td>25 %</td>
-            </tr>
-            </table>
-        </span>
+    <div class="centerAlign" id="aggregatedInfo">
     </div>
     </div>
 <div class="subsectionBanner1"></div>

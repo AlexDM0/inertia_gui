@@ -9,7 +9,7 @@ body{
 #mapContainer {
     position:relative;
     width:970px;
-    height:450px;
+    height:380px;
     margin: 0px auto 0px auto;
     background-color: #ffffff;
     overflow:hidden;
@@ -122,8 +122,14 @@ div.inertiaContent {
 div.stats {
     position:relative;
     width: 970px;
+    height:340px;
     margin: 0px auto 0px auto;
-    height:150px;
+    background-color: #ffffff;
+}
+
+div.stats_overview {
+    position:relative;
+    margin: 15px auto 15px auto;
     background-color: #ffffff;
 }
 
@@ -133,25 +139,33 @@ div.centerAlign {
 }
 
 table.stats {
-    /*border: 1px #888888 solid;*/
+    border-spacing:0px;
 }
 table.stats td {
-    border-left: 1px #888888 solid;
+    border-left: 1px #999999 solid;
+    border-right: 1px #e4e4e4 solid;
     width:150px;
     height:30px;
+    padding-top:0px;
+    padding-bottom:0px;
 }
 table.stats th {
     text-align:left;
     height:20px;
-    border-left: 1px #888888 solid;
+    border-left: 1px #999999 solid;
+    border-right: 1px #e4e4e4 solid;
     width:150px;
+    color:#2d73a7;
+
 }
 
-#statsDescription {
+span.statsDescription {
     display:block;
     height:25px;
     font-weight: bold;
-    font-size:15px;
+    font-size:13px;
+    font-style: italic;
+    color: #14334b;
 }
 
 span.preferences {
@@ -383,7 +397,7 @@ img.loadingImage {
     display:none;
     width:570px;
     height:270px;
-    margin: -110px auto 0px auto;
+    margin: -60px auto 0px auto;
     left:150px;
     background-color: rgb(255,255,255);
     border-radius:10px;
@@ -402,4 +416,34 @@ img.loadingImage {
     width: 970px;
     height:1050px;
     border:0px;
+}
+
+
+div.toggleButton {
+    background-image: url("../images/toggleOff.png");
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    display:inline-block;
+    width:138px;
+    height:24px;
+    font-size:12px;
+    border:1px solid #d0d0d0;
+    text-align:left;
+    padding-top:10px;
+    padding-left:60px;
+    padding-right:0px;
+    border-radius: 40px;
+    background-color: #ffffff;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor:pointer;
+}
+
+div.toggleButton.selected {
+    background-image: url("../images/toggleOn.png");
+    background-color: #ffffff;
 }
