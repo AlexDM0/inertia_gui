@@ -134,19 +134,22 @@ function parseFloors(xml, spaceIdRef) {
     points.push(parseCartesianPoint(xml.children[i]))
   }
 
-  var floor = new THREE.Shape();
+  var floor = []
+  //for (var i = 0; i < points.length; i++) {
+  //  var point = points[i];
+  //  if (i == 0) {
+  //    floor.moveTo(point.x, point.y);
+  //  } else {
+  //    floor.lineTo(point.x, point.y);
+  //  }
+  //}
   for (var i = 0; i < points.length; i++) {
     var point = points[i];
-    if (i == 0) {
-      floor.moveTo(point.x, point.y);
-    } else {
-      floor.lineTo(point.x, point.y);
-    }
+    floor.push({x:point.x, y:point.y});
   }
-
-  var geometry = floor.makeGeometry();
-  geometry.computeFaceNormals();
-  geometry.spaceIdRef = spaceIdRef;
+  var shape = {};
+  shape['coordinates'] = floor;
+  shape['spaceIdRef']  = spaceIdRef;
 //
 //  var floor2 = new THREE.Shape();
 //  for (var i = points.length - 1; i >= 0; i--) {
@@ -163,7 +166,7 @@ function parseFloors(xml, spaceIdRef) {
 //
 //  THREE.GeometryUtils.merge(geometry, geometry2);
 
-  return [geometry];
+  return [shape];
 }
 /**
  * Parse all surfaces

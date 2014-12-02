@@ -1,78 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head><meta http-equiv="content-type" content="text/html; charset=UTF8">
-
     <style>
-        #informationContent {
-            border: 1px #cccccc solid;
-            overflow-y:scroll;
-            height:240px;
-            background-color:#ffffff;
-        }
-
-        #informationClose {
-            position:absolute;
-            right:-10px;
-            top:-10px;
-            background-image: url("./images/close_icon.png");
-            background-repeat: no-repeat;
-            width:24px;
-            height:24px;
-            box-shadow: 0px 0px 10px #000000;
-            border-radius:12px;
-        }
-
-
-        #loadingIndicator {
+        #floorIndicator {
             position:relative;
-            width:100%;
-            height:450px;
+            height:80px;
+            margin-top:-350px;
+            overflow:hidden;
+            width:40px;
+        }
+
+        div.floorNumber {
+            position:relative;
+            left:-10px;
+            width:40px;
+            height:30px;
+            background-color: #23324e;
+            color:#ffffff;
+            border-radius:3px;
+            margin: 6px 6px 6px 6px;
             text-align:center;
-            margin-top:230px;
-            position:relative;
-            display:inline-block;
-            font-size: 35px;
-            color: #a3a3a3;
-            font-style:italic;
+            vertical-align:middle;
+            line-height:30px;
         }
 
-        img.loadingImage {
+        div.floorNumber.active {
             position:relative;
-        }
-
-        #informationDiv {
-            position:relative;
-            display:none;
-            width:570px;
-            height:270px;
-            margin: -410px auto 0px auto;
-            left:150px;
-            background-color: rgba(255,255,255,0.85);
-            border-radius:10px;
-            padding:15px;
-            box-shadow: 0px 0px 10px #000000;
-            cursor:default;
-        }
-
-        #informationHeader {
-            font-size:16px;
-            font-weight:bold;
-            color: #385380;
+            left:-10px;
+            width:40px;
+            height:30px;
+            background-color: #2d73a7;
+            color:#ffffff;
+            border-radius:3px;
+            margin: 6px 6px 6px 6px;
+            text-align:center;
+            vertical-align:middle;
+            line-height:30px;
         }
     </style>
-
     <title>INERTIA GUI</title>
+
+    <script language="javascript">
+        var EVE_URL = 'http://openid.almende.org:8081/agents/';
+        var htmlContainer = {};
+
+    </script>
+
+    <!-- css -->
     <link href="./css/vis.css" rel="stylesheet" type="text/css" />
     <link href="./css/visgraphstyles.css" rel="stylesheet" type="text/css" />
     <link href="./css/global.css" rel="stylesheet" type="text/css" />
+
+
+    <!--main libraries-->
+    <script language="JavaScript" src="./js/polyfill-done.js"></script>
+    <script language="JavaScript" src="./js/data.js"></script>
     <script language="JavaScript" src="./js/vis.js"></script>
     <script language="JavaScript" src="./js/three.js"></script>
+    <script language="JavaScript" src="./js/eve.js"></script>
+
+    <!--agents-->
+    <script language="JavaScript" src="./js/agents/aggregatorAgent.js"></script>
+    <script language="JavaScript" src="./js/agents/derAgent.js"></script>
+    <script language="JavaScript" src="./js/agents/portalAgent.js"></script>
+
+
+    <!--specific code-->
     <script language="JavaScript" src="./js/space.js"></script>
     <script language="JavaScript" src="./js/gbxml.js"></script>
     <script language="JavaScript" src="./js/webgl.js"></script>
     <script language="JavaScript" src="./js/gui.js"></script>
     <script language="JavaScript" src="./js/visElements.js"></script>
 
+    <!-- init -->
+    <script language="JavaScript" src="./js/init.js"></script>
 
 </head>
 <body onload="onLoad()">
@@ -89,18 +90,15 @@
 </div>
 <div id="mapContainer">
     <div id="loadingIndicator"><img class='loadingImage' src="./images/loading.gif" /></div>
-    <div id="informationDiv" onclick="stop(event)">
+    <div id="floorIndicator">
+        <div class="floorNumber" id='floorNumber1' onclick="init(gbxmlData,1); deselect();">1</div>
+        <div class="floorNumber" id='floorNumber0' onclick="init(gbxmlData,0); deselect();">0</div>
+    </div>
+    <div id="informationDiv" onclick="event.stopPropagation();">
         <div id="informationClose" onclick="hideInfoDiv()"></div>
         <div id="informationHeader">This is the best Room</div><br />
         <div id="informationContent">
-            CSS3 Borders
-            With CSS3, you can create rounded borders, add shadow to boxes, and use an image as a border - without using a design program, like Photoshop.
 
-            In this chapter you will learn about the following border properties:
-
-            border-radius
-            box-shadow
-            border-image
         </div>
 
     </div>
@@ -150,11 +148,9 @@
 <div class="subsectionBanner2"></div>
 <div class="subsectionBanner3" id="calendar">Calendar</div>
 <div class="inertiaContent">
-    <br /><br />
-    <div class='explaination' id="calendarDescription">Interactive calendar: Plan meetings.</div>
     <br />
 
-    <div id="timelineWrapper"></div>
+    <!--<iframe src="http://160.40.51.68:8080/INERTIA/web/week.php" id="calendar_iframe"></iframe>-->
 </div>
 <div class="bottomBanner1"></div>
 <div class="bottomBanner2"></div>

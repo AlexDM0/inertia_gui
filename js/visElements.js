@@ -18,76 +18,6 @@ var toggleGraphId4 = 4;
 
 function loadVis() {
   loadBarGraph();
-  loadTimeline();
-}
-
-
-function loadTimeline() {
-  var groups = new vis.DataSet();
-  for (var room in rooms) {
-    if (rooms.hasOwnProperty(room)) {
-      groups.add({id: rooms[room].id, content: rooms[room].name, className:"roomGroup"});
-    }
-  }
-
-  // create a dataset with items
-  var items = new vis.DataSet();
-  items.add({
-    id: 0,
-    group: "Admin_NW",
-    content: 'Do not disturb',
-    start: "2014-06-11 09:00:00",
-    end: "2014-06-11 11:00:00",
-    type: 'range'
-  });
-
-  items.add({
-    id: 1,
-    group: "Developer_Central",
-    content: 'Integration session',
-    start: "2014-06-11 15:00:00",
-    end: "2014-06-11 17:00:00",
-    type: 'range'
-  });
-
-  items.add({
-    id: 2,
-    group: "Meeting_Room",
-    content: 'Big important meeting',
-    start: "2014-06-11 10:00:00",
-    end: "2014-06-11 16:00:00",
-    type: 'range'
-  });
-
-
-  // create visualization
-  var container = document.getElementById('timelineWrapper');
-  var options = {
-    groupOrder: 'content',  // groupOrder can be a property name or a sorting function
-    start: '2014-06-11 08:00:00',
-    end: '2014-06-11 18:00:00',
-    stack: false,
-    clickToUse: true,
-    editable: {
-      add: true,         // add new items by double tapping
-      updateTime: true,  // drag items horizontally
-      updateGroup: true, // drag items from one group to another
-      remove: true       // delete an item by tapping the delete button top right
-    },
-    onAdd: function (item, callback) {newTimelineItem(item,callback);}
-  };
-
-  timeline = new vis.Timeline(container);
-  timeline.setOptions(options);
-  timeline.setGroups(groups);
-  timeline.setItems(items);
-}
-
-
-function newTimelineItem(item,callback) {
-  item.end = new Date(item.start).getTime() + 1.5*3600000;
-  item.content = "Allocated"
-  callback(item);
 }
 
 function loadGroups(container, visibilityArray) {
@@ -230,7 +160,6 @@ function loadBarGraph() {
   updateVis("Building");
 }
 
-
 function updateVis(roomId) {
   if (roomId === undefined) {
     roomId = selectedRoomId;
@@ -372,7 +301,6 @@ function populateExternalLegend() {
 }
 
 function toggleGraphFromID(idx) {
-  console.log(idx, toggleGraphId1,toggleGraphId2,toggleGraphId3,toggleGraphId4)
   switch (idx) {
     case 1:
       toggleGraph(toggleGraphId1);
@@ -461,69 +389,6 @@ function toggleGraph(toggleGroupId) {
         document.getElementById(toggleGroupId + "_legendContainer").className = document.getElementById(toggleGroupId + "_legendContainer").className.replace(" hidden","");
         break;
     }
-
-//    var groupsData = graph2dGroups.get();
-//    var updateQueries = [];
-//    for (var i = 0; i < groupsData.length - 3 ; i++) {
-//      var groupId = groupsData[i].id;
-//      if (groupId == toggleGroupId) {
-//        if (graph2d.isGroupVisible(groupId) == true) {
-//          updateQueries.push({id:groupId, visible:false});
-//          document.getElementById(groupId + "_legendContainer").className += " hidden";
-//        }
-//        else {
-//          if (groupId != "0"){
-//            updateQueries.push({id:groupId, visible:true});
-//          }
-//          document.getElementById(groupId + "_legendContainer").className = document.getElementById(groupId + "_legendContainer").className.replace(" hidden","");
-//        }
-//      }
-//      else {
-//        if (graph2d.isGroupVisible(groupId) == true) {
-//          updateQueries.push({id:groupId, visible:false});
-//          document.getElementById(groupId + "_legendContainer").className += " hidden";
-//        }
-//      }
-//    }
-//    if (toggleGroupId == "0") {
-//      if (graph2d.isGroupVisible(5) == true) {
-//        updateQueries.push({id:5, visible:false});
-//        updateQueries.push({id:6, visible:false});
-//        updateQueries.push({id:7, visible:false});
-//        document.getElementById("subLegend").style.display = "none";
-//        graph2d.setOptions({legend:false})
-//      }
-//      else {
-//        updateQueries.push({id:5, visible:true});
-//        updateQueries.push({id:6, visible:true});
-//        updateQueries.push({id:7, visible:true});
-//        document.getElementById("subLegend").style.display = "block";
-//        graph2d.setOptions({
-//          legend:true,
-//          start: '2014-06-11 6:00:00',
-//          end: '2014-06-11 18:00:00',
-//          dataAxis:{
-//            customRange:{left:{min:0}}
-//          }
-//        })
-//      }
-//    }
-//    else {
-//      updateQueries.push({id:5, visible:false});
-//      updateQueries.push({id:6, visible:false});
-//      updateQueries.push({id:7, visible:false});
-//      document.getElementById("0_legendContainer").className += " hidden";
-//      document.getElementById("subLegend").style.display = "none";
-//      graph2d.setOptions({
-//        legend:false,
-//        start: '2014-06-11 8:00:00',
-//        end: '2014-06-11 18:00:00',
-//        dataAxis:{
-//          customRange:{left:{min:undefined}}
-//        }
-//      })
-//    }
-//    graph2dGroups.update(updateQueries);
   }
 }
 

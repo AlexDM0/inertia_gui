@@ -90,9 +90,25 @@ div.menuItem {
 div.roomNames {
     position: absolute;
     font-family: verdana;
-    font-size: 12px;
-    font-weight: bold;
-    color: #3d3f3d;
+    font-size: 9px;
+    font-weight:strong;
+    color: #f8fff8;
+    height:10px;
+
+    background-color: #205176;
+    border-radius: 8px;
+    padding:2px 5px 2px 5px;
+    border:1.5px solid #14334b;
+}
+
+div.arrowDiv {
+    margin: 1px auto auto auto;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+
+    border-top: 5px solid #205176;
 }
 
 div.inertiaContent {
@@ -251,36 +267,6 @@ div.explaination {
     line-height:50px;
 }
 
-
-
-.vis.timeline .item {
-    position: absolute;
-    color: #f5f5f5;
-    border-color: #23324e;
-    border-width: 1px;
-    background-color: #385380;
-    display: inline-block;
-    padding: 5px;
-}
-
-.vis.timeline .item.selected {
-    border-color: #385380;
-    color: #383838;
-    background-color: #d9eeff;
-    z-index: 999;
-}
-
-.vis.timeline .item .delete {
-    background: url('../images/deleteTimelineItem.png') no-repeat;
-    background-position: -8px 0px;
-    position: absolute;
-    height:28px;
-    top: -1px;
-    right: -24px;
-    cursor: pointer;
-}
-
-
 table.derTable {
     padding:4px;
 }
@@ -353,4 +339,67 @@ div.lightButton.on {
 
 div.lightButton.off {
     background-image: url("../images/lightbulb_off.png");
+}
+
+#informationContent {
+    border: 1px #cccccc solid;
+    overflow-y:scroll;
+    height:240px;
+    background-color:#ffffff;
+}
+
+#informationClose {
+    position:absolute;
+    right:-10px;
+    top:-10px;
+    background-image: url("../images/close_icon.png");
+    background-repeat: no-repeat;
+    width:24px;
+    height:24px;
+    box-shadow: 0px 0px 10px #000000;
+    border-radius:12px;
+}
+
+
+#loadingIndicator {
+    position:relative;
+    width:100%;
+    height:450px;
+    text-align:center;
+    margin-top:230px;
+    position:relative;
+    display:inline-block;
+    font-size: 35px;
+    color: #a3a3a3;
+    font-style:italic;
+}
+
+img.loadingImage {
+    position:relative;
+}
+
+#informationDiv {
+    position:relative;
+    display:none;
+    width:570px;
+    height:270px;
+    margin: -110px auto 0px auto;
+    left:150px;
+    background-color: rgb(255,255,255);
+    border-radius:10px;
+    padding:15px;
+    box-shadow: 0px 0px 10px #000000;
+    cursor:default;
+}
+
+#informationHeader {
+    font-size:16px;
+    font-weight:bold;
+    color: #385380;
+}
+
+#calendar_iframe {
+    width: 970px;
+    height:1050px;
+    border:0px;
 }
