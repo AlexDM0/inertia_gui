@@ -308,36 +308,96 @@ table.derTable td.bigdata{
 
 span.rangeLabel {
     position:relative;
-    top:-6px;
-    font-size:12px;
+    font-size:11px;
 }
 
-input.rangeinputLabel {
-    width:24px;
-}
-
-table.lightingTable {
-    background-color:#ffffff;
+table.derTable {
     padding:1px;
+    border-spacing:0px;
+    cellspacing:0px;
 }
 
-table.lightingTable th {
+table.derTable th {
     width: 80px;
     text-align:left;
 }
 
-table.lightingTable td.description{
+table.derTable td.toggle{
+    width:62px;
+    height:20px;
+    font-size:11px;
+}
+
+
+table.derTable td.power{
+    width:40px;
+    height:20px;
+    padding-left:3px;
+    font-size:11px;
+    border-left: 1px #cccccc solid;
+}
+
+table.derTable td.text{
+    width:60px;
+    height:20px;
+    padding-left:3px;
+    font-size:11px;
+    border-left: 1px #cccccc solid;
+}
+
+table.derTable td.sensorData{
+    width:50px;
+    height:20px;
+    padding-left:3px;
+    font-size:11px;
+    border-left: 1px #cccccc solid;
+}
+
+table.derTable td.text.empty{
+    border-left: 0px;
+    border-right: 0px;
+}
+
+table.derTable td.range{
+    width:180px;
+    height:20px;
+    border-left: 1px #cccccc solid;
+}
+
+table.derTable td.range.empty{
+    border-left: 0px;
+    border-right: 0px;
+}
+
+table.derTable td.derName{
     width:150px;
     height:20px;
-    border-left: 1px #cccccc solid;
+    font-weight:bold;
+    font-size:11px;
+    padding-left:2px;
 }
 
-table.lightingTable td.smallDescription{
-    width:100px;
-    height:20px;
-    border-left: 1px #cccccc solid;
+div.derElement {
+    background-color: #eeeeee;
+    border-bottom:1px #cccccc solid;
 }
 
+div.spaceDivHeader {
+    font-size:13px;
+    font-weight:bold;
+    margin:3px;
+}
+
+div.subspaceDivHeader {
+    font-size:13px;
+    font-weight:bold;
+    margin:3px;
+}
+
+img.toggleImage {
+    position:relative;
+    top:2px;
+}
 
 div.lightButton {
     background-repeat: no-repeat;
@@ -358,7 +418,7 @@ div.lightButton.off {
 #informationContent {
     border: 1px #cccccc solid;
     overflow-y:scroll;
-    height:240px;
+    height:270px;
     background-color:#ffffff;
 }
 
@@ -395,9 +455,9 @@ img.loadingImage {
 #informationDiv {
     position:relative;
     display:none;
-    width:570px;
-    height:270px;
-    margin: -60px auto 0px auto;
+    width:600px;
+    height:300px;
+    margin: -70px auto 0px auto;
     left:150px;
     background-color: rgb(255,255,255);
     border-radius:10px;

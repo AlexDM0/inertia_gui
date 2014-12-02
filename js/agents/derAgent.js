@@ -12,7 +12,8 @@ function DERagent(id, derId, inertiaId, locations) {
   this.locations = locations;
   this.derId = derId;
 
-  this.sensors = []
+  this.sensors = [];
+  this.sensorsObj = {};
   this.canDim = false;
   this.canSwitch = false;
   this.canSetTemperature = false;
@@ -21,7 +22,6 @@ function DERagent(id, derId, inertiaId, locations) {
   var me = this;
   this.getData().then(function () {
       me.register();
-    console.log(me.category)
     }).done();
 }
 
@@ -43,6 +43,10 @@ DERagent.prototype.getData = function() {
         me.canSetTemperature = UIdata.canSetTemperature;
         me.canSwitch = UIdata.canSwitch;
         me.sensors = UIdata.sensors;
+
+        for (var i = 0; i < UIdata.sensors.length; i++) {
+          me.sensorsObj[UIdata.sensors[i].type] = UIdata.sensors[i];
+        }
 
         me.getLiveData = true;
         resolve();
@@ -72,35 +76,43 @@ DERagent.prototype.rpcFunctions.getUIElement = function() {
   var innerHTML = '';
   switch (this.category) {
     case 'LIGHTING':
-      innerHTML = '<table class"lightingTable">' +
-      '<tr><th>' + this.derId + ':</th>' +
-      '<td class="description">Consumption:</td><td class="smallDescription">' + this.sensors[0].value + ' ' + this.sensors[0].unit + '</td>';
+    case 'HVAC':
+    case 'OTHER':
+      var disabledTag = "_disabled";
+      innerHTML = '<table class="derTable">' +
+      '<tr>';
       if (this.canSwitch == true) {
-        innerHTML += '<td><img src="./images/toggleOn.png"></td>';
+        disabledTag = '';
+      }
+      innerHTML += '<td class="toggle"><img src="';
+      if (this.sensorsObj['state'].value == 'on')
+        innerHTML += './images/toggleOn' + disabledTag + '.png"';
+      else {
+        innerHTML += './images/toggleOff' + disabledTag + '.png"';
+      }
+      innerHTML += 'class="toggleImage"></td>';
+
+      innerHTML += '<td class="derName">' + this.derId + '</td>' +
+      '<td class="power">' + this.sensorsObj['consumption'].value + ' ' + this.sensorsObj['consumption'].unit + '</td>';
+
+      if (this.sensorsObj['temperature'] === undefined) {
+        innerHTML += '<td class="sensorData"></td>';
       }
       else {
-        innerHTML += '<td></td>';
-      }
-      if (this.canDim == true) {
-        innerHTML += '</tr>' +
-        '<tr>' +
-        ' <td><input type="range"></td>' +
-        '</tr>';
+        innerHTML += '<td class="sensorData">' + this.sensorsObj['temperature'].value + ' ' + this.sensorsObj['temperature'].unit + '</td>';
       }
 
-      innerHTML += '</tr></table>'
-      break;
-    case 'HVAC':
-      innerHTML = 'HVAC'
-      //innerHTML = '<table class='derTable'><tr><th colspan='4'>HVAC:</th></tr>' +
-      //'<tr><td class='description'>Consumption </td><td class='data'>' + this.data[0].value + ' ' + this.data[0].unit + '</td>' +
-      //'<td class='description'>Current Temperature  </td><td class='data'>' + this.data.temperature[3] + ' &deg; C</td></tr>' +
-      //'<tr><td class='description'>Target Temperature  </td><td class='bigdata' colspan='2'><span class='rangeLabel'>15</span> ' +
-      //'<input type='range' min='15' max='30' step='0.5' style='width:198px;' value=''+(this.data.temperature[3]+2)+'' onchange='' +
-      //'document.getElementById(\'' + randomId + '\').value = this.value;'> ' +
-      //'<span class='rangeLabel'>30</span></td><td><input id=''+randomId+'' value=''+(this.data.temperature[3]+2)+'' class='rangeinputLabel'>&deg; C</td></tr></table>';
-      break;
-    case 'OTHER':
+      if (this.canDim == true) {
+        innerHTML += '<td class="text">Dimming:</td><td class="range"><input type="range" min="0" max="100" value="'+this.sensorsObj['dimLevel'].value+'">' +
+        '<input class="rangeAssistant" value="'+this.sensorsObj['dimLevel'].value+'"></td>';
+      }
+      else if (this.canSetTemperature == true) {
+        innerHTML += '<td class="text">Set temp:</td><td class="range"><input type="range" min="15" max="35" value="'+this.sensorsObj['setTemperature'].value+'">' +
+        '<input class="rangeAssistant" value="' + this.sensorsObj['setTemperature'].value + '"></td>';
+      }
+      else {
+        innerHTML += '<td class="text empty"></td><td class="range empty"></td>';
+      }
       break;
     case 'SENSORS':
       break;
@@ -109,5 +121,5 @@ DERagent.prototype.rpcFunctions.getUIElement = function() {
     default:
       break;
   }
-  return innerHTML;
+  return {type:this.category, content:innerHTML};
 }

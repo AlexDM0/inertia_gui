@@ -44,8 +44,8 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
   var me = this;
   var spaceDiv = document.createElement('div');
   var derDiv = document.createElement('div');
-  var spaceDivHeader = document.createElement("span");
-  var subspaceDivHeader = document.createElement("span");
+  var spaceDivHeader = document.createElement("div");
+  var subspaceDivHeader = document.createElement("div");
   spaceDivHeader.className = 'spaceDivHeader';
   subspaceDivHeader.className = 'subspaceDivHeader';
 
@@ -55,6 +55,30 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
   container.appendChild(subspaceDivHeader);
   container.appendChild(derDiv);
 
+  // get subspace agents
+  for (var agentId in this.agentsToAggregate) {
+    if (this.agentsToAggregate.hasOwnProperty(agentId)) {
+      if (this.agentsToAggregate[agentId].agentType == 'DER') {
+        me.rpc.request(agentId, {method: 'getUIElement', params: {}}).then(function (reply) {
+          if (reply.content != '') {
+            var derElement = document.createElement("div");
+            derElement.className = 'derElement';
+            derElement.innerHTML = reply.content;
+            if (reply.type == "HVAC") {
+              derDiv.insertBefore(derElement, derDiv.firstChild);
+            }
+            else if (reply.type == "LIGHTING") {
+              derDiv.insertBefore(derElement, derDiv.firstChild);
+            }
+            else {
+              derDiv.appendChild(derElement);
+            }
+          }
+        }).done();
+      }
+    }
+  }
+
   // there is a superspace
   if (this.parent !== undefined) {
     if (this.parent.indexOf("space_") != -1) {
@@ -63,12 +87,21 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
           for (var i = 0; i < derAgents.length; i++) {
             me.rpc.request(derAgents[i], {method: 'getUIElement', params: {}})
               .then(function (reply) {
-                if (reply != null) {
+                if (reply.content != '') {
                   spaceDivHeader.innerHTML = "DERs in shared space:";
-                  var derSpan = document.createElement("span");
-                  derSpan.className = 'derSpan';
-                  derSpan.innerHTML = reply;
-                  spaceDiv.appendChild(derSpan);
+                  subspaceDivHeader.innerHTML = "DERs in subspace:";
+                  var derElement = document.createElement("div");
+                  derElement.className = 'derElement';
+                  derElement.innerHTML = reply.content;
+                  if (reply.type == "HVAC") {
+                    spaceDiv.insertBefore(derElement, spaceDiv.firstChild);
+                  }
+                  else if (reply.type == "LIGHTING") {
+                    spaceDiv.insertBefore(derElement, spaceDiv.firstChild);
+                  }
+                  else {
+                    spaceDiv.appendChild(derElement);
+                  }
                 }
               }).done();
           }
@@ -76,21 +109,7 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
     }
   }
 
-  for (var agentId in this.agentsToAggregate) {
-    if (this.agentsToAggregate.hasOwnProperty(agentId)) {
-      if (this.agentsToAggregate[agentId].agentType == 'DER') {
-        me.rpc.request(agentId, {method: 'getUIElement', params: {}}).then(function (reply) {
-          if (reply != null) {
-            subspaceDivHeader.innerHTML = "DERs in subspace:";
-            var derSpan = document.createElement("span");
-            derSpan.className = 'derSpan';
-            derSpan.innerHTML = reply;
-            derDiv.appendChild(derSpan);
-          }
-        }).done();
-      }
-    }
-  }
+
 }
 
 AggregatorAgent.prototype.loadOverview = function() {
