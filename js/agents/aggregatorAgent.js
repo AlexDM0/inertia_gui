@@ -46,32 +46,52 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
   var derDiv = document.createElement('div');
   var spaceDivHeader = document.createElement("div");
   var subspaceDivHeader = document.createElement("div");
+
+  var spaceHVACdiv = document.createElement('div');
+  var spaceLIGHTINGdiv = document.createElement('div');
+  var spaceOTHERdiv = document.createElement('div');
+
+  var subspaceHVACdiv = document.createElement('div');
+  var subspaceLIGHTINGdiv = document.createElement('div');
+  var subspaceOTHERdiv = document.createElement('div');
   spaceDivHeader.className = 'spaceDivHeader';
   subspaceDivHeader.className = 'subspaceDivHeader';
 
   container.innerHTML = "";
   container.appendChild(spaceDivHeader);
   container.appendChild(spaceDiv);
+  spaceDiv.appendChild(spaceHVACdiv);
+  spaceDiv.appendChild(spaceLIGHTINGdiv);
+  spaceDiv.appendChild(spaceOTHERdiv);
+  derDiv.appendChild(subspaceHVACdiv);
+  derDiv.appendChild(subspaceLIGHTINGdiv);
+  derDiv.appendChild(subspaceOTHERdiv);
   container.appendChild(subspaceDivHeader);
   container.appendChild(derDiv);
 
   // get subspace agents
+  var hasSubspaceDers = false;
   for (var agentId in this.agentsToAggregate) {
     if (this.agentsToAggregate.hasOwnProperty(agentId)) {
+      var sensorType = this.agentsToAggregate[agentId].sensorType;
+      if (sensorType == "LIGHTING" || sensorType == "HVAC" || sensorType == "OTHER") {
+        hasSubspaceDers = true;
+      }
       if (this.agentsToAggregate[agentId].agentType == 'DER') {
         me.rpc.request(agentId, {method: 'getUIElement', params: {}}).then(function (reply) {
           if (reply.content != '') {
             var derElement = document.createElement("div");
             derElement.className = 'derElement';
+            derElement.id = reply.id;
             derElement.innerHTML = reply.content;
             if (reply.type == "HVAC") {
-              derDiv.insertBefore(derElement, derDiv.firstChild);
+              subspaceHVACdiv.appendChild(derElement);
             }
             else if (reply.type == "LIGHTING") {
-              derDiv.insertBefore(derElement, derDiv.firstChild);
+              subspaceLIGHTINGdiv.appendChild(derElement);
             }
             else {
-              derDiv.appendChild(derElement);
+              subspaceOTHERdiv.appendChild(derElement);
             }
           }
         }).done();
@@ -89,18 +109,21 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
               .then(function (reply) {
                 if (reply.content != '') {
                   spaceDivHeader.innerHTML = "DERs in shared space:";
-                  subspaceDivHeader.innerHTML = "DERs in subspace:";
+                  if (hasSubspaceDers == true) {
+                    subspaceDivHeader.innerHTML = "DERs in room:";
+                  }
                   var derElement = document.createElement("div");
                   derElement.className = 'derElement';
+                  derElement.id = reply.id;
                   derElement.innerHTML = reply.content;
                   if (reply.type == "HVAC") {
-                    spaceDiv.insertBefore(derElement, spaceDiv.firstChild);
+                    spaceHVACdiv.appendChild(derElement);
                   }
                   else if (reply.type == "LIGHTING") {
-                    spaceDiv.insertBefore(derElement, spaceDiv.firstChild);
+                    spaceLIGHTINGdiv.appendChild(derElement);
                   }
                   else {
-                    spaceDiv.appendChild(derElement);
+                    spaceOTHERdiv.appendChild(derElement);
                   }
                 }
               }).done();

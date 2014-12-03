@@ -59,8 +59,9 @@ PortalAgent.prototype.getDERs = function() {
     .then(function (DERinfo) {
       for (var i = 0; i < DERinfo.length; i++) {
         me.createAggregatorsIfNeeded(DERinfo[i].locations);
-        var agent = new DERagent(randomUUID(), DERinfo[i].derID, DERinfo[i].id, DERinfo[i].locations);
-        derAgents[DERinfo[i].derID] = agent;
+        var derID = randomUUID();
+        var agent = new DERagent(derID, DERinfo[i].derID, DERinfo[i].id, DERinfo[i].locations);
+        derAgents[derID] = agent;
       }
       resolve();
     })

@@ -311,75 +311,68 @@ span.rangeLabel {
     font-size:11px;
 }
 
-table.derTable {
-    padding:1px;
-    border-spacing:0px;
-    cellspacing:0px;
-}
-
-table.derTable th {
-    width: 80px;
-    text-align:left;
-}
-
-table.derTable td.toggle{
-    width:62px;
-    height:20px;
-    font-size:11px;
-}
-
-
-table.derTable td.power{
-    width:40px;
-    height:20px;
-    padding-left:3px;
-    font-size:11px;
-    border-left: 1px #cccccc solid;
-}
-
-table.derTable td.text{
-    width:60px;
-    height:20px;
-    padding-left:3px;
-    font-size:11px;
-    border-left: 1px #cccccc solid;
-}
-
-table.derTable td.sensorData{
-    width:50px;
-    height:20px;
-    padding-left:3px;
-    font-size:11px;
-    border-left: 1px #cccccc solid;
-}
-
-table.derTable td.text.empty{
-    border-left: 0px;
-    border-right: 0px;
-}
-
-table.derTable td.range{
-    width:180px;
-    height:20px;
-    border-left: 1px #cccccc solid;
-}
-
-table.derTable td.range.empty{
-    border-left: 0px;
-    border-right: 0px;
-}
-
-table.derTable td.derName{
-    width:150px;
-    height:20px;
-    font-weight:bold;
-    font-size:11px;
-    padding-left:2px;
-}
 
 div.derElement {
+    width:100%;
+    height:35px;
     background-color: #eeeeee;
     border-bottom:1px #cccccc solid;
+}
+
+div.derUI {
+    float:left;
+    height:35px;
+    font-size:11px;
+    text-align:left;
+    vertical-align:middle;
+    line-height:35px;
+    padding-left:3px;
+}
+
+div.derUI.toggle{
+    width:55px;
+}
+
+div.derUI.power{
+    width:50px;
+    border-left: 1px #cccccc solid;
+}
+
+div.derUI.text{
+    width:60px;
+    border-left: 1px #cccccc solid;
+}
+
+
+div.derUI.temporary{
+    opacity:0.6;
+    color:#999999;
+}
+
+div.derUI.sensorData{
+    width:50px;
+    border-left: 1px #cccccc solid;
+}
+
+div.derUI.text.empty{
+    border-left: 0px;
+    border-right: 0px;
+}
+
+div.derUI.DERrange{
+    width:190px;
+    border-left: 1px #cccccc solid;
+}
+
+div.derUI.empty{
+    border-left: 0px;
+    border-right: 0px;
+}
+
+div.derUI.derName{
+    width:150px;
+    font-weight:bold;
+    padding-left:2px;
 }
 
 div.spaceDivHeader {

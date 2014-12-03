@@ -53,3 +53,17 @@ function hideInfoDiv() {
   var containerDiv = document.getElementById("informationDiv");
   containerDiv.style.display = "none";
 }
+
+
+function toggleDER(derId) {
+  derAgents[derId].toggle();
+}
+
+function updateIndicator(derId, unit, sendToEVE) {
+  var range = document.getElementById("range" + derId);
+  var indicator = document.getElementById("rangeNumber" + derId);
+  indicator.innerHTML = range.value + unit;
+  if (sendToEVE == true) {
+    derAgents[derId].updateRange(range.value);
+  }
+}
