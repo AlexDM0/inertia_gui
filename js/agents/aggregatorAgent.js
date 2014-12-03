@@ -16,7 +16,7 @@ function AggregatorAgent(id) {
     {type:'brightness'  , value: 0, method:'avg', unit:'lux', counter: 0},
     {type:'humidity'    , value: 0, method:'avg', unit:'%', counter: 0},
     {type:'co2level'    , value: 0, method:'avg', unit:'ppm', counter: 0}
-    ]
+    ];
   this.parent = undefined;
   this.overviewActive = false;
 }
@@ -133,7 +133,7 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
   }
 
 
-}
+};
 
 AggregatorAgent.prototype.loadOverview = function() {
   var container = document.getElementById("aggregatedInfo");
@@ -167,7 +167,7 @@ AggregatorAgent.prototype.loadOverview = function() {
     else {
       var newContainer = document.createElement("div");
       newContainer.id = this.id + "overview";
-      newContainer.className = 'stats_overview'
+      newContainer.className = 'stats_overview';
       newContainer.innerHTML = innerHTML;
       container.insertBefore(newContainer, container.firstChild);
     }
@@ -179,7 +179,7 @@ AggregatorAgent.prototype.loadOverview = function() {
       container.removeChild(oldContainer)
     }
   }
-}
+};
 
 
 AggregatorAgent.prototype.aggregate = function() {
@@ -225,7 +225,7 @@ AggregatorAgent.prototype.propagate = function() {
   if (this.parent !== undefined) {
     this.rpc.request(this.parent, {method: 'register', params: {data: this.aggregatedValues, type: this.id}}).done();
   }
-}
+};
 
 //  -------------------  RPC  -------------------- //
 
@@ -237,7 +237,7 @@ AggregatorAgent.prototype.rpcFunctions.register = function(params, sender) {
 };
 
 AggregatorAgent.prototype.rpcFunctions.getDERS = function(params, sender) {
-  var DERs = []
+  var DERs = [];
   for (var agentId in this.agentsToAggregate) {
     if (this.agentsToAggregate.hasOwnProperty(agentId)) {
       if (this.agentsToAggregate[agentId].agentType == 'DER') {

@@ -40,7 +40,7 @@ DERagent.prototype.update = function() {
       })
       .catch(function (err) {console.log("er",err);reject(err);})
   });
-}
+};
 
 DERagent.prototype.getData = function() {
   var me = this;
@@ -60,7 +60,7 @@ DERagent.prototype.getData = function() {
         me.getLiveData = true;
         resolve();
       }).catch(function (err) {
-        console.log('DERagent:gedivata:error',err);
+        console.log('DERagent:getData:error',err);
         reject(err);
       }).done();
     }
@@ -132,11 +132,11 @@ DERagent.prototype.getUIElement = function(temporary) {
       break;
   }
   return innerHTML;
-}
+};
 
 DERagent.prototype.rpcFunctions.getUIElement = function() {
   return {type:this.category, content:this.getUIElement(), id:'derUI' + this.id};
-}
+};
 
 DERagent.prototype.toggle = function() {
   if (this.canSwitch == true) {
@@ -157,7 +157,7 @@ DERagent.prototype.toggle = function() {
         }).done();
       });
   }
-}
+};
 
 DERagent.prototype.updateRange = function(value) {
   var method = undefined;
@@ -177,7 +177,6 @@ DERagent.prototype.updateRange = function(value) {
     var me = this;
     var params = {};
     params[paramName] = value;
-    console.log(EVE_URL + this.inertiaId,{method:method, params:params})
     this.rpc.request(EVE_URL + this.inertiaId,{method:method, params:params})
       .then(function () {
         me.update().then(function () {
@@ -185,11 +184,11 @@ DERagent.prototype.updateRange = function(value) {
         }).done();
       });
   }
-}
+};
 
 DERagent.prototype.updateDerUI = function(temporary) {
   var divElement = document.getElementById("derUI" + this.id);
   if (divElement) {
     divElement.innerHTML = this.getUIElement(temporary);
   }
-}
+};
