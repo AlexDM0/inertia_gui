@@ -22,8 +22,7 @@ function DERagent(id, derId, inertiaId, locations) {
   this.artificialSensorData = undefined;
   if (this.derId == undefined) {
     this.artificialSensorData = {temperature: new vis.DataSet(), occupancy: new vis.DataSet()};
-    this.artificialSensorData.temperature.on("*", this.sendArtificialToEve.bind(this, 'temperature'));
-    this.artificialSensorData.occupancy.on("*", this.sendArtificialToEve.bind(this, 'occupancy'));
+    this.getArtificialFromEve();
   }
   this.update().done();
 }
@@ -36,6 +35,47 @@ DERagent.prototype.constructor = DERagent;
 // exposed functions from local functions.
 DERagent.prototype.rpcFunctions = {};
 
+DERagent.prototype.bindData = function() {
+  this.artificialSensorData.temperature.on("*", this.sendArtificialToEve.bind(this, 'temperature'));
+  this.artificialSensorData.occupancy.on("*", this.sendArtificialToEve.bind(this, 'occupancy'));
+}
+
+DERagent.prototype.getArtificialFromEve = function() {
+  var me = this;
+  this.rpc.request(EVE_URL + this.inertiaId, {method:'getArtificialSensors', params:{}})
+    .then(function (reply) {
+      return new Promise(function (resolve, reject) {
+        if (typeof reply == 'object' && reply.length > 0) {
+          var start, end, value;
+          for (var i = 0; i < reply.length; i++) {
+            var data = [];
+            if (reply[i].values.length % 2 == 0) {
+              for (var j = 0; j < reply[i].values.length; j++) {
+                // every first entree is the start value, every second value is the end
+                if (j % 2 == 0) {
+                  start = reply[i].values[j].timestamp;
+                  value = reply[i].values[j].value;
+                }
+                else {
+                  end = reply[i].values[j].timestamp;
+                  data.push({start: start, end: end, content: value});
+                }
+              }
+              me.artificialSensorData[reply[i].type] = new vis.DataSet(data);
+            }
+            else {
+              reject(new Error("Error: data is not an even number"));
+            }
+          }
+          resolve();
+        }
+      });
+    })
+    .then(function (reply) {
+      console.log('binding')
+      me.bindData();
+    }).done();
+}
 
 DERagent.prototype.sendArtificialToEve = function(type) {
   var sendData = [];
@@ -53,7 +93,11 @@ DERagent.prototype.sendArtificialToEve = function(type) {
   if (type == 'temperature') {
     unit = 'C';
   }
-  this.rpc.request(EVE_URL + this.inertiaId, {method:'addArtificialSensor', params:{type:type,unit:unit, values:sendData}});
+  var me = this;
+  this.rpc.request(EVE_URL + this.inertiaId, {method:'addArtificialSensor', params:{type:type,unit:unit, values:sendData}})
+    .then(function () {
+      return me.update();
+    }).done();
 }
 
 DERagent.prototype.getArtificialToEve = function(type) {
