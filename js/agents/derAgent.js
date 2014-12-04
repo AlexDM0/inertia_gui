@@ -2,7 +2,7 @@ function DERagent(id, derId, inertiaId, locations) {
   // execute super constructor
   eve.Agent.call(this, id);
   // extend the agent with RPC functionality
-  this.rpc = this.loadModule('rpc', this.rpcFunctions, {timeout: 6000});
+  this.rpc = this.loadModule('rpc', this.rpcFunctions, {timeout: 60000});
   // connect to all transports provided by the system
   this.connect(eve.system.transports.getAll());
 
@@ -22,9 +22,9 @@ function DERagent(id, derId, inertiaId, locations) {
   this.artificialSensorData = undefined;
   if (this.derId == undefined) {
     this.artificialSensorData = {temperature: new vis.DataSet(), occupancy: new vis.DataSet()};
-    //this.artificialSensorData.temperature
+    this.artificialSensorData.temperature.on("*", this.sendArtificialToEve.bind(this, 'temperature'));
+    this.artificialSensorData.occupancy.on("*", this.sendArtificialToEve.bind(this, 'occupancy'));
   }
-
   this.update().done();
 }
 
@@ -35,6 +35,31 @@ DERagent.prototype.constructor = DERagent;
 // define RPC functions, preferably in a separated object to clearly distinct
 // exposed functions from local functions.
 DERagent.prototype.rpcFunctions = {};
+
+
+DERagent.prototype.sendArtificialToEve = function(type) {
+  var sendData = [];
+  var unit = 'people';
+  var data = this.artificialSensorData[type].get({returnType:'Array'});
+
+  for (var i = 0; i < data.length; i++) {
+    var end = data[i].end
+    if (typeof data[i].end != 'number') {
+      end = data[i].end.valueOf();
+    }
+    sendData.push({timestamp:data[i].start.valueOf(), value:data[i].content})
+    sendData.push({timestamp:end, value:0})
+  }
+  if (type == 'temperature') {
+    unit = 'C';
+  }
+  this.rpc.request(EVE_URL + this.inertiaId, {method:'addArtificialSensor', params:{type:type,unit:unit, values:sendData}});
+}
+
+DERagent.prototype.getArtificialToEve = function(type) {
+  this.rpc.request(EVE_URL + this.inertiaId, {method:'getArtificialSensor', params:{type:type,unit:unit, values:sendData}});
+}
+
 
 DERagent.prototype.update = function() {
   var me = this;
@@ -77,7 +102,7 @@ DERagent.prototype.getData = function() {
 DERagent.prototype.register = function() {
   for (var i = 0; i < this.locations.length; i++) {
     var location = this.locations[i];
-    if (spaceAgents[this.locations[i]] !== undefined) {
+    if (spaceAgents[this.locations[i]] !== undefined && subspaceAgents[this.locations[i]] === undefined) {
       location = 'space_' + location;
     }
     this.rpc.request(location, {

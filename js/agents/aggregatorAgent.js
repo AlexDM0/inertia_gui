@@ -3,7 +3,7 @@ function AggregatorAgent(id) {
   eve.Agent.call(this, id);
 
   // extend the agent with RPC functionality
-  this.rpc = this.loadModule('rpc', this.rpcFunctions);
+  this.rpc = this.loadModule('rpc', this.rpcFunctions,{timeout: 60000});
 
   // connect to all transports provided by the system
   this.connect(eve.system.transports.getAll());

@@ -6,7 +6,7 @@ function PortalAgent(id) {
   eve.Agent.call(this, id);
 
   // extend the agent with RPC functionality
-  this.rpc = this.loadModule('rpc', this.rpcFunctions);
+  this.rpc = this.loadModule('rpc', this.rpcFunctions,{timeout: 60000});
 
   // connect to all transports provided by the system
   this.connect(eve.system.transports.getAll());
@@ -32,17 +32,11 @@ PortalAgent.prototype.getMappings = function() {
       .then(function (spaceMapping) {
         for (var i = 0; i < spaceMapping.length; i++) {
           var space = spaceMapping[i].space;
-          // only store as space if it is not 1:1
-          if (spaceMapping[i].subspace.length > 1) {
-            me.spaces[space] = [];
-            for (var j = 0; j < spaceMapping[i].subspace.length; j++) {
-              var subspace = spaceMapping[i].subspace[j];
-              me.spaces[space].push(subspace);
-              me.subspaces[subspace] = space;
-            }
-          }
-          else if (spaceMapping[i].subspace.length == 1) {
-            var subspace = spaceMapping[i].subspace[0];
+
+          me.spaces[space] = [];
+          for (var j = 0; j < spaceMapping[i].subspace.length; j++) {
+            var subspace = spaceMapping[i].subspace[j];
+            me.spaces[space].push(subspace);
             me.subspaces[subspace] = space;
           }
         }
@@ -74,8 +68,8 @@ PortalAgent.prototype.getDERs = function() {
 PortalAgent.prototype.createAggregatorsIfNeeded = function(location) {
   if (location.length > 0) {
     for (var i = 0; i < location.length; i++) {
-      if (this.spaces[location[i]] === undefined) {
-        // make a subspace agent, not a space agents
+      // Check if this is a space agent
+      if (this.spaces[location[i]] === undefined || this.subspaces[location[i]] !== undefined) {
         if (subspaceAgents[location[i]] === undefined) {
           subspaceAgents[location[i]] = new AggregatorAgent(location[i]);
           subspaceAgents[location[i]].setParent(this.getSpace(location[i]));

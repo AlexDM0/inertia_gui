@@ -92,6 +92,8 @@ function openArtificialSensorSetup(type, sensorAgentId) {
 
   var items = derAgents[sensorAgentId].getDataSet(type);
   var options = {
+    start: new Date().valueOf() - 3600000*6,
+    end: new Date().valueOf() + 3600000*6,
     height: '150px',
     editable: true,
     showCurrentTime: true,
