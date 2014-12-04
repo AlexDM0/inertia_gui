@@ -23,21 +23,17 @@
             vertical-align:middle;
             line-height:30px;
             box-shadow: #ffffff 0px 0px 5px 1px;
+            cursor:pointer;
         }
 
         div.floorNumber.active {
-            position:relative;
-            left:-10px;
-            width:40px;
-            height:30px;
             background-color: #2d73a7;
-            color:#ffffff;
-            border-radius:3px;
-            margin: 6px 6px 6px 6px;
-            text-align:center;
-            vertical-align:middle;
-            line-height:30px;
         }
+
+        div.floorNumber.hidden {
+            display:none;
+        }
+
     </style>
     <title>INERTIA GUI</title>
 
@@ -93,6 +89,45 @@
 
 </head>
 <body onload="onLoad()">
+<div id="darkOverlay">
+    <div id="artificialSensor">
+        <div id="artificialSensorClose" class="closePopupButton" onclick="closeArtificialSensor();"></div>
+        <div class="artificialSensorHeader">Setup Artificial Sensor</div>
+        <div id="artificialSensorPopup" class="artificialSensorPopup">
+            <div class="closePopupButton" onclick="closeArtificialSensorPopup();"></div>
+            <div class="popupHeader">Pick a value and a duration.</div>
+            <div class="popupText">Value:</div>
+            <div class="popupRange">
+                <span id="popupValueSpan">
+                    <select class="inertia" id="popupValue">
+                        <option value="25" selected="selected">25</option>
+                    </select>
+                </span>
+            </div>
+            <div class="popupText">Duration:</div>
+            <div class="popupRange">
+                <select id="popupDuration" class="inertia">
+                    <option value="5">5 min</option>
+                    <option value="10">10 min</option>
+                    <option value="15" selected="selected">15 min</option>
+                    <option value="20">20 min</option>
+                    <option value="25">25 min</option>
+                    <option value="30">30 min</option>
+                    <option value="45">45 min</option>
+                    <option value="60">1 hour</option>
+                    <option value="120">2 hours</option>
+                    <option value="180">3 hours</option>
+                    <option value="240">4 hours</option>
+                </select>
+            </div>
+            <div class="popupButton">
+                <input type="submit" value="Add artificial sensor value" class="saveButton" id="artificialSensorSaveBtn">
+            </div>
+        </div>
+        <div class="artificialSensorDescription">Doubletap on the timeline to create a sensor value and it's duration.</div>
+        <div id="artificialSensorTimelineContainer"></div>
+    </div>
+</div>
 <div class="topBanner">
     <img class="eu" src="./images/eu.png">
 </div>
@@ -104,11 +139,12 @@
     <a href="#details" class="transparent"><div class="menuItem">Details</div></a>
     <a href="#calendar" class="transparent"><div class="menuItem">Calendar</div></a>
 </div>
+
 <div id="mapContainer">
     <div id="loadingIndicator"><img class='loadingImage' src="./images/loading.gif" /></div>
     <div id="floorIndicator">
-        <div class="floorNumber" id='floorNumber1' onclick="webglInit(gbxmlData,1); deselect();">1</div>
-        <div class="floorNumber" id='floorNumber0' onclick="webglInit(gbxmlData,0); deselect();">0</div>
+        <div class="floorNumber hidden" id='floorNumber1' onclick="webglInit(gbxmlData,1); deselect();">1</div>
+        <div class="floorNumber hidden" id='floorNumber0' onclick="webglInit(gbxmlData,0); deselect();">0</div>
     </div>
     <div id="informationDiv" onclick="event.stopPropagation();">
         <div id="informationClose" onclick="hideInfoDiv(); deselect();"></div>
@@ -150,7 +186,7 @@
 <div class="inertiaContent">
     <br />
 
-    <iframe src="http://160.40.51.68:8080/INERTIA/web/week.php" id="calendar_iframe"></iframe>
+    <!--<iframe src="http://160.40.51.68:8080/INERTIA/web/week.php" id="calendar_iframe"></iframe>-->
 </div>
 <div class="bottomBanner1"></div>
 <div class="bottomBanner2"></div>

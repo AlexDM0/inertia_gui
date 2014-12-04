@@ -19,6 +19,12 @@ function DERagent(id, derId, inertiaId, locations) {
   this.canSetTemperature = false;
   this.category = 'OTHER';
 
+  this.artificialSensorData = undefined;
+  if (this.derId == undefined) {
+    this.artificialSensorData = {temperature: new vis.DataSet(), occupancy: new vis.DataSet()};
+    //this.artificialSensorData.temperature
+  }
+
   this.update().done();
 }
 
@@ -76,7 +82,7 @@ DERagent.prototype.register = function() {
     }
     this.rpc.request(location, {
       method: 'register',
-      params: {data: this.sensors, sensorType: this.category, agentType:'DER'}
+      params: {data: this.sensors, sensorType: this.category, agentType: (this.derId === undefined ? 'SENSOR_COLLECTIVE' : 'DER')}
     }).done();
   }
 };
@@ -97,13 +103,23 @@ DERagent.prototype.getUIElement = function(temporary) {
       innerHTML = '<div class="derUI toggle' + temporary + '"><img src="';
       if (this.sensorsObj['state'].value == 'on')
         innerHTML += './images/toggleOn' + disabledTag + '.png"';
+      else if (this.sensorsObj['state'].value == 'unknown') {
+        innerHTML += './images/toggleUnknown' + disabledTag + '.png"';
+      }
       else {
         innerHTML += './images/toggleOff' + disabledTag + '.png"';
       }
-      innerHTML += 'class="toggleImage" onclick="toggleDER(\'' + this.id + '\')"></div>';
 
-      innerHTML += '<div class="derUI derName' + temporary + '">' + this.derId + '</div>' +
-      '<div class="derUI power' + temporary + '">' + this.sensorsObj['consumption'].value + ' ' + this.sensorsObj['consumption'].unit + '</div>';
+      innerHTML += 'class="toggleImage" onclick="toggleDER(\'' + this.id + '\')"></div>';
+      innerHTML += '<div class="derUI derName' + temporary + '">' + this.derId + '</div>';
+
+      if (this.sensorsObj['consumption'] !== undefined) {
+        innerHTML += '<div class="derUI power' + temporary + '">' + this.sensorsObj['consumption'].value + ' ' + this.sensorsObj['consumption'].unit + '</div>';
+      }
+      else {
+        innerHTML += '<div class="derUI power' + temporary + '">?</div>';
+      }
+
 
       if (this.sensorsObj['temperature'] === undefined) {
         innerHTML += '<div class="derUI sensorData' + temporary + '"></div>';
@@ -191,4 +207,9 @@ DERagent.prototype.updateDerUI = function(temporary) {
   if (divElement) {
     divElement.innerHTML = this.getUIElement(temporary);
   }
+};
+
+
+DERagent.prototype.getDataSet = function(type) {
+  return this.artificialSensorData[type];
 };

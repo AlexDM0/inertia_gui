@@ -15,13 +15,13 @@ eve.system.init({
 });
 
 var buildingAgents = {};
-buildingAgents['Building_ITA'] = new AggregatorAgent('Building_ITA');
+buildingAgents['Building_ITI'] = new AggregatorAgent('Building_ITI');
 
 var floorAgents = {};
 floorAgents['Floor_0'] = new AggregatorAgent('Floor_0');
-floorAgents['Floor_0'].setParent('Building_ITA')
+floorAgents['Floor_0'].setParent('Building_ITI')
 floorAgents['Floor_1'] = new AggregatorAgent('Floor_1');
-floorAgents['Floor_1'].setParent('Building_ITA')
+floorAgents['Floor_1'].setParent('Building_ITI')
 
 var spaceAgents = {}
 var subspaceAgents = {};
@@ -39,10 +39,9 @@ function onLoad() {
   //loadVis();
   //populateExternalLegend();
   //enableSubLegend();
-  buildingAgents['Building_ITA'].overviewActive = true;
-  buildingAgents["Building_ITA"].loadOverview();
-  floorAgents['Floor_1'].overviewActive = true;
-  floorAgents["Floor_1"].loadOverview();
+  buildingAgents['Building_ITI'].overviewActive = true;
+  buildingAgents["Building_ITI"].loadOverview();
+
 
   webglInit(gbxmlData,1);
   webglRender();

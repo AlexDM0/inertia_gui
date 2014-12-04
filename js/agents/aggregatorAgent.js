@@ -39,7 +39,6 @@ AggregatorAgent.prototype.register = function() {
   }
 };
 
-
 AggregatorAgent.prototype.loadDerInterface = function(container) {
   var me = this;
   var spaceDiv = document.createElement('div');
@@ -137,13 +136,32 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
 
 AggregatorAgent.prototype.loadOverview = function() {
   var container = document.getElementById("aggregatedInfo");
+  var allowArtificialSensor = false;
+  if (this.parent !== undefined) {
+    if (this.parent.indexOf("space_") != -1) {
+      allowArtificialSensor = true;
+    }
+  }
+
+  var sensorAgentId = undefined;
+  for (var agentId in this.agentsToAggregate) {
+    if (this.agentsToAggregate.hasOwnProperty(agentId)) {
+      if (this.agentsToAggregate[agentId].agentType == 'SENSOR_COLLECTIVE') {
+        sensorAgentId = agentId;
+        break;
+      }
+    }
+  }
+
+  allowArtificialSensor = allowArtificialSensor && sensorAgentId !== undefined;
+
   if (this.overviewActive == true) {
     var innerHTML = "" +
       '<span class="statsDescription">' + this.id.replace(/[_]/g, " ") + ' Status:</span>' +
       '<span>' +
       '<table class="stats">' +
       '  <tr>' +
-      '    <th>Energy (total)</th>' +
+      '    <th>Power (total)</th>' +
       '    <th>Temperature (avg)</th>' +
       '    <th>Occupancy (total)</th>' +
       '    <th>Brightness (avg)</th>' +
@@ -152,8 +170,8 @@ AggregatorAgent.prototype.loadOverview = function() {
       '  </tr>' +
       '  <tr>' +
       '    <td>' + Math.round(this.aggregatedValues[0].value * 100) / 100 + ' ' + this.aggregatedValues[0].unit + '</td>' +
-      '    <td>' + Math.round(this.aggregatedValues[1].value * 100) / 100 + ' ' + this.aggregatedValues[1].unit + '</td>' +
-      '    <td>' + Math.round(this.aggregatedValues[2].value * 100) / 100 + ' ' + this.aggregatedValues[2].unit + '</td>' +
+      '    <td>' + Math.round(this.aggregatedValues[1].value * 100) / 100 + ' ' + this.aggregatedValues[1].unit + (allowArtificialSensor ? ' <img class="override" src="./images/cog_edit.png" onclick="openArtificialSensorSetup(\'temperature\',\'' + sensorAgentId + '\');">' : '') + '</td>' +
+      '    <td>' + Math.round(this.aggregatedValues[2].value * 100) / 100 + ' ' + this.aggregatedValues[2].unit + (allowArtificialSensor ? ' <img class="override" src="./images/cog_edit.png" onclick="openArtificialSensorSetup(\'occupancy\',\'' + sensorAgentId + '\');">' : '') + '</td>' +
       '    <td>' + Math.round(this.aggregatedValues[3].value * 100) / 100 + ' ' + this.aggregatedValues[3].unit + '</td>' +
       '    <td>' + Math.round(this.aggregatedValues[4].value * 100) / 100 + ' ' + this.aggregatedValues[4].unit + '</td>' +
       '    <td>' + Math.round(this.aggregatedValues[5].value * 100) / 100 + ' ' + this.aggregatedValues[5].unit + '</td>' +
@@ -180,7 +198,6 @@ AggregatorAgent.prototype.loadOverview = function() {
     }
   }
 };
-
 
 AggregatorAgent.prototype.aggregate = function() {
   // clear values;
@@ -226,6 +243,8 @@ AggregatorAgent.prototype.propagate = function() {
     this.rpc.request(this.parent, {method: 'register', params: {data: this.aggregatedValues, type: this.id}}).done();
   }
 };
+
+
 
 //  -------------------  RPC  -------------------- //
 

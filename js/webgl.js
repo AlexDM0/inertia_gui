@@ -37,7 +37,7 @@ var winHalfW;
 var activeFloorNumber = 0;
 var borderSize = 0;
 var focusOnClick = [1,1,1];
-var highlightFocus = {"0":[-6,-5,15],"1":[9.7,6.7,15]};
+var highlightFocus = {"0":[-6,-2,15],"1":[9.7,6.7,15]};
 var normalFocus = {"0":[4.95,-1.6,23],"1":[21,8,23]};
 var focus = {"0":[4.95,-1.6,23],"1":[21,8,23]};
 var theta = 0.001;
@@ -264,12 +264,22 @@ function colorAccordingToDers() {
 
 
 function toggleFloorSelectors(floorNumber) {
+  document.getElementById("floorNumber0").className = document.getElementById("floorNumber0").className.replace("hidden", "");
+  document.getElementById("floorNumber1").className = document.getElementById("floorNumber1").className.replace("hidden", "");
   if (floorNumber == '0') {
     document.getElementById("floorNumber1").className = document.getElementById("floorNumber1").className.replace("active", "");
     document.getElementById("floorNumber0").className += " active";
+    floorAgents['Floor_1'].overviewActive = false;
+    floorAgents["Floor_1"].loadOverview();
+    floorAgents['Floor_0'].overviewActive = true;
+    floorAgents["Floor_0"].loadOverview();
   }
   else {
     document.getElementById("floorNumber0").className = document.getElementById("floorNumber0").className.replace("active", "");
     document.getElementById("floorNumber1").className += " active";
+    floorAgents['Floor_0'].overviewActive = false;
+    floorAgents["Floor_0"].loadOverview();
+    floorAgents['Floor_1'].overviewActive = true;
+    floorAgents["Floor_1"].loadOverview();
   }
 }

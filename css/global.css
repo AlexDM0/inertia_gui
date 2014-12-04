@@ -429,7 +429,6 @@ div.lightButton.off {
 
 
 #loadingIndicator {
-    position:relative;
     width:100%;
     height:450px;
     text-align:center;
@@ -499,4 +498,124 @@ div.toggleButton {
 div.toggleButton.selected {
     background-image: url("../images/toggleOn.png");
     background-color: #ffffff;
+}
+
+img.artificialSensor {
+    cursor: pointer;
+}
+
+#darkOverlay {
+    position:absolute;
+    top:0px;
+    min-width:1024px;
+    min-height:1024px;
+    width:100%;
+    height:100%;
+    z-index:999;
+    background-color: rgba(0,0,0,0.8);
+    display:none;
+}
+
+div.artificialSensorPopup {
+    position:absolute;
+    top:70px;
+    left:300px;
+    width:300px;
+    height:100px;
+    padding:10px;
+    background-color:#ffffff;
+    box-shadow: #111927 0px 0px 10px 3px;
+    border-radius:10px;
+    z-index:30;
+    display:none;
+}
+
+#artificialSensor {
+    position:relative;
+    margin:300px auto auto auto;
+    width:900px;
+    height:230px;
+    padding:10px;
+    background-color:#ffffff;
+    border-radius:10px;
+}
+
+
+#artificialSensorClose {
+    position:absolute;
+    right:-10px;
+    top:-10px;
+    background-image: url("../images/close_icon.png");
+    background-repeat: no-repeat;
+    width:24px;
+    height:24px;
+    box-shadow: 0px 0px 10px #000000;
+    border-radius:12px;
+}
+
+div.closePopupButton {
+    position:absolute;
+    right:-10px;
+    top:-10px;
+    background-image: url("../images/close_icon.png");
+    background-repeat: no-repeat;
+    width:24px;
+    height:24px;
+    box-shadow: 0px 0px 5px #000000;
+    border-radius:12px;
+}
+
+#artificialSensorTimelineContainer {
+    width:800px;
+    height:150px;
+    margin:20px auto auto auto;
+}
+
+div.artificialSensorHeader {
+    font-size:17px;
+    font-weight: bold;
+    font-style:italic;
+}
+
+div.artificialSensorDescription {
+    position:relative;
+    top: 10px;
+    left: 50px;
+    font-size:15px;
+    font-style:italic;
+}
+
+
+input.saveButton {
+    width:287px;
+    margin:0px;
+    padding:0px;
+}
+
+div.popupText {
+    float:left;
+    width:60px;
+    height:30px;
+    text-align:center;
+
+}
+div.popupRange {
+    float:left;
+    width:80px;
+    height:30px;
+    text-align:center;
+}
+div.popupButton {
+    width:280px;
+    height:30px;
+    padding-left:3px;
+}
+div.popupHeader {
+    width:280px;
+    height:30px;
+    font-style:italic;
+}
+
+select.inertia {
+    width: 70px;
 }
