@@ -6,6 +6,17 @@ body{
     background-color: #f5f7fa;
 }
 
+div {
+    -webkit-user-select: none;
+}
+
+canvas {
+    -webkit-user-select: none;
+}
+#webglMapping {
+    cursor:pointer;
+}
+
 #mapContainer {
     position:relative;
     width:970px;
@@ -14,7 +25,6 @@ body{
     background-color: #ffffff;
     overflow:hidden;
     -webkit-user-select: none; /* webkit (safari, chrome) browsers */
-    cursor: pointer;
 }
 
 div.topBanner {
@@ -99,6 +109,7 @@ div.roomNames {
     border-radius: 8px;
     padding:2px 5px 2px 5px;
     border:1.5px solid #14334b;
+    cursor:pointer;
 }
 
 div.arrowDiv {
@@ -618,4 +629,40 @@ div.popupHeader {
 
 select.inertia {
     width: 70px;
+}
+
+
+div.facilityManagerInfo{
+    display: inline-block;
+    height:40px;
+    line-height:40px;
+    padding-left:10px;
+}
+
+div.facilityManagerInfo.main{
+    position:relative;
+    margin:0px auto 0px auto;
+    width:960px;
+    background-color:#ffffff;
+    display: block;
+}
+
+
+div.facilityManagerInfo.wrapper {
+    display:table;
+    margin:0px auto 0px auto;
+}
+
+
+div.facilityManagerInfo.activeprofile {
+}
+
+div.facilityManagerInfo.profiles {
+}
+div.facilityManagerInfo.information {
+}
+
+img.icon {
+    position:relative;
+    top:2px;
 }

@@ -20,14 +20,11 @@ function DERagent(id, derId, inertiaId, locations) {
   this.category = 'OTHER';
 
   this.artificialSensorData = undefined;
-  if (this.derId == undefined) {
-    this.artificialSensorData = {temperature: new vis.DataSet(), occupancy: new vis.DataSet()};
-    this.getArtificialFromEve();
-  }
   this.update().done();
 
-  var me = this;
-  setInterval(function() {me.update().done();}, 30000);
+  //var me = this;
+  //var updateFrequency = 120000;
+  //setInterval(function() {me.update().done();}, updateFrequency);
 }
 
 // extend the eve.Agent prototype
@@ -83,11 +80,16 @@ DERagent.prototype.getArtificialFromEve = function() {
         resolve();
       });
     })
-    .then(function (reply) {
+    .then(function () {
       me.bindData();
     }).done();
 }
 
+
+/**
+ * send sorted artificial sensors data to EVE
+ * @param type
+ */
 DERagent.prototype.sendArtificialToEve = function(type) {
   var sendData = [];
   var unit = 'people';
@@ -113,11 +115,20 @@ DERagent.prototype.sendArtificialToEve = function(type) {
     }).done();
 }
 
+
+/**
+ * get artificial sensor data from EVE
+ * @param type
+ */
 DERagent.prototype.getArtificialToEve = function(type) {
   this.rpc.request(EVE_URL + this.inertiaId, {method:'getArtificialSensor', params:{type:type,unit:unit, values:sendData}});
 }
 
 
+/**
+ * Get the DER data from EVE and send to aggregator
+ * @returns {Promise}
+ */
 DERagent.prototype.update = function() {
   var me = this;
   return new Promise(function (resolve, reject) {
@@ -126,10 +137,15 @@ DERagent.prototype.update = function() {
         me.register();
         resolve();
       })
-      .catch(function (err) {console.log("er",err);reject(err);})
+      .catch(function (err) {console.error("DERAgent:update",err);reject(err);})
   });
 };
 
+
+/**
+ * get the DER data from EVE
+ * @returns {Promise}
+ */
 DERagent.prototype.getData = function() {
   var me = this;
   return new Promise(function (resolve, reject) {
@@ -146,9 +162,14 @@ DERagent.prototype.getData = function() {
         }
 
         me.getLiveData = true;
+        if (me.category == "SENSORS") {
+          me.artificialSensorData = {temperature: new vis.DataSet(), occupancy: new vis.DataSet()};
+          me.getArtificialFromEve();
+        }
+
         resolve();
       }).catch(function (err) {
-        console.log('DERagent:getData:error',err);
+        console.error('DERagent:getData',err);
         reject(err);
       }).done();
     }

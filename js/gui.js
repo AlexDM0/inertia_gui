@@ -138,3 +138,8 @@ function closeArtificialSensorPopup() {
   popup.style.display = 'none';
 }
 
+function updateFacilityProfile() {
+  var facilityProfileSelector = document.getElementById("facilityProfileSelector");
+  var value = facilityProfileSelector.options[facilityProfileSelector.selectedIndex].value;
+  facilityManagerAgent.setProfile(value);
+}

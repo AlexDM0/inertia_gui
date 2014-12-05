@@ -5,7 +5,14 @@ if (typeof Promise.prototype.done !== 'function') {
     var self = arguments.length ? this.then.apply(this, arguments) : this
     self.then(null, function (err) {
       setTimeout(function () {
-        console.error("done:err",err)
+        console.error("done:",err)
+        //if (typeof err == 'object') {
+        //  if (err.stackTrace !== undefined) {
+        //    for (var i = 0; i < err.stackTrace.length; i++) {
+        //      console.error(err.stackTrace[i])
+        //    }
+        //  }
+        //}
         //throw err;
       }, 0)
     })

@@ -75,10 +75,10 @@
     <script language="JavaScript" src="./js/agents/aggregatorAgent.js"></script>
     <script language="JavaScript" src="./js/agents/derAgent.js"></script>
     <script language="JavaScript" src="./js/agents/portalAgent.js"></script>
+    <script language="JavaScript" src="./js/agents/facilityManager.js"></script>
 
 
     <!--specific code-->
-    <script language="JavaScript" src="./js/space.js"></script>
     <script language="JavaScript" src="./js/gbxml.js"></script>
     <script language="JavaScript" src="./js/webgl.js"></script>
     <script language="JavaScript" src="./js/gui.js"></script>
@@ -140,6 +140,18 @@
     <a href="#calendar" class="transparent"><div class="menuItem">Calendar</div></a>
 </div>
 
+<div class="facilityManagerInfo main">
+    <div class="facilityManagerInfo wrapper">
+        <div class="facilityManagerInfo activeprofile">Active profile:</div>
+        <div class="facilityManagerInfo profiles" id="facilityProfileDiv">
+            Fetching from remote.
+        </div>
+        <div class="facilityManagerInfo information">
+            <img src="./images/information.png" class="icon" />
+            <span id="profileInformationSpan">Data is being fetched.</span>
+        </div>
+    </div>
+</div>
 <div id="mapContainer">
     <div id="loadingIndicator"><img class='loadingImage' src="./images/loading.gif" /></div>
     <div id="floorIndicator">
@@ -148,7 +160,7 @@
     </div>
     <div id="informationDiv" onclick="event.stopPropagation();">
         <div id="informationClose" onclick="hideInfoDiv(); deselect();"></div>
-        <div id="informationHeader">This is the best Room</div><br />
+        <div id="informationHeader"></div><br />
         <div id="informationContent">
 
         </div>

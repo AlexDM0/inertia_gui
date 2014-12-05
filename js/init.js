@@ -14,6 +14,8 @@ eve.system.init({
   ]
 });
 
+var facilityManagerAgent = new FacilityManager('facilityManager');
+
 var buildingAgents = {};
 buildingAgents['Building_ITI'] = new AggregatorAgent('Building_ITI');
 
