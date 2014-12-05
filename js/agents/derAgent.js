@@ -25,6 +25,9 @@ function DERagent(id, derId, inertiaId, locations) {
     this.getArtificialFromEve();
   }
   this.update().done();
+
+  var me = this;
+  setInterval(function() {me.update().done();}, 30000);
 }
 
 // extend the eve.Agent prototype
@@ -35,20 +38,29 @@ DERagent.prototype.constructor = DERagent;
 // exposed functions from local functions.
 DERagent.prototype.rpcFunctions = {};
 
+/**
+ * bind the dataset events to eve back-and-forth
+ */
 DERagent.prototype.bindData = function() {
   this.artificialSensorData.temperature.on("*", this.sendArtificialToEve.bind(this, 'temperature'));
   this.artificialSensorData.occupancy.on("*", this.sendArtificialToEve.bind(this, 'occupancy'));
 }
 
+/**
+ * get artificial sensor data from eve
+ */
 DERagent.prototype.getArtificialFromEve = function() {
   var me = this;
   this.rpc.request(EVE_URL + this.inertiaId, {method:'getArtificialSensors', params:{}})
     .then(function (reply) {
       return new Promise(function (resolve, reject) {
+        // if the reply is an filled array
         if (typeof reply == 'object' && reply.length > 0) {
           var start, end, value;
+          // look through all types
           for (var i = 0; i < reply.length; i++) {
             var data = [];
+            // we need matching pairs
             if (reply[i].values.length % 2 == 0) {
               for (var j = 0; j < reply[i].values.length; j++) {
                 // every first entree is the start value, every second value is the end
@@ -67,12 +79,11 @@ DERagent.prototype.getArtificialFromEve = function() {
               reject(new Error("Error: data is not an even number"));
             }
           }
-          resolve();
         }
+        resolve();
       });
     })
     .then(function (reply) {
-      console.log('binding')
       me.bindData();
     }).done();
 }
@@ -90,6 +101,8 @@ DERagent.prototype.sendArtificialToEve = function(type) {
     sendData.push({timestamp:data[i].start.valueOf(), value:data[i].content})
     sendData.push({timestamp:end, value:0})
   }
+  sendData.sort(function(a,b) {return a.timestamp - b.timestamp;})
+
   if (type == 'temperature') {
     unit = 'C';
   }
