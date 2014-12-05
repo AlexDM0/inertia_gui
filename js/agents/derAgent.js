@@ -41,7 +41,7 @@ DERagent.prototype.rpcFunctions = {};
 DERagent.prototype.bindData = function() {
   this.artificialSensorData.temperature.on("*", this.sendArtificialToEve.bind(this, 'temperature'));
   this.artificialSensorData.occupancy.on("*", this.sendArtificialToEve.bind(this, 'occupancy'));
-}
+};
 
 /**
  * get artificial sensor data from eve
@@ -83,7 +83,7 @@ DERagent.prototype.getArtificialFromEve = function() {
     .then(function () {
       me.bindData();
     }).done();
-}
+};
 
 
 /**
@@ -96,14 +96,14 @@ DERagent.prototype.sendArtificialToEve = function(type) {
   var data = this.artificialSensorData[type].get({returnType:'Array'});
 
   for (var i = 0; i < data.length; i++) {
-    var end = data[i].end
+    var end = data[i].end;
     if (typeof data[i].end != 'number') {
       end = data[i].end.valueOf();
     }
-    sendData.push({timestamp:data[i].start.valueOf(), value:data[i].content})
+    sendData.push({timestamp:data[i].start.valueOf(), value:data[i].content});
     sendData.push({timestamp:end, value:0})
   }
-  sendData.sort(function(a,b) {return a.timestamp - b.timestamp;})
+  sendData.sort(function(a,b) {return a.timestamp - b.timestamp;});
 
   if (type == 'temperature') {
     unit = 'C';
@@ -113,7 +113,7 @@ DERagent.prototype.sendArtificialToEve = function(type) {
     .then(function () {
       return me.update();
     }).done();
-}
+};
 
 
 /**
@@ -122,7 +122,7 @@ DERagent.prototype.sendArtificialToEve = function(type) {
  */
 DERagent.prototype.getArtificialToEve = function(type) {
   this.rpc.request(EVE_URL + this.inertiaId, {method:'getArtificialSensor', params:{type:type,unit:unit, values:sendData}});
-}
+};
 
 
 /**
@@ -267,6 +267,7 @@ DERagent.prototype.toggle = function() {
       this.sensorsObj['state'].value = 'on';
       method = 'switchOn';
     }
+    //this.updateDerUI();
     this.updateDerUI(' temporary');
     var me = this;
     this.rpc.request(EVE_URL + this.inertiaId,{method:method, params:{}})

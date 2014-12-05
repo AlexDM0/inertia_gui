@@ -13,7 +13,7 @@ function FacilityManager(id) {
   this.information = {
     'Free running': 'The GUI can be used to toggle DERs',
     'Energy conservation': 'DERs are switched automatically to conserve energy',
-    'Contract': 'GUI locked. View contract details here'
+    'Contract': 'GUI locked. <a onclick="loadContract()">View contract details here <img src"./images/chart_curve.png" />.</a>'
   }
 
   this.getProfile();
@@ -42,6 +42,8 @@ FacilityManager.prototype.updateHTML = function() {
 
     var information = "Data is being fetched."
     var infoSpan = document.getElementById('profileInformationSpan');
+    infoSpan.innerHTML = this.information[this.profile];
+    console.log(this.information, this.profile, this)
   }
 }
 
@@ -59,8 +61,8 @@ FacilityManager.prototype.getProfile = function() {
   this.rpc.request(EVE_URL + "holistic", {method:'getModus', params:{}})
     .then(function(reply) {
       console.log(reply)
-      //me.profile = reply.modus;
-      //me.updateHTML();
+      me.profile = reply;
+      me.updateHTML();
     })
     .done();
 }
