@@ -637,9 +637,11 @@ select.inertia {
 
 div.facilityManagerInfo{
     display: inline-block;
-    height:40px;
-    line-height:40px;
+    height:80px;
+    padding-top:8px;
     padding-left:10px;
+    font-size:17px;
+    font-weight:600;
 }
 
 div.facilityManagerInfo.main{
@@ -656,12 +658,19 @@ div.facilityManagerInfo.wrapper {
     margin:0px auto 0px auto;
 }
 
+#facilityProfileSelector {
+    font-size:17px;
+    font-weight:600;
+}
+
 
 div.facilityManagerInfo.activeprofile {
 }
 div.facilityManagerInfo.profiles {
 }
 div.facilityManagerInfo.information {
+    font-weight:500;
+    font-size:11px;
 }
 
 img.icon {
