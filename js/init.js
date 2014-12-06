@@ -2,6 +2,8 @@
  * Created by Alex on 11/28/2014.
  */
 
+document.addEventListener("touchstart", function(){}, true);
+
 // configure eve
 eve.system.init({
   transports: [

@@ -1,4 +1,5 @@
 var artificialSensorTimeline;
+var contractOverviewGraph2d;
 
 function clickedRoom(roomId) {
   //updateVis(roomId);
@@ -71,6 +72,8 @@ function updateIndicator(derId, unit, sendToEVE) {
 function openArtificialSensorSetup(type, sensorAgentId) {
   var overlay = document.getElementById("darkOverlay");
   overlay.style.display = 'block';
+  var artificialSensor = document.getElementById("artificialSensor");
+  artificialSensor.style.display = 'block';
   var container = document.getElementById("artificialSensorTimelineContainer");
 
 
@@ -122,13 +125,16 @@ function openArtificialSensorSetup(type, sensorAgentId) {
 function closeArtificialSensor() {
   if (artificialSensorTimeline !== undefined) {
     artificialSensorTimeline.destroy();
+    artificialSensorTimeline = undefined;
   }
   var overlay = document.getElementById("darkOverlay");
   var popup = document.getElementById("artificialSensorPopup");
   var container = document.getElementById("artificialSensorTimelineContainer");
+  var artificialSensor = document.getElementById("artificialSensor");
 
   overlay.style.display = 'none';
   popup.style.display = 'none';
+  artificialSensor.style.display = 'none';
   container.innerHTML = "";
 }
 
@@ -143,3 +149,99 @@ function updateFacilityProfile() {
   var value = facilityProfileSelector.options[facilityProfileSelector.selectedIndex].value;
   facilityManagerAgent.setProfile(value);
 }
+
+function loadContract() {
+  var overlay = document.getElementById("darkOverlay");
+  overlay.style.display = 'block';
+  var contractOverview = document.getElementById("contractOverview");
+  contractOverview.style.display = 'block';
+  var container = document.getElementById("contractOverviewContainer");
+
+  var groups = new vis.DataSet();
+  groups.add({id:'contract', content:'contract',className:'contractGraph', options: {
+    shaded: {
+      orientation: 'bottom'
+    }}})
+  groups.add({id:'usage', content:'usage',className:'usageGraph', options: {
+    shaded: false
+  }})
+
+  var datapoints = new vis.DataSet();
+  datapoints.add({x: '2014-06-11', y: 10, group:'contract'});
+  datapoints.add({x: '2014-06-12', y: 25, group: 'contract'});
+  datapoints.add({x: '2014-06-13', y: 30, group: 'contract'});
+  datapoints.add({x: '2014-06-14', y: 10, group: 'contract'});
+  datapoints.add({x: '2014-06-15', y: 15, group: 'contract'});
+  datapoints.add({x: '2014-06-16', y: 30, group: 'contract'});
+
+  datapoints.add({x: '2014-06-11', y: 12, group:'usage'});
+  datapoints.add({x: '2014-06-12', y: 15, group: 'usage'});
+  datapoints.add({x: '2014-06-13', y: 32, group: 'usage'});
+  datapoints.add({x: '2014-06-14', y: 11, group: 'usage'});
+  datapoints.add({x: '2014-06-15', y: 14, group: 'usage'});
+  datapoints.add({x: '2014-06-16', y: 32, group: 'usage'});
+
+  var options = {
+    start: '2014-06-10',
+    end: '2014-06-18',
+    height: '280px',
+    showCurrentTime: true,
+    catmullRom:false,
+    drawPoints:{
+      style:'circle'
+    },
+    dataAxis: {
+      showMinorLabels: true,
+      title: {
+        left: {
+          text: 'Power (W)'
+        }
+      }
+    }
+  };
+  contractOverviewGraph2d = new vis.Graph2d(container, datapoints, groups, options);
+
+}
+
+function closeContractOverview() {
+  if (contractOverviewGraph2d !== undefined) {
+    contractOverviewGraph2d.destroy();
+    contractOverviewGraph2d = undefined;
+  }
+  var overlay = document.getElementById("darkOverlay");
+  var contractOverview = document.getElementById("contractOverview");
+  var container = document.getElementById("contractOverviewContainer");
+
+  overlay.style.display = 'none';
+  contractOverview.style.display = 'none';
+  container.innerHTML = "";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

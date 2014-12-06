@@ -59,8 +59,9 @@
 
     <!-- css -->
     <link href="./css/input.css" rel="stylesheet" type="text/css" />
-    <link href="./css/vis.css" rel="stylesheet" type="text/css" />
     <link href="./css/visgraphstyles.css" rel="stylesheet" type="text/css" />
+    <link href="./css/vis.css" rel="stylesheet" type="text/css" />
+
     <link href="./css/global.css" rel="stylesheet" type="text/css" />
 
 
@@ -92,7 +93,7 @@
 <div id="darkOverlay">
     <div id="artificialSensor">
         <div id="artificialSensorClose" class="closePopupButton" onclick="closeArtificialSensor();"></div>
-        <div class="artificialSensorHeader">Setup Artificial Sensor</div>
+        <div class="overlayHeader">Setup Artificial Sensor</div>
         <div id="artificialSensorPopup" class="artificialSensorPopup">
             <div class="closePopupButton" onclick="closeArtificialSensorPopup();"></div>
             <div class="popupHeader">Pick a value and a duration.</div>
@@ -127,7 +128,15 @@
         <div class="artificialSensorDescription">Doubletap on the timeline to create a sensor value and it's duration.</div>
         <div id="artificialSensorTimelineContainer"></div>
     </div>
+    <div id="contractOverview">
+        <div class="closePopupButton" onclick="closeContractOverview();"></div>
+            <div id="contractInformation"  class="overlayHeader">Showing current contract:</div>
+            <div id="contractOverviewContainer"></div>
+        </div>
+    </div>
 </div>
+
+
 <div class="topBanner">
     <img class="eu" src="./images/eu.png">
 </div>
@@ -136,7 +145,6 @@
 <div class="topSubBanner2"></div>
 <div class="menuBanner" id="blueprint">
     <a href="#blueprint" class="transparent"><div class="menuItem">Blueprint</div></a>
-    <a href="#details" class="transparent"><div class="menuItem">Details</div></a>
     <a href="#calendar" class="transparent"><div class="menuItem">Calendar</div></a>
 </div>
 
@@ -159,7 +167,7 @@
         <div class="floorNumber hidden" id='floorNumber0' onclick="webglInit(gbxmlData,0); deselect();">0</div>
     </div>
     <div id="informationDiv" onclick="event.stopPropagation();">
-        <div id="informationClose" onclick="hideInfoDiv(); deselect();"></div>
+        <div  class="closePopupButton" id="informationClose" onclick="hideInfoDiv(); deselect();"></div>
         <div id="informationHeader"></div><br />
         <div id="informationContent">
 
@@ -168,37 +176,36 @@
     </div>
 </div>
 <div class="stats">
-    <div class="centerAlign" id="aggregatedInfo">
-    </div>
-    </div>
-<div class="subsectionBanner1"></div>
-<div class="subsectionBanner2"></div>
-<div class="subsectionBanner3" id="details">Details</div>
-<div class="inertiaContent">
-    <div class='explaination' id="detailsDescription">We are in the process of gathering historical data.</div>
-    <!--<br /><br />-->
-    <!--<div class='explaination' id="detailsDescription">Detailed view of aggregated data in building.</div>-->
-    <!--<br />-->
-    <!--<div id="Legend"></div>-->
-    <!--<div class='smallGraph' id="barGraphSubWrapper1"><div class='smallGraphExp' id="barGraphSubWrapper1Exp"></div></div>-->
-    <!--<div class='smallGraph' id="barGraphSubWrapper2"><div class='smallGraphExp' id="barGraphSubWrapper2Exp"></div></div>-->
-    <!--<div class='smallGraph' id="barGraphSubWrapper3"><div class='smallGraphExp' id="barGraphSubWrapper3Exp"></div></div>-->
-    <!--<div class='smallGraph' id="barGraphSubWrapper4"><div class='smallGraphExp' id="barGraphSubWrapper4Exp"></div></div>-->
-    <!--<div id="barGraphWrapper"></div>-->
-    <!--<div id="subLegend">-->
-        <!--<div class="legendElementContainer2" id="plotEnergy"><img class="icon" src="./images/lightbulb.png"/> Energy</div>-->
-        <!--<div class="legendElementContainer2 hidden" id="plotCost"><img class="icon" src="./images/coins.png"/> Cost</div>-->
-
-    <!--</div>-->
-
+    <div class="centerAlign" id="aggregatedInfo"></div>
 </div>
+<!--<div class="subsectionBanner1"></div>-->
+<!--<div class="subsectionBanner2"></div>-->
+<!--<div class="subsectionBanner3" id="details">Details</div>-->
+<!--<div class="inertiaContent">-->
+    <!--<div class='explaination' id="detailsDescription">We are in the process of gathering historical data.</div>-->
+    <!--&lt;!&ndash;<br /><br />&ndash;&gt;-->
+    <!--&lt;!&ndash;<div class='explaination' id="detailsDescription">Detailed view of aggregated data in building.</div>&ndash;&gt;-->
+    <!--&lt;!&ndash;<br />&ndash;&gt;-->
+    <!--&lt;!&ndash;<div id="Legend"></div>&ndash;&gt;-->
+    <!--&lt;!&ndash;<div class='smallGraph' id="barGraphSubWrapper1"><div class='smallGraphExp' id="barGraphSubWrapper1Exp"></div></div>&ndash;&gt;-->
+    <!--&lt;!&ndash;<div class='smallGraph' id="barGraphSubWrapper2"><div class='smallGraphExp' id="barGraphSubWrapper2Exp"></div></div>&ndash;&gt;-->
+    <!--&lt;!&ndash;<div class='smallGraph' id="barGraphSubWrapper3"><div class='smallGraphExp' id="barGraphSubWrapper3Exp"></div></div>&ndash;&gt;-->
+    <!--&lt;!&ndash;<div class='smallGraph' id="barGraphSubWrapper4"><div class='smallGraphExp' id="barGraphSubWrapper4Exp"></div></div>&ndash;&gt;-->
+    <!--&lt;!&ndash;<div id="barGraphWrapper"></div>&ndash;&gt;-->
+    <!--&lt;!&ndash;<div id="subLegend">&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="legendElementContainer2" id="plotEnergy"><img class="icon" src="./images/lightbulb.png"/> Energy</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="legendElementContainer2 hidden" id="plotCost"><img class="icon" src="./images/coins.png"/> Cost</div>&ndash;&gt;-->
+
+    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+<!--</div>-->
 <div class="subsectionBanner1"></div>
 <div class="subsectionBanner2"></div>
 <div class="subsectionBanner3" id="calendar">Calendar</div>
 <div class="inertiaContent">
     <br />
 
-    <!--<iframe src="http://160.40.51.68:8080/INERTIA/web/week.php" id="calendar_iframe"></iframe>-->
+    <iframe src="http://160.40.51.68:8080/INERTIA/web/week.php" id="calendar_iframe"></iframe>
 </div>
 <div class="bottomBanner1"></div>
 <div class="bottomBanner2"></div>

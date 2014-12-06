@@ -9,11 +9,13 @@ function FacilityManager(id) {
   this.connect(eve.system.transports.getAll());
 
   this.profile = "pending"
-  this.profiles = ['Free running', 'Energy conservation', 'Contract'];
+  this.profiles = ['Free running','Comfort optimization', 'Energy conservation', 'Contract'];
+  this.profilesLabels = ['Free running','Flexibility optimization', 'Energy conservation', 'Contract (DEMO)'];
   this.information = {
-    'Free running': 'The GUI can be used to toggle DERs',
-    'Energy conservation': 'DERs are switched automatically to conserve energy',
-    'Contract': 'GUI locked. <a onclick="loadContract()">View contract details here <img src"./images/chart_curve.png" />.</a>'
+    'Free running': 'The GUI can be used to toggle DERs.',
+    'Comfort optimization': 'DERs are switched automatically to maximize flexibility through comfort optimization.',
+    'Energy conservation': 'DERs are switched automatically to conserve energy.',
+    'Contract': 'Contract mode locked in. <a class="link1" onclick="loadContract()">View contract details here <img class="icon" src="./images/chart_curve.png" />.</a>'
   }
 
   this.getProfile();
@@ -35,15 +37,13 @@ FacilityManager.prototype.updateHTML = function() {
   else {
     var innerHTML ='<select onchange="updateFacilityProfile();" id="facilityProfileSelector">';
     for (var i = 0; i < this.profiles.length; i++) {
-      innerHTML +='<option value="' + this.profiles[i] +'" ' + (this.profile == this.profiles[i] ? 'selected="selected"' : '') + '>' + this.profiles[i] + '</option>';
+      innerHTML +='<option value="' + this.profiles[i] +'" ' + (this.profile == this.profiles[i] ? 'selected="selected"' : '') + '>' + this.profilesLabels[i] + '</option>';
     }
     innerHTML += '</select>';
     selectDiv.innerHTML = innerHTML;
 
-    var information = "Data is being fetched."
     var infoSpan = document.getElementById('profileInformationSpan');
     infoSpan.innerHTML = this.information[this.profile];
-    console.log(this.information, this.profile, this)
   }
 }
 
@@ -57,11 +57,15 @@ FacilityManager.prototype.setProfile = function(profile) {
 
 FacilityManager.prototype.getProfile = function() {
   var me = this;
-  console.log(EVE_URL + "holistic", {method:'getModus', params:{}})
   this.rpc.request(EVE_URL + "holistic", {method:'getModus', params:{}})
     .then(function(reply) {
-      console.log(reply)
       me.profile = reply;
+      if (me.profile == "Contract") {
+        me.rpc.request(EVE_URL + 'holistic', {method:'getRequestProfile',params:{}})
+          .then(function (reply) {
+
+          }).done();
+      }
       me.updateHTML();
     })
     .done();

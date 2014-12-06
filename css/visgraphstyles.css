@@ -213,3 +213,20 @@ div.legendElementContainer2.hidden {
     right: -24px;
     cursor: pointer;
 }
+
+
+.contractGraph {
+    fill:#3792d8;
+    fill-opacity:0;
+    stroke-width:2px;
+    stroke: #3792d8;
+}
+
+
+
+.usageGraph {
+    fill:#f79646;
+    fill-opacity:0;
+    stroke-width:2px;
+    stroke: #f79646;
+}

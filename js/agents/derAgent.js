@@ -23,7 +23,7 @@ function DERagent(id, derId, inertiaId, locations) {
   this.update().done();
 
   //var me = this;
-  //var updateFrequency = 120000;
+  //var updateFrequency = 60000;
   //setInterval(function() {me.update().done();}, updateFrequency);
 }
 
@@ -134,6 +134,7 @@ DERagent.prototype.update = function() {
   return new Promise(function (resolve, reject) {
     me.getData()
       .then(function () {
+        //console.log(me.sensors)
         me.register();
         resolve();
       })
@@ -161,7 +162,7 @@ DERagent.prototype.getData = function() {
           me.sensorsObj[me.sensors[i].type] = me.sensors[i];
         }
 
-        me.getLiveData = true;
+        //me.getLiveData = true;
         if (me.category == "SENSORS") {
           me.artificialSensorData = {temperature: new vis.DataSet(), occupancy: new vis.DataSet()};
           me.getArtificialFromEve();
@@ -185,14 +186,15 @@ DERagent.prototype.register = function() {
     }
     this.rpc.request(location, {
       method: 'register',
-      params: {data: this.sensors, sensorType: this.category, agentType: (this.derId === undefined ? 'SENSOR_COLLECTIVE' : 'DER')}
+      params: {data: this.sensors, derType: this.category}
     }).done();
   }
 };
 
-DERagent.prototype.getUIElement = function(temporary) {
-  if (temporary === undefined) {
-    temporary = '';
+DERagent.prototype.getUIElement = function(temporaryToggle) {
+  var temporary = '';
+  if (temporaryToggle == true) {
+    temporary = ' temporary';
   }
   var innerHTML = '';
   switch (this.category) {
@@ -231,11 +233,11 @@ DERagent.prototype.getUIElement = function(temporary) {
         innerHTML += '<div class="derUI sensorData' + temporary + '">' + this.sensorsObj['temperature'].value + ' ' + this.sensorsObj['temperature'].unit + '</div>';
       }
 
-      if (this.canDim == true) {
+      if (this.canDim == true && temporaryToggle != true) {
         innerHTML += '<div class="derUI text' + temporary + '">Dimming:</div><div class="derUI DERrange' + temporary + '"><input type="range" min="0" max="100" step="1" id="range' + this.id + '" onchange="updateIndicator(\'' + this.id + '\', \'%\', true);" oninput="updateIndicator(\'' + this.id + '\',\'%\', false);" value="'+this.sensorsObj['dimLevel'].value+'" >' +
         '<span class="rangeAssistant"  id="rangeNumber' + this.id + '">' + this.sensorsObj['dimLevel'].value + '%</span>';
       }
-      else if (this.canSetTemperature == true) {
+      else if (this.canSetTemperature == true && temporaryToggle != true) {
         innerHTML += '<div class="derUI text' + temporary + '">Set temp:</div><div class="derUI DERrange' + temporary + '"><input type="range" min="15" max="35"  step="1" id="range' + this.id + '" onchange="updateIndicator(\'' + this.id + '\',\'&deg;C\', true);" oninput="updateIndicator(\'' + this.id + '\',\'&deg;C\', false);" value="'+this.sensorsObj['setTemperature'].value+'">' +
         '<span class="rangeAssistant"  id="rangeNumber' + this.id + '">' + this.sensorsObj['setTemperature'].value + '&deg;C</span>';
       }
@@ -253,12 +255,15 @@ DERagent.prototype.getUIElement = function(temporary) {
   return innerHTML;
 };
 
-DERagent.prototype.rpcFunctions.getUIElement = function() {
+DERagent.prototype.rpcFunctions.getUIElement = function(params) {
+  var me = this;
+  this.refreshedData = false;
+  this.update().then(function () {me.refreshedData = true; me.updateDerUI();}).done();
   return {type:this.category, content:this.getUIElement(), id:'derUI' + this.id};
 };
 
 DERagent.prototype.toggle = function() {
-  if (this.canSwitch == true) {
+  if (this.canSwitch == true && this.refreshedData == true) {
     var method = 'switchOff';
     if (this.sensorsObj['state'].value == 'on') {
       this.sensorsObj['state'].value = 'off';
@@ -267,42 +272,37 @@ DERagent.prototype.toggle = function() {
       this.sensorsObj['state'].value = 'on';
       method = 'switchOn';
     }
-    //this.updateDerUI();
-    this.updateDerUI(' temporary');
-    var me = this;
-    this.rpc.request(EVE_URL + this.inertiaId,{method:method, params:{}})
-      .then(function () {
-        me.update().then(function () {
-          me.updateDerUI();
-        }).done();
-      });
+    this.updateDerUI();
+    this.rpc.request(EVE_URL + this.inertiaId,{method:method, params:{}}).done();
   }
 };
 
 DERagent.prototype.updateRange = function(value) {
-  var method = undefined;
-  var paramName = undefined;
-  if (this.canDim == true) {
-    method = 'setDimLevel';
-    paramName = 'dimlevel';
-    this.sensorsObj['dimLevel'].value = value;
-  }
-  else if (this.canSetTemperature == true) {
-    method = 'setTemperature';
-    paramName = 'temperature';
-    this.sensorsObj['setTemperature'].value = value;
-  }
-  if (method !== undefined) {
-    this.updateDerUI(' temporary');
-    var me = this;
-    var params = {};
-    params[paramName] = value;
-    this.rpc.request(EVE_URL + this.inertiaId,{method:method, params:params})
-      .then(function () {
-        me.update().then(function () {
-          me.updateDerUI();
-        }).done();
-      });
+  if (this.refreshedData == true) {
+    var method = undefined;
+    var paramName = undefined;
+    if (this.canDim == true) {
+      method = 'setDimLevel';
+      paramName = 'dimlevel';
+      this.sensorsObj['dimLevel'].value = value;
+    }
+    else if (this.canSetTemperature == true) {
+      method = 'setTemperature';
+      paramName = 'temperature';
+      this.sensorsObj['setTemperature'].value = value;
+    }
+    if (method !== undefined) {
+      this.updateDerUI(' temporary');
+      var me = this;
+      var params = {};
+      params[paramName] = value;
+      this.rpc.request(EVE_URL + this.inertiaId, {method: method, params: params})
+        .then(function () {
+          me.update().then(function () {
+            me.updateDerUI();
+          }).done();
+        });
+    }
   }
 };
 

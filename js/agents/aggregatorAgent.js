@@ -72,12 +72,12 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
   var hasSubspaceDers = false;
   for (var agentId in this.agentsToAggregate) {
     if (this.agentsToAggregate.hasOwnProperty(agentId)) {
-      var sensorType = this.agentsToAggregate[agentId].sensorType;
+      var sensorType = this.agentsToAggregate[agentId].derType;
       if (sensorType == "LIGHTING" || sensorType == "HVAC" || sensorType == "OTHER") {
         hasSubspaceDers = true;
       }
-      if (this.agentsToAggregate[agentId].agentType == 'DER') {
-        me.rpc.request(agentId, {method: 'getUIElement', params: {}}).then(function (reply) {
+      if (this.agentsToAggregate[agentId].derType != 'SENSORS') {
+        me.rpc.request(agentId, {method: 'getUIElement', params: {temporary:true}}).then(function (reply) {
           if (reply.content != '') {
             var derElement = document.createElement("div");
             derElement.className = 'derElement';
@@ -104,7 +104,7 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
       this.rpc.request(this.parent, {method: "getDERS", params: {}})
         .then(function (derAgents) {
           for (var i = 0; i < derAgents.length; i++) {
-            me.rpc.request(derAgents[i], {method: 'getUIElement', params: {}})
+            me.rpc.request(derAgents[i], {method: 'getUIElement', params: {temporary:true}})
               .then(function (reply) {
                 if (reply.content != '') {
                   spaceDivHeader.innerHTML = "DERs in shared space:";
@@ -146,7 +146,7 @@ AggregatorAgent.prototype.loadOverview = function() {
   var sensorAgentId = undefined;
   for (var agentId in this.agentsToAggregate) {
     if (this.agentsToAggregate.hasOwnProperty(agentId)) {
-      if (this.agentsToAggregate[agentId].agentType == 'SENSOR_COLLECTIVE') {
+      if (this.agentsToAggregate[agentId].derType == 'SENSORS') {
         sensorAgentId = agentId;
         break;
       }
@@ -227,7 +227,6 @@ AggregatorAgent.prototype.aggregate = function() {
       }
     }
   }
-
   //average over sensor values
   for (var i = 0; i < this.aggregatedValues.length; i++) {
     if (this.aggregatedValues[i].method == 'avg') {
@@ -245,11 +244,11 @@ AggregatorAgent.prototype.propagate = function() {
 };
 
 
-
 //  -------------------  RPC  -------------------- //
 
 AggregatorAgent.prototype.rpcFunctions.register = function(params, sender) {
   this.agentsToAggregate[sender] = params;
+  if (this.id == 'MEETING_ROOM') {console.log(params)}
   this.aggregate();
   this.propagate();
   this.loadOverview();
@@ -259,7 +258,7 @@ AggregatorAgent.prototype.rpcFunctions.getDERS = function(params, sender) {
   var DERs = [];
   for (var agentId in this.agentsToAggregate) {
     if (this.agentsToAggregate.hasOwnProperty(agentId)) {
-      if (this.agentsToAggregate[agentId].agentType == 'DER') {
+      if (this.agentsToAggregate[agentId].derType != 'SENSORS') {
         DERs.push(agentId);
       }
     }

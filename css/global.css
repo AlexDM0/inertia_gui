@@ -8,11 +8,14 @@ body{
 
 div {
     -webkit-user-select: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 canvas {
     -webkit-user-select: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
+
 #webglMapping {
     cursor:pointer;
 }
@@ -427,15 +430,6 @@ div.lightButton.off {
 }
 
 #informationClose {
-    position:absolute;
-    right:-10px;
-    top:-10px;
-    background-image: url("../images/close_icon.png");
-    background-repeat: no-repeat;
-    width:24px;
-    height:24px;
-    box-shadow: 0px 0px 10px #000000;
-    border-radius:12px;
 }
 
 
@@ -549,31 +543,23 @@ div.artificialSensorPopup {
     padding:10px;
     background-color:#ffffff;
     border-radius:10px;
+    display:none;
 }
 
 
 #artificialSensorClose {
-    position:absolute;
-    right:-10px;
-    top:-10px;
-    background-image: url("../images/close_icon.png");
-    background-repeat: no-repeat;
-    width:24px;
-    height:24px;
-    box-shadow: 0px 0px 10px #000000;
-    border-radius:12px;
 }
 
 div.closePopupButton {
     position:absolute;
-    right:-10px;
-    top:-10px;
+    right:-12px;
+    top:-12px;
     background-image: url("../images/close_icon.png");
     background-repeat: no-repeat;
-    width:24px;
-    height:24px;
+    width:30px;
+    height:30px;
     box-shadow: 0px 0px 5px #000000;
-    border-radius:12px;
+    border-radius:15px;
 }
 
 #artificialSensorTimelineContainer {
@@ -582,7 +568,7 @@ div.closePopupButton {
     margin:20px auto auto auto;
 }
 
-div.artificialSensorHeader {
+div.overlayHeader {
     font-size:17px;
     font-weight: bold;
     font-style:italic;
@@ -594,6 +580,23 @@ div.artificialSensorDescription {
     left: 50px;
     font-size:15px;
     font-style:italic;
+}
+
+#contractOverview {
+    position:relative;
+    margin:300px auto auto auto;
+    width:900px;
+    height:330px;
+    padding:10px;
+    background-color:#ffffff;
+    border-radius:10px;
+    display:none;
+}
+
+#contractOverviewContainer {
+    width:800px;
+    height:280px;
+    margin:10px auto auto auto;
 }
 
 
@@ -663,5 +666,11 @@ div.facilityManagerInfo.information {
 
 img.icon {
     position:relative;
-    top:2px;
+    top:3px;
+}
+
+a.link1 {
+    font-style:italic;
+    text-decoration: underline;
+    cursor:pointer;
 }
