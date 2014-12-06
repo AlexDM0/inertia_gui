@@ -293,15 +293,9 @@ DERagent.prototype.updateRange = function(value) {
     }
     if (method !== undefined) {
       this.updateDerUI(' temporary');
-      var me = this;
       var params = {};
       params[paramName] = value;
-      this.rpc.request(EVE_URL + this.inertiaId, {method: method, params: params})
-        .then(function () {
-          me.update().then(function () {
-            me.updateDerUI();
-          }).done();
-        });
+      this.rpc.request(EVE_URL + this.inertiaId, {method: method, params: params}).done();
     }
   }
 };

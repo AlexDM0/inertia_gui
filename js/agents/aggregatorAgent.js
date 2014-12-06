@@ -35,7 +35,7 @@ AggregatorAgent.prototype.setParent = function(parent) {
 
 AggregatorAgent.prototype.register = function() {
   if (this.parent !== undefined) {
-    this.rpc.request(this.parent,{method:'register',params:{sensors:this.aggregatedValues, sensorType:'NONE', agentType:'aggregator'}}).done();
+    this.rpc.request(this.parent,{method:'register',params:{data:this.aggregatedValues, derType:'AGGREGATOR'}}).done();
   }
 };
 
@@ -237,18 +237,13 @@ AggregatorAgent.prototype.aggregate = function() {
   }
 };
 
-AggregatorAgent.prototype.propagate = function() {
-  if (this.parent !== undefined) {
-    this.rpc.request(this.parent, {method: 'register', params: {data: this.aggregatedValues, type: this.id}}).done();
-  }
-};
+AggregatorAgent.prototype.propagate = AggregatorAgent.prototype.register;
 
 
 //  -------------------  RPC  -------------------- //
 
 AggregatorAgent.prototype.rpcFunctions.register = function(params, sender) {
   this.agentsToAggregate[sender] = params;
-  if (this.id == 'MEETING_ROOM') {console.log(params)}
   this.aggregate();
   this.propagate();
   this.loadOverview();
@@ -258,12 +253,16 @@ AggregatorAgent.prototype.rpcFunctions.getDERS = function(params, sender) {
   var DERs = [];
   for (var agentId in this.agentsToAggregate) {
     if (this.agentsToAggregate.hasOwnProperty(agentId)) {
-      if (this.agentsToAggregate[agentId].derType != 'SENSORS') {
+      if (this.agentsToAggregate[agentId].derType != 'SENSORS' && this.agentsToAggregate[agentId].derType != 'AGGREGATOR') {
         DERs.push(agentId);
       }
     }
   }
   return DERs;
 };
+
+AggregatorAgent.prototype.rpcFunctions.getUIElement = function(params) {
+  console.log("ERROR:", this)
+}
 
 AggregatorAgent.prototype.rpcFunctions.update = AggregatorAgent.prototype.rpcFunctions.register;

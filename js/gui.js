@@ -218,7 +218,11 @@ function closeContractOverview() {
 }
 
 
-
+function unlockProfile() {
+  if (facilityManagerAgent.profile == 'Contract') {
+    facilityManagerAgent.setProfile(facilityManagerAgent.profiles[0]);
+  }
+}
 
 
 

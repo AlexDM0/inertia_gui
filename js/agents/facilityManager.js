@@ -10,7 +10,7 @@ function FacilityManager(id) {
 
   this.profile = "pending"
   this.profiles = ['Free running','Comfort optimization', 'Energy conservation', 'Contract'];
-  this.profilesLabels = ['Free running','Flexibility optimization', 'Energy conservation', 'Contract (DEMO)'];
+  this.profilesLabels = ['Free running','Flexibility optimization', 'Energy conservation', 'Contract'];
   this.information = {
     'Free running': 'The GUI can be used to toggle DERs.',
     'Comfort optimization': 'DERs are switched automatically to maximize flexibility through comfort optimization.',
@@ -35,7 +35,11 @@ FacilityManager.prototype.updateHTML = function() {
     selectDiv.innerHTML = 'Fetching from remote...'
   }
   else {
-    var innerHTML ='<select onchange="updateFacilityProfile();" id="facilityProfileSelector">';
+    var lock = '';
+    if (this.profile == 'Contract') {
+      lock = 'disabled';
+    }
+    var innerHTML ='<select onchange="updateFacilityProfile();" '+lock+' id="facilityProfileSelector">';
     for (var i = 0; i < this.profiles.length; i++) {
       innerHTML +='<option value="' + this.profiles[i] +'" ' + (this.profile == this.profiles[i] ? 'selected="selected"' : '') + '>' + this.profilesLabels[i] + '</option>';
     }
