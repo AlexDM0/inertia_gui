@@ -22,9 +22,9 @@ function DERagent(id, derId, inertiaId, locations) {
   this.artificialSensorData = undefined;
   this.update().done();
 
-  //var me = this;
-  //var updateFrequency = 60000;
-  //setInterval(function() {me.update().done();}, updateFrequency);
+  var me = this;
+  var updateFrequency = 60000;
+  setInterval(function() {me.update().done();}, updateFrequency);
 }
 
 // extend the eve.Agent prototype

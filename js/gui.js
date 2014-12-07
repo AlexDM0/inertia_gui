@@ -165,41 +165,11 @@ function loadContract() {
   groups.add({id:'usage', content:'usage',className:'usageGraph', options: {
     shaded: false
   }})
+  groups.add({id:'demand', content:'demand',className:'demandGraph', options: {
+    shaded: false
+  }})
 
-  var datapoints = new vis.DataSet();
-  datapoints.add({x: '2014-06-11', y: 10, group:'contract'});
-  datapoints.add({x: '2014-06-12', y: 25, group: 'contract'});
-  datapoints.add({x: '2014-06-13', y: 30, group: 'contract'});
-  datapoints.add({x: '2014-06-14', y: 10, group: 'contract'});
-  datapoints.add({x: '2014-06-15', y: 15, group: 'contract'});
-  datapoints.add({x: '2014-06-16', y: 30, group: 'contract'});
-
-  datapoints.add({x: '2014-06-11', y: 12, group:'usage'});
-  datapoints.add({x: '2014-06-12', y: 15, group: 'usage'});
-  datapoints.add({x: '2014-06-13', y: 32, group: 'usage'});
-  datapoints.add({x: '2014-06-14', y: 11, group: 'usage'});
-  datapoints.add({x: '2014-06-15', y: 14, group: 'usage'});
-  datapoints.add({x: '2014-06-16', y: 32, group: 'usage'});
-
-  var options = {
-    start: '2014-06-10',
-    end: '2014-06-18',
-    height: '280px',
-    showCurrentTime: true,
-    catmullRom:false,
-    drawPoints:{
-      style:'circle'
-    },
-    dataAxis: {
-      showMinorLabels: true,
-      title: {
-        left: {
-          text: 'Power (W)'
-        }
-      }
-    }
-  };
-  contractOverviewGraph2d = new vis.Graph2d(container, datapoints, groups, options);
+  contractOverviewGraph2d = new vis.Graph2d(container, facilityManagerAgent.contractData, groups, facilityManagerAgent.contractOptions);
 
 }
 
@@ -217,6 +187,11 @@ function closeContractOverview() {
   container.innerHTML = "";
 }
 
+function updateContractOverview() {
+  if (contractOverviewGraph2d !== undefined) {
+    contractOverviewGraph2d.setOptions(facilityManagerAgent.contractOptions);
+  }
+}
 
 function unlockProfile() {
   if (facilityManagerAgent.profile == 'Contract') {

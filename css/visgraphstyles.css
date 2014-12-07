@@ -230,3 +230,10 @@ div.legendElementContainer2.hidden {
     stroke-width:2px;
     stroke: #f79646;
 }
+
+.demandGraph {
+    fill: rgba(247,150,70,0.5);
+    fill-opacity:0;
+    stroke-width:2px;
+    stroke: rgba(247,150,70,0.5);
+}

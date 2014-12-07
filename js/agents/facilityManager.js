@@ -18,7 +18,33 @@ function FacilityManager(id) {
     'Contract': 'Contract mode locked in. <a class="link1" onclick="loadContract()">View contract details here <img class="icon" src="./images/chart_curve.png" />.</a>'
   }
 
+  this.contractLength = 30 * 60 * 1000; // 15 mins in millis
+  this.contractData = new vis.DataSet();
+  this.contractData.on("*",updateContractOverview);
+  this.contractOptions = {
+    start: '2014-06-10',
+    end: '2014-06-18',
+    height: '280px',
+    showCurrentTime: true,
+    moveable:false,
+    zoomable:false,
+    catmullRom:false,
+    drawPoints:{
+      style:'circle'
+    },
+    dataAxis: {
+      showMinorLabels: true,
+      title: {
+        left: {
+          text: 'Power (W)'
+        }
+      }
+    }};
+
   this.getProfile();
+  var me = this;
+  var updateFrequency = 60000;
+  setInterval(function() {me.getProfile();}, updateFrequency);
 }
 
 // extend the eve.Agent prototype
@@ -54,9 +80,24 @@ FacilityManager.prototype.updateHTML = function() {
 
 FacilityManager.prototype.setProfile = function(profile) {
   this.profile = profile;
+  this.processProfile();
   this.rpc.request(EVE_URL + "holistic", {method:'setModus', params:{modus: this.profile}}).done();
   this.updateHTML();
 
+}
+
+FacilityManager.prototype.processProfile = function() {
+  if (this.profile == "Contract") {
+    var me = this;
+    var dataCollecting = [
+      this.rpc.request(EVE_URL + 'holistic', {method:'getRequestProfile',params:{}}),
+      this.rpc.request(EVE_URL + 'holistic', {method:'getCurrentProfile',params:{}})
+    ]
+    Promise.all(dataCollecting)
+      .then(function (values) {
+        me.processData(values)
+      }).done();
+  }
 }
 
 FacilityManager.prototype.getProfile = function() {
@@ -64,13 +105,39 @@ FacilityManager.prototype.getProfile = function() {
   this.rpc.request(EVE_URL + "holistic", {method:'getModus', params:{}})
     .then(function(reply) {
       me.profile = reply;
-      if (me.profile == "Contract") {
-        me.rpc.request(EVE_URL + 'holistic', {method:'getRequestProfile',params:{}})
-          .then(function (reply) {
-
-          }).done();
-      }
+      me.processProfile();
       me.updateHTML();
-    })
-    .done();
+    }).done();
+}
+
+FacilityManager.prototype.processData = function(data) {
+  var visData = [];
+  if (data) {
+    var requestData = data[0];
+    var currentData = data[1];
+    if (requestData && requestData.request && requestData.request.series) {
+      var timestamp = requestData.request.timestamp;
+      this.contractOptions.start = timestamp;
+      this.contractOptions.end = timestamp + this.contractLength;
+      for (var i = 0; i < requestData.request.series.length; i++) {
+        var datapoint = requestData.request.series[i];
+        visData.push({x: timestamp + datapoint.offset, y: datapoint.value, group: 'contract'})
+      }
+    }
+
+    if (currentData) {
+      timestamp = currentData.consumptionInWatts.timestamp;
+      for (var i = 0; i < currentData.consumptionInWatts.series.length; i++) {
+        var datapoint = currentData.consumptionInWatts.series[i];
+        visData.push({x: timestamp + datapoint.offset, y: datapoint.value, group: 'usage'})
+      }
+      for (var i = 0; i < currentData.demand.series.length; i++) {
+        var datapoint = currentData.demand.series[i];
+        visData.push({x: timestamp + datapoint.offset, y: datapoint.value, group: 'demand'})
+      }
+    }
+  }
+
+  this.contractData.clear();
+  this.contractData.add(visData);
 }
