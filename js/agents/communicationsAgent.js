@@ -20,28 +20,21 @@ CommunicationsAgent.prototype.constructor = CommunicationsAgent;
 CommunicationsAgent.prototype.rpcFunctions = {};
 
 CommunicationsAgent.prototype.init = function() {
-  var button1 = document.getElementById('do1');
   var textDiv1 = document.getElementById('do1Text');
-  var button2 = document.getElementById('do2');
   var textDiv2 = document.getElementById('do2Text');
-  var button3 = document.getElementById('do3');
   var textDiv3 = document.getElementById('do3Text');
-
-  button1.className = button1.className.replace("selected", "");
-  button2.className = button2.className.replace("selected", "");
-  button3.className = button3.className.replace("selected", "");
 
   var me = this;
 
   this.rpc.request('http://openid.almende.org:8082/agents/dso',{method:'isOverflowscenario', params:{}})
     .then(function (reply) {
       if (reply == true || reply == 'Overcurrent') {
-        me.btn1 = true;
-        button1.className += ' selected';
+        me.buttonValues.btn1 = true;
+        me.toggleButton('btn1');
         textDiv1.innerHTML = "isOverflowScenario is Overcurrent (agentreply:" + reply + ")";
       }
       else {
-        me.btn1 = false;
+        me.buttonValues.btn1 = false;
         textDiv1.innerHTML = "isOverflowScenario is Overvoltage (agentreply:" + reply + ")";
       }
     })
@@ -49,32 +42,16 @@ CommunicationsAgent.prototype.init = function() {
       textDiv1.innerHTML = "Error getting overcurrent: " + err.message;
     })
 
-  //this.rpc.request(EVE_URL + "dso",{method:'isOverflowscenario', params:{}})
-  //  .then(function (reply) {
-  //    if (reply == true || reply == 'Overcurrent') {
-  //      me.btn1 = true;
-  //      button2.className += ' selected';
-  //      textDiv1.innerHTML = "Overcurrent is true: " + reply;
-  //    }
-  //    else {
-  //      me.btn1 = false;
-  //      textDiv1.innerHTML = "Overcurrent is false: " + reply;
-  //    }
-  //  })
-  //  .catch (function (err) {
-  //  textDiv1.innerHTML = "Error getting overcurrent: " + err.message;
-  //})
-
   this.rpc.request('http://openid.almende.org:8081/agents/controlProxy',{method:'getActive', params:{}})
     .then(function (reply) {
       if (reply == true || reply == 'Overcurrent') {
-        me.btn3 = true;
-        button3.className += ' selected';
-        textDiv3.innerHTML = "Actuators are active: " + reply;
+        me.buttonValues.btn3 = true;
+        me.toggleButton('btn3');
+        textDiv3.innerHTML = "Actuators are active. (agentreply:" + reply + ")";
       }
       else {
-        me.btn3 = false;
-        textDiv3.innerHTML = "Actuators are not active: " + reply;
+        me.buttonValues.btn3 = false;
+        textDiv3.innerHTML = "Actuators are not active. (agentreply:" + reply + ")";
       }
     })
     .catch (function (err) {
@@ -83,51 +60,61 @@ CommunicationsAgent.prototype.init = function() {
 };
 
 CommunicationsAgent.prototype.toggleDSOScenario = function() {
+  var button = document.getElementById('btn1');
+  var textDiv = document.getElementById('do1Text');
+  var me = this;
   this.rpc.request('http://openid.almende.org:8082/agents/dso',{method:'setOverflowscenario', params:{overflow: !this.buttonValues.btn1}})
     .then(function (reply) {
-      var button = document.getElementById('do1');
-      button.className = button.className.replace("selected", "");
-      var textDiv = document.getElementById('do1Text');
-      textDiv.innerHTML = "Request received:" + JSON.stringify(reply);
+      me.buttonValues.btn1 = !me.buttonValues.btn1;
+      me.toggleButton('btn1');
+      textDiv.innerHTML = "Request received. (" + new Date().valueOf() + ")";
     })
     .catch(function (err) {
-      var button = document.getElementById('do1');
       button.className = button.className.replace("selected", "");
-      var textDiv = document.getElementById('do1Text');
       textDiv.innerHTML = "Error in request:" + err.message;
     })
 }
 
 
 CommunicationsAgent.prototype.clearCurrentDispatch = function() {
+  var button = document.getElementById('btn2');
+  var textDiv = document.getElementById('do2Text');
+  var me = this;
   this.rpc.request("agent1",{method:'hello', params:{}})
     .then(function (reply) {
-      var button = document.getElementById('do2');
-      button.className = button.className.replace("selected", "");
-      var textDiv = document.getElementById('do2Text');
-      textDiv.innerHTML = "Request received:" + JSON.stringify(reply);
+      me.buttonValues.btn2 = !me.buttonValues.btn2;
+      me.toggleButton('btn2');
+      textDiv.innerHTML = "Request received. (" + new Date().valueOf() + ")";
     })
     .catch(function (err) {
-      var button = document.getElementById('do2');
       button.className = button.className.replace("selected", "");
-      var textDiv = document.getElementById('do2Text');
       textDiv.innerHTML = "Error in request:" + err.message;
     })
 }
 
 
 CommunicationsAgent.prototype.ActuatorsActive = function() {
+  var button = document.getElementById('btn3');
+  var textDiv = document.getElementById('do3Text');
+  var me = this;
   this.rpc.request('http://openid.almende.org:8081/agents/controlProxy',{method:'setActive', params:{state: !this.buttonValues.btn3}})
     .then(function (reply) {
-      var textDiv = document.getElementById('do3Text');
-      var button = document.getElementById('do3');
-      button.className = button.className.replace("selected", "");
-      textDiv.innerHTML = "Request received:" + JSON.stringify(reply);
+      me.buttonValues.btn3 = !me.buttonValues.btn3;
+      me.toggleButton('btn3');
+      textDiv.innerHTML = "Request received. (" + new Date().valueOf() + ")";
     })
     .catch(function (err) {
-      var textDiv = document.getElementById('do3Text');
-      var button = document.getElementById('do3');
       button.className = button.className.replace("selected", "");
       textDiv.innerHTML = "Error in request:" + err.message;
     })
+}
+
+
+CommunicationsAgent.prototype.toggleButton = function(button) {
+  var DOMbutton = document.getElementById(button);
+  DOMbutton.className = DOMbutton.className.replace("selected", "");
+  var value = this.buttonValues[button];
+  if (value == true) {
+    DOMbutton.className += ' selected';
+  }
 }
