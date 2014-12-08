@@ -37,7 +37,7 @@
             padding-top:100px;
         }
 
-        div.exptext {
+        div.explainationText {
             min-height: 32px;
             line-height:32px;
             border:1px solid #aaaaaa;
@@ -74,8 +74,10 @@
             ]
         });
 
-
+        // load the communications agent that handles the RPC calls
         var comAgent = new CommunicationsAgent('com');
+
+        // init the agent when the gui is loaded so the buttons can be toggled
         function onLoad() {
             comAgent.init();
         }
@@ -94,7 +96,6 @@
     <a href="#modeSelector" class="transparent"><div class="menuItem">Demo Control</div></a>
 </div>
 
-<!--</div>-->
 <div class="inertiaContent">
     <div class="ButtonWrapper">
         <table>
@@ -102,18 +103,18 @@
                 <td>
                     <div class="typeButton" onclick="comAgent.toggleDSOScenario();" id="btn1">Toggle DSO scenario</div>
                 </td>
-                 <td><div class="exptext" id="do1Text">Not available.</div></td>
+                 <td><div class="explainationText" id="do1Text">Not available.</div></td>
             </tr>
             <tr>
                 <td>
                     <div class="typeButton" onclick="comAgent.clearCurrentDispatch();" id="btn2">Clear current dispatch</div>
                 </td>
-                <td><div class="exptext" id="do2Text">Not available.</div></td>
+                <td><div class="explainationText" id="do2Text">Not available.</div></td>
             </tr><tr>
             <td>
                 <div class="typeButton" onclick="comAgent.ActuatorsActive();" id="btn3">Actuator Status</div>
             </td>
-            <td><div class="exptext" id="do3Text">Not available.</div></td>
+            <td><div class="explainationText" id="do3Text">Not available.</div></td>
         </tr>
 
         </table>
