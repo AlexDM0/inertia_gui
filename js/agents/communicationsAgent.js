@@ -88,7 +88,7 @@ CommunicationsAgent.prototype.toggleDSOScenario = function() {
       var button = document.getElementById('do1');
       button.className = button.className.replace("selected", "");
       var textDiv = document.getElementById('do1Text');
-      textDiv.innerHTML = "Request received:" + JSON.stingify(reply);
+      textDiv.innerHTML = "Request received:" + JSON.stringify(reply);
     })
     .catch(function (err) {
       var button = document.getElementById('do1');
@@ -105,7 +105,7 @@ CommunicationsAgent.prototype.clearCurrentDispatch = function() {
       var button = document.getElementById('do2');
       button.className = button.className.replace("selected", "");
       var textDiv = document.getElementById('do2Text');
-      textDiv.innerHTML = "Request received:" + JSON.stingify(reply);
+      textDiv.innerHTML = "Request received:" + JSON.stringify(reply);
     })
     .catch(function (err) {
       var button = document.getElementById('do2');
@@ -122,7 +122,7 @@ CommunicationsAgent.prototype.ActuatorsActive = function() {
       var textDiv = document.getElementById('do3Text');
       var button = document.getElementById('do3');
       button.className = button.className.replace("selected", "");
-      textDiv.innerHTML = "Request received:" + JSON.stingify(reply);
+      textDiv.innerHTML = "Request received:" + JSON.stringify(reply);
     })
     .catch(function (err) {
       var textDiv = document.getElementById('do3Text');
