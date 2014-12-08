@@ -116,8 +116,18 @@
             </td>
             <td><div class="explainationText" id="do3Text">Not available.</div></td>
         </tr>
-
         </table>
+        Select the kitchen mode: <br />
+        <div class="typeButton" onclick="comAgent.setKitchen('Free running');" id="kitchen_Free_running">Free running</div>
+        <div class="typeButton" onclick="comAgent.setKitchen('Comfort optimization');" id="kitchen_Comfort_optimization">Comfort optimization</div>
+        <div class="typeButton" onclick="comAgent.setKitchen('Energy conservation');" id="kitchen_Energy_conservation">Energy conservation</div>
+        <div id="kitchenStatus"></div><br /><br />
+
+        Select the Meeting room mode:<br />
+        <div class="typeButton" onclick="comAgent.setMeetingroom('Free running');" id="mr_Free_running">Free running</div>
+        <div class="typeButton" onclick="comAgent.setMeetingroom('Comfort optimization');" id="mr_Comfort_optimization">Comfort optimization</div>
+        <div class="typeButton" onclick="comAgent.setMeetingroom('Energy conservation');" id="mr_Energy_conservation">Energy conservation</div>
+        <div id="meetingRoomStatus"></div><br /><br />
     </div>
 </div>
 <div class="bottomBanner1"></div>

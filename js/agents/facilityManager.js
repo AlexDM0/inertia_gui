@@ -146,3 +146,4 @@ FacilityManager.prototype.processData = function(data) {
   this.contractData.clear();
   this.contractData.add(visData);
 }
+
