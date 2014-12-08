@@ -179,3 +179,25 @@ CommunicationsAgent.prototype.setMeetingroom = function(mode) {
       document.getElementById("meetingRoomStatus").innerHTML = "Error in request:" + err.message;
     })
 }
+/**
+ * toggle the third button, function call is onclick in the dom
+ */
+CommunicationsAgent.prototype.setAllModes = function(mode) {
+  var dom = {
+    'Free running':document.getElementById('all_Free_running'),
+    'Comfort optimization':document.getElementById('all_Comfort_optimization'),
+    'Energy conservation':document.getElementById('all_Energy_conservation')
+  }
+
+  dom['Free running'].className = dom['Free running'].className.replace("selected", "");
+  dom['Comfort optimization'].className = dom['Comfort optimization'].className.replace("selected", "");
+  dom['Energy conservation'].className = dom['Energy conservation'].className.replace("selected", "");
+
+  this.rpc.request('http://openid.almende.org:8081/agents/scenario',{method:'setAllModes', params:{modus: mode}})
+    .then(function () {
+      dom[mode].className += ' selected';
+    })
+    .catch(function (err) {
+      document.getElementById("allStatus").innerHTML = "Error in request:" + err.message;
+    })
+}
