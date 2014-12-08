@@ -37,7 +37,7 @@ CommunicationsAgent.prototype.init = function() {
     .then(function (reply) {
       if (reply == true || reply == 'Overcurrent') {
         me.btn1 = true;
-        button.className += ' selected';
+        button1.className += ' selected';
         textDiv1.innerHTML = "isOverflowScenario is Overcurrent (agentreply:" + reply + ")";
       }
       else {
@@ -53,7 +53,7 @@ CommunicationsAgent.prototype.init = function() {
   //  .then(function (reply) {
   //    if (reply == true || reply == 'Overcurrent') {
   //      me.btn1 = true;
-  //      button.className += ' selected';
+  //      button2.className += ' selected';
   //      textDiv1.innerHTML = "Overcurrent is true: " + reply;
   //    }
   //    else {
@@ -69,7 +69,7 @@ CommunicationsAgent.prototype.init = function() {
     .then(function (reply) {
       if (reply == true || reply == 'Overcurrent') {
         me.btn3 = true;
-        button.className += ' selected';
+        button3.className += ' selected';
         textDiv3.innerHTML = "Actuators are active: " + reply;
       }
       else {
@@ -83,7 +83,7 @@ CommunicationsAgent.prototype.init = function() {
 };
 
 CommunicationsAgent.prototype.toggleDSOScenario = function() {
-  this.rpc.request('http://openid.almende.org:8082/agents/dso',{method:'setOverflowScenario', params:{overflow: !this.buttonValues.btn1}})
+  this.rpc.request('http://openid.almende.org:8082/agents/dso',{method:'setOverflowscenario', params:{overflow: !this.buttonValues.btn1}})
     .then(function (reply) {
       var button = document.getElementById('do1');
       button.className = button.className.replace("selected", "");
@@ -117,7 +117,7 @@ CommunicationsAgent.prototype.clearCurrentDispatch = function() {
 
 
 CommunicationsAgent.prototype.ActuatorsActive = function() {
-  this.rpc.request('http://openid.almende.org:8081/agents/controlProxy',{method:'hello', params:{state: !this.buttonValues.btn3}})
+  this.rpc.request('http://openid.almende.org:8081/agents/controlProxy',{method:'setActive', params:{state: !this.buttonValues.btn3}})
     .then(function (reply) {
       var textDiv = document.getElementById('do3Text');
       var button = document.getElementById('do3');

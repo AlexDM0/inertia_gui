@@ -79,24 +79,6 @@
         function onLoad() {
             comAgent.init();
         }
-        function toggleDSOScenario() {
-            var button = document.getElementById('do1');
-            button.className = button.className.replace(" selected", "");
-            button.className += ' selected';
-            setTimeout(function() {comAgent.toggleDSOScenario();},250);
-        }
-        function clearCurrentDispatch() {
-            var button = document.getElementById('do2');
-            button.className = button.className.replace(" selected", "");
-            button.className += ' selected'
-            setTimeout(function() {comAgent.clearCurrentDispatch();},250);
-        }
-        function ActuatorsActive() {
-            var button = document.getElementById('do3');
-            button.className = button.className.replace(" selected", "");
-            button.className += ' selected'
-            setTimeout(function() {comAgent.ActuatorsActive();},250);
-        }
     </script>
 
 </head>
@@ -118,20 +100,20 @@
         <table>
             <tr>
                 <td>
-                    <div class="typeButton" onclick="toggleDSOScenario()" id="do1">Toggle DSO scenario</div>
+                    <div class="typeButton" onclick="comAgent.toggleDSOScenario();" id="do1">Toggle DSO scenario</div>
                 </td>
-                 <td><div class="exptext" id="do1Text">Status of the request will be shown here.</div></td>
+                 <td><div class="exptext" id="do1Text">Not available.</div></td>
             </tr>
             <tr>
                 <td>
-                    <div class="typeButton" onclick="clearCurrentDispatch()" id="do2">Clear current dispatch</div>
+                    <div class="typeButton" onclick="comAgent.clearCurrentDispatch();" id="do2">Clear current dispatch</div>
                 </td>
-                <td><div class="exptext" id="do2Text">Status of the request will be shown here.</div></td>
+                <td><div class="exptext" id="do2Text">Not available.</div></td>
             </tr><tr>
             <td>
-                <div class="typeButton" onclick="ActuatorsActive()" id="do3">Actuator Status</div>
+                <div class="typeButton" onclick="comAgent.ActuatorsActive();" id="do3">Actuator Status</div>
             </td>
-            <td><div class="exptext" id="do3Text">Status of the request will be shown here.</div></td>
+            <td><div class="exptext" id="do3Text">Not available.</div></td>
         </tr>
 
         </table>
