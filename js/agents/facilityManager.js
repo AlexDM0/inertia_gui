@@ -10,7 +10,7 @@ function FacilityManager(id) {
 
   this.profile = "pending"
   this.profiles = ['Free running','Comfort optimization', 'Energy conservation', 'Contract'];
-  this.profilesLabels = ['Free running','Flexibility optimization', 'Energy conservation', 'Contract (demo)'];
+  this.profilesLabels = ['Free running','Flexibility optimization', 'Energy conservation', 'Contract'];
   this.information = {
     'Free running': 'The GUI can be used to toggle DERs.',
     'Comfort optimization': 'DERs are switched automatically to maximize flexibility through comfort optimization.',
