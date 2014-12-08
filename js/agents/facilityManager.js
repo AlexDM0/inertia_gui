@@ -10,7 +10,7 @@ function FacilityManager(id) {
 
   this.profile = "pending"
   this.profiles = ['Free running','Comfort optimization', 'Energy conservation', 'Contract'];
-  this.profilesLabels = ['Free running','Flexibility optimization', 'Energy conservation', 'Contract'];
+  this.profilesLabels = ['Free running','Flexibility optimization', 'Energy conservation', 'Contract (demo)'];
   this.information = {
     'Free running': 'The GUI can be used to toggle DERs.',
     'Comfort optimization': 'DERs are switched automatically to maximize flexibility through comfort optimization.',
@@ -29,6 +29,7 @@ function FacilityManager(id) {
     moveable:false,
     zoomable:false,
     catmullRom:false,
+    legend: {left: {position: 'top-right'}},
     drawPoints:{
       style:'circle'
     },
@@ -43,7 +44,7 @@ function FacilityManager(id) {
 
   this.getProfile();
   var me = this;
-  var updateFrequency = 60000;
+  var updateFrequency = 2000;
   setInterval(function() {me.getProfile();}, updateFrequency);
 }
 
@@ -115,7 +116,7 @@ FacilityManager.prototype.processData = function(data) {
   if (data) {
     var requestData = data[0];
     var currentData = data[1];
-    if (requestData && requestData.request && requestData.request.series) {
+    if (requestData != null && requestData.request && requestData.request.series) {
       var timestamp = requestData.request.timestamp;
       this.contractOptions.start = timestamp;
       this.contractOptions.end = timestamp + this.contractLength;
@@ -129,11 +130,15 @@ FacilityManager.prototype.processData = function(data) {
       timestamp = currentData.consumptionInWatts.timestamp;
       for (var i = 0; i < currentData.consumptionInWatts.series.length; i++) {
         var datapoint = currentData.consumptionInWatts.series[i];
-        visData.push({x: timestamp + datapoint.offset, y: datapoint.value, group: 'usage'})
+        if (datapoint.value != 'NaN') {
+          visData.push({x: timestamp + datapoint.offset, y: datapoint.value, group: 'usage'})
+        }
       }
       for (var i = 0; i < currentData.demand.series.length; i++) {
         var datapoint = currentData.demand.series[i];
-        visData.push({x: timestamp + datapoint.offset, y: datapoint.value, group: 'demand'})
+        if (datapoint.value != 'NaN') {
+          visData.push({x: timestamp + datapoint.offset, y: datapoint.value, group: 'demand'})
+        }
       }
     }
   }

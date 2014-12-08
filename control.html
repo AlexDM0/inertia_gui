@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head><meta http-equiv="content-type" content="text/html; charset=UTF8">
+
+    <style>
+        div.typeButton {
+            display:inline-block;
+            width:150px;
+            height:24px;
+            border:2px solid #ffffff;
+            border-radius: 40px;
+            text-align:center;
+            font-size:12px;
+            color: #000000;
+            padding-top:8px;
+            background-color: #e3e3e3;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor:pointer;
+            margin:5px;
+            box-shadow: rgba(50,50,50,0.3) 0px 0px 3px;
+        }
+
+        div.typeButton.selected {
+            background-color: #3792d8;
+            color: #ffffff;
+        }
+
+        div.ButtonWrapper {
+            width:600px;
+            height:200px;
+            margin:auto auto auto auto;
+            padding-top:100px;
+        }
+
+        div.exptext {
+            min-height: 32px;
+            line-height:32px;
+            border:1px solid #aaaaaa;
+            width:390px;
+            border-radius:10px;
+            padding-left:10px;
+        }
+    </style>
+    <!-- css -->
+    <link href="./css/input.css" rel="stylesheet" type="text/css" />
+    <link href="./css/visgraphstyles.css" rel="stylesheet" type="text/css" />
+    <link href="./css/vis.css" rel="stylesheet" type="text/css" />
+
+    <link href="./css/global.css" rel="stylesheet" type="text/css" />
+
+
+    <!--main libraries-->
+    <script language="JavaScript" src="./js/polyfill-done.js"></script>
+    <script language="JavaScript" src="./js/eve.js"></script>
+
+    <!--agents-->
+    <script language="JavaScript" src="./js/agents/communicationsAgent.js"></script>
+
+    <script language="JavaScript">
+        // configure eve
+        eve.system.init({
+            transports: [
+                {
+                    type: 'local'
+                },
+                {
+                    type: 'http'
+                }
+            ]
+        });
+
+
+        var comAgent = new CommunicationsAgent('com');
+        function onLoad() {
+            comAgent.init();
+        }
+        function toggleDSOScenario() {
+            var button = document.getElementById('do1');
+            button.className = button.className.replace(" selected", "");
+            button.className += ' selected';
+            setTimeout(function() {comAgent.toggleDSOScenario();},250);
+        }
+        function clearCurrentDispatch() {
+            var button = document.getElementById('do2');
+            button.className = button.className.replace(" selected", "");
+            button.className += ' selected'
+            setTimeout(function() {comAgent.clearCurrentDispatch();},250);
+        }
+        function ActuatorsActive() {
+            var button = document.getElementById('do3');
+            button.className = button.className.replace(" selected", "");
+            button.className += ' selected'
+            setTimeout(function() {comAgent.ActuatorsActive();},250);
+        }
+    </script>
+
+</head>
+<body onload="onLoad()">
+
+
+<div class="topBanner">
+</div>
+
+<div class="topSubBanner"></div>
+<div class="topSubBanner2"></div>
+<div class="menuBanner" id="blueprint">
+    <a href="#modeSelector" class="transparent"><div class="menuItem">Demo Control</div></a>
+</div>
+
+<!--</div>-->
+<div class="inertiaContent">
+    <div class="ButtonWrapper">
+        <table>
+            <tr>
+                <td>
+                    <div class="typeButton" onclick="toggleDSOScenario()" id="do1">Toggle DSO scenario</div>
+                </td>
+                 <td><div class="exptext" id="do1Text">Status of the request will be shown here.</div></td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="typeButton" onclick="clearCurrentDispatch()" id="do2">Clear current dispatch</div>
+                </td>
+                <td><div class="exptext" id="do2Text">Status of the request will be shown here.</div></td>
+            </tr><tr>
+            <td>
+                <div class="typeButton" onclick="ActuatorsActive()" id="do3">Actuator Status</div>
+            </td>
+            <td><div class="exptext" id="do3Text">Status of the request will be shown here.</div></td>
+        </tr>
+
+        </table>
+    </div>
+</div>
+<div class="bottomBanner1"></div>
+<div class="bottomBanner2"></div>
+<div class="bottomBanner3">&copy; INERTIA Project 2013</div>
+</body>
+</html>
