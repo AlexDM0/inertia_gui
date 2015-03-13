@@ -80,23 +80,32 @@ SimulationAgent.prototype.startSimulation = function() {
   this.LCHIds = Object.keys(this.LCHdata);
   this.LCHIndex = 0;
 
-  // this will iterate over all LCHs and the DERs if required
-  this.parseLCH();
+  if (this.LCHIds.length == 0) {
+    this.sendSimulationData();
+  }
+  else {
+    // this will iterate over all LCHs and the DERs if required
+    this.parseLCH();
+  }
 }
 
 
 SimulationAgent.prototype.sendSimulationData = function() {
-  console.log("sending simulation data");
+  console.log("sending simulation data", this.simData);
   this.rpc.request(EVE_ADDRESS, {method:"startSimulation", params: {simulationData:this.simData}});
 }
 
 SimulationAgent.prototype.parseLCH = function() {
   if (this.LCHIndex === this.LCHIds.length) {
     this.sendSimulationData();
+    return;
   }
+
+
   var LCHid = this.LCHIds[this.LCHIndex];
 
   var LCHdata = this.LCHdata[LCHid];
+  console.log(LCHdata, LCHid, this.LCHdata, this.LCHIds, this.LCHIndex)
   this.simData.LCHs[LCHid] = {id: LCHid, type: LCHdata.type}
   if (LCHdata['DERs'] !== undefined) {
     this.simData.LCHs[LCHid]['DERs'] = {};
