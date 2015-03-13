@@ -116,12 +116,6 @@
                     <div class="typeButton" onclick="comAgent.toggleDSOScenario();" id="btn1">Toggle DSO scenario</div>
                 </td>
                  <td><div class="explainationText" id="do1Text">Not available.</div></td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="typeButton" onclick="comAgent.clearCurrentDispatch();" id="btn2">Clear current dispatch</div>
-                </td>
-                <td><div class="explainationText" id="do2Text">Not available.</div></td>
             </tr><tr>
             <td>
                 <div class="typeButton" onclick="comAgent.ActuatorsActive();" id="btn3">Actuator Status</div>
@@ -130,6 +124,13 @@
         </tr>
         </table>
         <br /><br />
+        Select the mode of all DERs: (resets contract as well)<br />
+        <div class="space"><div class="typeButton" onclick="comAgent.setAllModes('Free running');" id="all_Free_running">Free running</div></div>
+        <div class="space mid"><div class="typeButton" onclick="comAgent.setAllModes('Comfort optimization');" id="all_Comfort_optimization">Comfort optimization</div></div>
+        <div class="space right"><div class="typeButton" onclick="comAgent.setAllModes('Energy conservation');" id="all_Energy_conservation">Energy conservation</div></div>
+        <div id="allStatus"></div><br /><br />
+
+
         Select the kitchen mode: <br />
         <div class="space"><div class="typeButton" onclick="comAgent.setKitchen('Free running');" id="kitchen_Free_running">Free running</div></div>
         <div class="space mid"><div class="typeButton" onclick="comAgent.setKitchen('Comfort optimization');" id="kitchen_Comfort_optimization">Comfort optimization</div></div>
@@ -141,6 +142,7 @@
         <div class="space mid"><div class="typeButton" onclick="comAgent.setMeetingroom('Comfort optimization');" id="mr_Comfort_optimization">Comfort optimization</div></div>
         <div class="space right"><div class="typeButton" onclick="comAgent.setMeetingroom('Energy conservation');" id="mr_Energy_conservation">Energy conservation</div></div>
         <div id="meetingRoomStatus"></div><br /><br />
+
     </div>
 </div>
 <div class="bottomBanner1"></div>
