@@ -150,8 +150,8 @@
         // load the communications agent that handles the RPC calls
         var simAgent = new SimulationAgent('sim');
 
-        // init the agent when the gui is loaded so the buttons can be toggled
         function onLoad() {
+            // could be used to setup a ws connection? Empty function at the moment.
             simAgent.init();
         }
 

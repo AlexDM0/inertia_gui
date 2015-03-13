@@ -29,53 +29,17 @@ SimulationAgent.prototype.init = function() {
 
 };
 
-/**
- *  adds a DOM element to the page for a MESO LCH
- **/
-SimulationAgent.prototype.addMesoLCH = function() {
-  var container = document.getElementById("LCHMesoContainer");
-  var div = document.createElement("div");
-  var content = '<img class="delete" src="./images/delete.png" onclick="simAgent.removeLCH('+this.LCHid+')" />' +
-  '<table class="LCHtable">' +
-  '<tr><td>ID</td><td>' + this.LCHid + '</td></tr>' +
-  '<tr><td>data</td><td><textarea id="lch_' + this.LCHid + '_kv"></textarea></td></tr>' +
-  '</table>';
-
-  div.id = this.LCHid + "_container"
-  div.innerHTML = content;
-  div.className = 'LCHwrapper';
-  container.appendChild(div);
-
-  this.LCHdata[this.LCHid] = {type:"meso"};
-  this.LCHid += 1;
-}
-
 
 /**
- *  adds a DOM element to the page for a MICRO LCH
- **/
-SimulationAgent.prototype.addMicroLCH = function() {
-  var container = document.getElementById("LCHMicroContainer");
-  var div = document.createElement("div");
-  var content = '<img class="delete" src="./images/delete.png" onclick="simAgent.removeLCH('+this.LCHid+')" />' +
-    '<table class="LCHtable">' +
-    '<tr><td>ID</td><td>' + this.LCHid + '</td></tr>' +
-    '<tr><td>DERS</td><td><img src="./images/add.png" onclick="simAgent.addDER(' + this.LCHid + ')" /></td></tr>' +
-    '<tr><td></td><td><div class="DERcontainer" id="' + this.LCHid + '_DERcontainer"></div></td></tr>' +
-    '</table>';
-
-  div.id = this.LCHid + "_container"
-  div.innerHTML = content;
-  div.className = 'LCHwrapper';
-  container.appendChild(div);
-
-  this.LCHdata[this.LCHid] = {type:"micro", DERs:{}};
-  this.LCHid += 1;
-}
-
-
+ * This is called by the start sim button, the ders (if available) are async collected due to the file attachements
+ * this is done with promises.
+ *
+ * */
 SimulationAgent.prototype.startSimulation = function() {
+  // show the overlay
   document.getElementById('progressBarWrapper').style.display = "block";
+
+  // construct the simulation data
   this.simData = {
     name: document.getElementById("name").value,
     startTime: document.getElementById("startTime").value,
@@ -96,18 +60,24 @@ SimulationAgent.prototype.startSimulation = function() {
   }
 }
 
-
+/**
+ * If all data is collected, it is sent with this.
+ */
 SimulationAgent.prototype.sendSimulationData = function() {
   console.log("sending simulation data", this.simData);
   this.rpc.request(EVE_ADDRESS, {method:"startSimulation", params: {simulationData:this.simData}});
 }
 
+
+/**
+ * Ony by one parse the LCH's. this is done to allow the async handling of files for ders.
+ */
 SimulationAgent.prototype.parseLCH = function() {
+  // finished, send data
   if (this.LCHIndex === this.LCHIds.length) {
     this.sendSimulationData();
     return;
   }
-
 
   var LCHid = this.LCHIds[this.LCHIndex];
 
@@ -116,9 +86,12 @@ SimulationAgent.prototype.parseLCH = function() {
   if (LCHdata['DERs'] !== undefined) {
     this.simData.LCHs[LCHid]['DERs'] = {};
     var promises = [];
+    // gather promises
     for (var DERid in LCHdata['DERs']) {
       promises.push(this.parseDER(LCHid,DERid));
     }
+
+    // handle the resolving of the promises
     Promise.all(promises)
       .then(function () {
         this.LCHIndex++;
@@ -135,6 +108,10 @@ SimulationAgent.prototype.parseLCH = function() {
   }
 }
 
+/**
+ * Handle the async collecting of files with promises
+ *
+ * */
 SimulationAgent.prototype.parseDER = function(LCHid,DERid) {
   return new Promise(function (resolve, reject) {
     this.simData.LCHs[LCHid]['DERs'][DERid] = {id: DERid};
@@ -170,13 +147,14 @@ SimulationAgent.prototype.parseDER = function(LCHid,DERid) {
 
 //* UTIL functions *//
 
+// remove LCH from data and DOM
 SimulationAgent.prototype.removeLCH = function(id) {
   var div = document.getElementById(id + "_container")
   div.parentNode.removeChild(div);
   delete this.LCHdata[id];
 }
 
-
+// add DER in DOM and data
 SimulationAgent.prototype.addDER = function(id) {
   var container = document.getElementById(id + "_DERcontainer");
   var div = document.createElement("div");
@@ -194,13 +172,57 @@ SimulationAgent.prototype.addDER = function(id) {
 
   this.LCHdata[id]['DERs'][this.DERid] = {id: this.DERid, data: null, file: null};
   this.DERid += 1;
-
 }
 
-
+// removce DER from data and DOM
 SimulationAgent.prototype.removeDER = function(LCHid, DERid) {
-  console.log('lch_' + LCHid + '_' + DERid + '_div')
   var div = document.getElementById('lch_' + LCHid + '_' + DERid + '_div')
   div.parentNode.removeChild(div);
   delete this.LCHdata[LCHid]["DERs"][DERid];
 }
+
+
+/**
+ *  adds a DOM element to the page for a MESO LCH
+ **/
+SimulationAgent.prototype.addMesoLCH = function() {
+  var container = document.getElementById("LCHMesoContainer");
+  var div = document.createElement("div");
+  var content = '<img class="delete" src="./images/delete.png" onclick="simAgent.removeLCH('+this.LCHid+')" />' +
+    '<table class="LCHtable">' +
+    '<tr><td>ID</td><td>' + this.LCHid + '</td></tr>' +
+    '<tr><td>data</td><td><textarea id="lch_' + this.LCHid + '_kv"></textarea></td></tr>' +
+    '</table>';
+
+  div.id = this.LCHid + "_container"
+  div.innerHTML = content;
+  div.className = 'LCHwrapper';
+  container.appendChild(div);
+
+  this.LCHdata[this.LCHid] = {type:"meso"};
+  this.LCHid += 1;
+}
+
+
+/**
+ *  adds a DOM element to the page for a MICRO LCH
+ **/
+SimulationAgent.prototype.addMicroLCH = function() {
+  var container = document.getElementById("LCHMicroContainer");
+  var div = document.createElement("div");
+  var content = '<img class="delete" src="./images/delete.png" onclick="simAgent.removeLCH('+this.LCHid+')" />' +
+    '<table class="LCHtable">' +
+    '<tr><td>ID</td><td>' + this.LCHid + '</td></tr>' +
+    '<tr><td>DERS</td><td><img src="./images/add.png" onclick="simAgent.addDER(' + this.LCHid + ')" /></td></tr>' +
+    '<tr><td></td><td><div class="DERcontainer" id="' + this.LCHid + '_DERcontainer"></div></td></tr>' +
+    '</table>';
+
+  div.id = this.LCHid + "_container"
+  div.innerHTML = content;
+  div.className = 'LCHwrapper';
+  container.appendChild(div);
+
+  this.LCHdata[this.LCHid] = {type:"micro", DERs:{}};
+  this.LCHid += 1;
+}
+
