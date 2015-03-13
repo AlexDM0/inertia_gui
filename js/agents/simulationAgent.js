@@ -105,7 +105,6 @@ SimulationAgent.prototype.parseLCH = function() {
   var LCHid = this.LCHIds[this.LCHIndex];
 
   var LCHdata = this.LCHdata[LCHid];
-  console.log(LCHdata, LCHid, this.LCHdata, this.LCHIds, this.LCHIndex)
   this.simData.LCHs[LCHid] = {id: LCHid, type: LCHdata.type}
   if (LCHdata['DERs'] !== undefined) {
     this.simData.LCHs[LCHid]['DERs'] = {};
