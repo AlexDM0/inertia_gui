@@ -29,6 +29,9 @@ SimulationAgent.prototype.init = function() {
 
 };
 
+/**
+ *  adds a DOM element to the page for a MESO LCH
+ **/
 SimulationAgent.prototype.addMesoLCH = function() {
   var container = document.getElementById("LCHMesoContainer");
   var div = document.createElement("div");
@@ -48,6 +51,9 @@ SimulationAgent.prototype.addMesoLCH = function() {
 }
 
 
+/**
+ *  adds a DOM element to the page for a MICRO LCH
+ **/
 SimulationAgent.prototype.addMicroLCH = function() {
   var container = document.getElementById("LCHMicroContainer");
   var div = document.createElement("div");
@@ -69,6 +75,7 @@ SimulationAgent.prototype.addMicroLCH = function() {
 
 
 SimulationAgent.prototype.startSimulation = function() {
+  document.getElementById('progressBarWrapper').style.display = "block";
   this.simData = {
     name: document.getElementById("name").value,
     startTime: document.getElementById("startTime").value,
