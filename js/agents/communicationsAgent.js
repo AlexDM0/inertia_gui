@@ -44,7 +44,7 @@ CommunicationsAgent.prototype.init = function() {
     })
     .catch (function (err) {
       textDiv1.innerHTML = "Error getting overcurrent: " + err.message;
-    })
+    });
 
   // get status for button 3 (2 not yet available on the EVE)
   this.rpc.request('http://openid.almende.org:8081/agents/controlProxy',{method:'getActive', params:{}})
@@ -80,7 +80,7 @@ CommunicationsAgent.prototype.toggleDSOScenario = function() {
       button.className = button.className.replace("selected", "");
       textDiv.innerHTML = "Error in request:" + err.message;
     })
-}
+};
 
 /**
  * toggle the second button, function call is onclick in the dom
@@ -99,7 +99,7 @@ CommunicationsAgent.prototype.clearCurrentDispatch = function() {
       button.className = button.className.replace("selected", "");
       textDiv.innerHTML = "Error in request:" + err.message;
     })
-}
+};
 
 /**
  * toggle the third button, function call is onclick in the dom
@@ -118,7 +118,7 @@ CommunicationsAgent.prototype.ActuatorsActive = function() {
       button.className = button.className.replace("selected", "");
       textDiv.innerHTML = "Error in request:" + err.message;
     })
-}
+};
 
 
 /**
@@ -132,7 +132,7 @@ CommunicationsAgent.prototype.toggleButton = function(button) {
   if (value == true) {
     DOMbutton.className += ' selected';
   }
-}
+};
 
 /**
  * toggle the third button, function call is onclick in the dom
@@ -142,7 +142,7 @@ CommunicationsAgent.prototype.setKitchen = function(mode) {
     'Free running':document.getElementById('kitchen_Free_running'),
     'Comfort optimization':document.getElementById('kitchen_Comfort_optimization'),
     'Energy conservation':document.getElementById('kitchen_Energy_conservation')
-  }
+  };
   dom['Free running'].className = dom['Free running'].className.replace("selected", "");
   dom['Comfort optimization'].className = dom['Comfort optimization'].className.replace("selected", "");
   dom['Energy conservation'].className = dom['Energy conservation'].className.replace("selected", "");
@@ -154,7 +154,7 @@ CommunicationsAgent.prototype.setKitchen = function(mode) {
     .catch(function (err) {
       document.getElementById("kitchenStatus").innerHTML = "Error in request:" + err.message;
     })
-}
+};
 
 
 /**
@@ -165,7 +165,7 @@ CommunicationsAgent.prototype.setMeetingroom = function(mode) {
     'Free running':document.getElementById('mr_Free_running'),
     'Comfort optimization':document.getElementById('mr_Comfort_optimization'),
     'Energy conservation':document.getElementById('mr_Energy_conservation')
-  }
+  };
 
   dom['Free running'].className = dom['Free running'].className.replace("selected", "");
   dom['Comfort optimization'].className = dom['Comfort optimization'].className.replace("selected", "");
@@ -178,4 +178,4 @@ CommunicationsAgent.prototype.setMeetingroom = function(mode) {
     .catch(function (err) {
       document.getElementById("meetingRoomStatus").innerHTML = "Error in request:" + err.message;
     })
-}
+};

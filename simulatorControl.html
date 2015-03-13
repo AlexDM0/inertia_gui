@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head><meta http-equiv="content-type" content="text/html; charset=UTF8">
+
+    <style>
+        div.typeButton {
+            display:inline-block;
+            width:150px;
+            height:24px;
+            border:2px solid #ffffff;
+            border-radius: 40px;
+            text-align:center;
+            font-size:12px;
+            color: #000000;
+            padding-top:8px;
+            background-color: #e3e3e3;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor:pointer;
+            margin:5px;
+            box-shadow: rgba(50,50,50,0.3) 0px 0px 3px;
+        }
+
+        div.typeButton.selected {
+            background-color: #3792d8;
+            color: #ffffff;
+        }
+
+
+        div.ButtonWrapper {
+            width:600px;
+            min-height:200px;
+            margin:auto auto auto auto;
+            padding-top:100px;
+        }
+
+        div.subcontainer {
+            margin-left:20px;
+            min-height:50px;
+            background-color: #d1eeff;
+            border-radius:5px;
+            padding:3px;
+        }
+
+        div.inertiaContent {
+            padding-bottom:20px;
+        }
+
+        table.simTable {
+            margin-left:20px;
+        }
+
+        div.progressBarWrapper {
+            position:absolute;
+            width:970px;
+            height:100%;
+            background-color: rgba(17, 23, 35, 0.80);
+            display:none;
+        }
+
+        div.progressBarOuterContainer {
+            position:relative;
+            top:200px;
+            left:185px;
+        }
+
+        div.progressBarBorder {
+            width: 600px;
+            border: 2px solid #646464;
+            height: 35px;
+            border-radius:6px;
+            box-shadow: 0px 0px 4px 0px #183a50;
+            background: rgb(255,255,255); /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(242,242,242,1) 47%, rgba(224,224,224,1) 52%, rgba(229,229,229,1) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(47%,rgba(242,242,242,1)), color-stop(52%,rgba(224,224,224,1)), color-stop(100%,rgba(229,229,229,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(242,242,242,1) 47%,rgba(224,224,224,1) 52%,rgba(229,229,229,1) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(242,242,242,1) 47%,rgba(224,224,224,1) 52%,rgba(229,229,229,1) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(242,242,242,1) 47%,rgba(224,224,224,1) 52%,rgba(229,229,229,1) 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(242,242,242,1) 47%,rgba(224,224,224,1) 52%,rgba(229,229,229,1) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+
+        }
+
+        div.progressBar {
+            width: 0%;
+            height: 35px;
+            border-radius:4px;
+            background: rgb(226,238,255); /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(226,238,255,1) 0%, rgba(140,179,209,1) 18%, rgba(78,153,211,1) 47%, rgba(56,83,128,1) 52%, rgba(55,146,216,1) 100%, rgba(78,153,211,1) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(226,238,255,1)), color-stop(18%,rgba(140,179,209,1)), color-stop(47%,rgba(78,153,211,1)), color-stop(52%,rgba(56,83,128,1)), color-stop(100%,rgba(55,146,216,1)), color-stop(100%,rgba(78,153,211,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  rgba(226,238,255,1) 0%,rgba(140,179,209,1) 18%,rgba(78,153,211,1) 47%,rgba(56,83,128,1) 52%,rgba(55,146,216,1) 100%,rgba(78,153,211,1) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  rgba(226,238,255,1) 0%,rgba(140,179,209,1) 18%,rgba(78,153,211,1) 47%,rgba(56,83,128,1) 52%,rgba(55,146,216,1) 100%,rgba(78,153,211,1) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  rgba(226,238,255,1) 0%,rgba(140,179,209,1) 18%,rgba(78,153,211,1) 47%,rgba(56,83,128,1) 52%,rgba(55,146,216,1) 100%,rgba(78,153,211,1) 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  rgba(226,238,255,1) 0%,rgba(140,179,209,1) 18%,rgba(78,153,211,1) 47%,rgba(56,83,128,1) 52%,rgba(55,146,216,1) 100%,rgba(78,153,211,1) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2eeff', endColorstr='#4e99d3',GradientType=0 ); /* IE6-9 */
+            box-shadow: 0px 0px 10px 0px #183a50;
+        }
+
+        div.LCHwrapper {
+            position:relative;
+            margin:5px;
+            border:1px solid #7d8e98;
+            border-radius:4px;
+        }
+
+        h2.progress {
+            color:#ffffff;
+        }
+
+        img.delete {
+            position:absolute;
+            right:2px;
+            cursor: pointer;
+        }
+    </style>
+    <!-- css -->
+    <link href="./css/input.css" rel="stylesheet" type="text/css" />
+    <link href="./css/visgraphstyles.css" rel="stylesheet" type="text/css" />
+    <link href="./css/vis.css" rel="stylesheet" type="text/css" />
+
+    <link href="./css/global.css" rel="stylesheet" type="text/css" />
+
+
+    <!--main libraries-->
+    <script language="JavaScript" src="./js/polyfill-done.js"></script>
+    <script language="JavaScript" src="./js/eve.js"></script>
+
+    <!--agents-->
+    <script language="JavaScript" src="./js/agents/simulationAgent.js"></script>
+
+    <script language="JavaScript">
+        // configure eve
+        var EVE_ADDRESS = 'http://address here';
+
+        eve.system.init({
+            transports: [
+                {
+                    type: 'local'
+                },
+                {
+                    type: 'http'
+                }
+            ]
+        });
+
+        // load the communications agent that handles the RPC calls
+        var simAgent = new SimulationAgent('sim');
+
+        // init the agent when the gui is loaded so the buttons can be toggled
+        function onLoad() {
+            simAgent.init();
+        }
+
+    </script>
+
+</head>
+<body onload="onLoad()">
+
+
+<div class="topBanner">
+</div>
+
+<div class="topSubBanner"></div>
+<div class="topSubBanner2"></div>
+<div class="menuBanner" id="blueprint">
+    <a href="#modeSelector" class="transparent"><div class="menuItem">Simulation Control</div></a>
+</div>
+<div class="inertiaContent">
+    <div class="progressBarWrapper" id="progressBarWrapper">
+        <div class="progressBarOuterContainer">
+        <h2 class="progress">Progress:</h2>
+        <div class="progressBarBorder">
+            <div class="progressBar" id="progressBar"></div>
+        </div>
+        </div>
+    </div>
+    <div class="ButtonWrapper">
+        <h1>Simulation Scenario</h1>
+        <table class="simTable">
+            <tr><td>name</td><td><input id="name"></td></tr>
+            <tr><td>start time</td><td><input id="startTime" value="YYYY-MM-DD HH:mm:ss"></td></tr>
+            <tr><td>duration</td><td><input id="duration"></td></tr>
+            <tr><td>pace</td><td><input id="pace"></td></tr>
+        </table>
+        <h3>LCH meso<img src="./images/add.png" onclick="simAgent.addMesoLCH()"></h3>
+        <div id="LCHMesoContainer" class="subcontainer">
+
+        </div>
+        <h3>LCH micro<img src="./images/add.png" onclick="simAgent.addMicroLCH()"></h3>
+        <div id="LCHMicroContainer" class="subcontainer">
+
+        </div>
+        <br />
+        <div class="typeButton selected" onclick="simAgent.startSimulation();" id="btn2">Start Simulation</div>
+    </div>
+</div>
+<div class="bottomBanner1"></div>
+<div class="bottomBanner2"></div>
+<div class="bottomBanner3">&copy; INERTIA Project 2013</div>
+</body>
+</html>
