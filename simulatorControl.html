@@ -5,7 +5,7 @@
     <style>
         div.typeButton {
             display:inline-block;
-            width:150px;
+           // width:150px;
             height:24px;
             border:2px solid #ffffff;
             border-radius: 40px;
@@ -22,15 +22,21 @@
             user-select: none;
             cursor:pointer;
             margin:5px;
+            padding:5px;
+            vertical-align:center;
             box-shadow: rgba(50,50,50,0.3) 0px 0px 3px;
         }
 
-        div.typeButton.selected {
+        div.typeButton:hover {
             background-color: #3792d8;
             color: #ffffff;
         }
 
-
+        div.typeButton.start {
+            position:absolute;
+            right:2px;
+        }
+ 
         div.ButtonWrapper {
             width:600px;
             min-height:200px;
@@ -38,20 +44,16 @@
             padding-top:100px;
         }
 
-        div.subcontainer {
+        .subcontainer {
             margin-left:20px;
-            min-height:50px;
+            min-height:20px;
             background-color: #d1eeff;
-            border-radius:5px;
+            border-radius:3px;
             padding:3px;
         }
 
         div.inertiaContent {
             padding-bottom:20px;
-        }
-
-        table.simTable {
-            margin-left:20px;
         }
 
         div.progressBarWrapper {
@@ -110,11 +112,20 @@
         h2.progress {
             color:#ffffff;
         }
-
-        img.delete {
-            position:absolute;
-            right:2px;
-            cursor: pointer;
+        
+        th.leftColumn {
+            width: 70px;
+        	text-align: right;
+        	margin-right: 5px;
+        }
+       
+        body {
+        	cursor: default;
+        }
+        
+        textarea {
+        	min-width: 100%;
+            min-height:150px;
         }
     </style>
     <!-- css -->
@@ -179,27 +190,51 @@
         </div>
     </div>
     <div class="ButtonWrapper">
-        <h1>Simulation Scenario</h1>
-        <table class="simTable">
-            <tr><td>name</td><td><input id="name"></td></tr>
-            <tr><td>start time</td><td><input id="startTime" value="YYYY-MM-DD HH:mm:ss"></td></tr>
-            <tr><td>duration</td><td><input id="duration"></td></tr>
-            <tr><td>pace</td><td><input id="pace"></td></tr>
+         <table class="subcontainer" width="100%">
+            <tr title="Scenario setup name"><th class="leftColumn">Name</th><td><input id="name" value="MyScenarioSetup" onFocus="this.select();"></td>
+            <td rowSpan="4" align="right"><div class="typeButton" onclick="simAgent.startSimulation();" id="startBtn" align="right">Start Simulation</div></td></tr>
+            <tr title="Scenario start time, e.g. '2015-10-01 00:00:00'"><th class="leftColumn">Start time</th><td><input id="startTime" value="2015-10-01 00:00:00" onFocus="this.select();"></td></tr>
+            <tr title="Scenario duration as ISO period, e.g. 'P100D' or 'PT20H'"><th class="leftColumn">Duration</th><td><input id="duration" value="P100D" onFocus="this.select();"></td></tr>
+            <tr title="Speed factor in relation to real time, e.g. 1.0 = actual speed"><th class="leftColumn">Pace</th><td><input id="pace" value="50" onFocus="this.select();"></td></tr>
+            <tr title="DSO settings"><th class="leftColumn" vAlign="top">DSO</th><td colSpan=2><textarea id="'+areaID+'">{
+	"dso-scenario-file": "file1.csv",
+	"economy-noise-distribution": {
+		"daily-extremes": [0.9, 1.1],
+		"weekly-extremes": [0.95, 1.05],
+	},
+	"imbalance-risk-events": [
+		{
+			"start-time": "P20D",
+			"duration": "PT2H",
+			"participation-factor": 0.2
+		},
+		{
+			"start-time": "P40D",
+			"duration": "PT2H",
+			"participation-factor": 0.4
+		},
+		{
+			"start-time": "P60D",
+			"duration": "PT2H",
+			"participation-factor": 0.6
+		},
+		{
+			"start-time": "P80D",
+			"duration": "PT2H",
+			"participation-factor": 0.8
+		},
+	]
+}</textarea></td></tr>
+
         </table>
-        <h3>LCH meso<img src="./images/add.png" onclick="simAgent.addMesoLCH()"></h3>
-        <div id="LCHMesoContainer" class="subcontainer">
-
+        <div class="typeButton" onClick="simAgent.addMesoLCH()">Add Meso LCH <img src="./images/add.png"/></div> 
+        <div class="typeButton" onClick="simAgent.addMicroLCH()">Add Micro LCH <img src="./images/add.png"/></div>
+        <div id="LCHContainer" class="subcontainer">
         </div>
-        <h3>LCH micro<img src="./images/add.png" onclick="simAgent.addMicroLCH()"></h3>
-        <div id="LCHMicroContainer" class="subcontainer">
-
-        </div>
-        <br />
-        <div class="typeButton selected" onclick="simAgent.startSimulation();" id="btn2">Start Simulation</div>
     </div>
 </div>
 <div class="bottomBanner1"></div>
 <div class="bottomBanner2"></div>
-<div class="bottomBanner3">&copy; INERTIA Project 2013</div>
+<div class="bottomBanner3">&copy; <a class="transparent" href="http://www.inertia-project.eu">INERTIA Project</a></div>
 </body>
 </html>
