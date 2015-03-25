@@ -45,7 +45,7 @@
         }
 
         .subcontainer {
-            margin-left:20px;
+          //  margin-left:20px;
             min-height:20px;
             background-color: #d1eeff;
             border-radius:3px;
@@ -127,11 +127,18 @@
         	min-width: 100%;
             min-height:150px;
         }
+        
+        #mynetwork {
+			width: 100%;
+			height: 600px;
+			//border: 1px solid lightgray;
+		}
+        
     </style>
     <!-- css -->
     <link href="./css/input.css" rel="stylesheet" type="text/css" />
     <link href="./css/visgraphstyles.css" rel="stylesheet" type="text/css" />
-    <link href="./css/vis.css" rel="stylesheet" type="text/css" />
+    <link href="./css/vis.min.css" rel="stylesheet" type="text/css" />
 
     <link href="./css/global.css" rel="stylesheet" type="text/css" />
 
@@ -139,7 +146,8 @@
     <!--main libraries-->
     <script language="JavaScript" src="./js/polyfill-done.js"></script>
     <script language="JavaScript" src="./js/eve.js"></script>
-
+    <script language="JavaScript" src="./js/vis.min.js"></script>
+ 
     <!--agents-->
     <script language="JavaScript" src="./js/agents/simulationAgent.js"></script>
 
@@ -164,7 +172,83 @@
         function onLoad() {
             // could be used to setup a ws connection? Empty function at the moment.
             simAgent.init();
+            draw();
         }
+        
+         var nodes = null;
+	var edges = null;
+    var network = null;
+    var edgeColor = '#3792d8';//'#CCCCCC';
+
+    var DIR = 'images/';
+    var LENGTH_MAIN = 150;
+    var LENGTH_SUB = 50;
+
+    // Called when the Visualization API is loaded.
+    function draw() {
+      // Create a data table with nodes.
+      nodes = new vis.DataSet();
+      // Create a data table with links.
+      edges = new vis.DataSet();
+
+      nodes.add({id: 'DSO', label: 'DSO', title: 'Distribution System Operator', shape: 'image', image: DIR + 'svg/power47.svg'});
+      
+      //nodes.add({id: 'Fossil', label: 'Fossil', title: 'Fossil fuels', shape: 'image', image: DIR + 'svg/manufacture.svg'});
+	  //edges.add({from: 'Fossil', to: 'DSO', value: 4,  title: '2.3040 MW', color: edgeColor});
+	  
+      //nodes.add({id: 'Hydro', label: 'Hydro', title: 'Hydro', shape: 'image', image: DIR + 'svg/beach16.svg'});
+	  //edges.add({from: 'Hydro', to: 'DSO', value: 4,  title: '2.3040 MW', color: edgeColor});
+	  
+      //nodes.add({id: 'Bio', label: 'Biofuel', title: 'Bio fuels', shape: 'image', image: DIR + 'svg/green3.svg'});
+	  //edges.add({from: 'Bio', to: 'DSO', value: 4, title: '2.3040 MW', color: edgeColor});
+	  
+      //nodes.add({id: 'Solar', label: 'Solar', title: 'Solar Park', shape: 'image', image: DIR + 'svg/solar6.svg'});
+	  //edges.add({from: 'Solar', to: 'DSO', value: 4, title: '2.3040 MW', color: edgeColor});
+	  
+      //nodes.add({id: 'Wind', label: 'Wind', title: 'Wind Turbine', shape: 'image', image: DIR + 'svg/wind15.svg'});
+	  //edges.add({from: 'Wind', to: 'DSO', value: 4, title: '2.3040 MW', color: edgeColor});
+	  
+      nodes.add({id: 'VA', label: "Mitigator", title: 'Imbalance Risk Mitigator/Analyst', shape: 'image', image: DIR + 'svg/two205.svg'});
+	  edges.add({from: 'VA', to: 'ACH', value: 1, title: 'Flex DR', color: edgeColor});
+	  
+      nodes.add({id: 'ACH', label: 'ACH', title: 'Aggregator Control Hub', shape: 'image', image: DIR + 'svg/power48.svg'});
+	  edges.add({from: 'DSO', to: 'ACH', value: 3,  title: "Power & Flex DR", color: edgeColor});
+	  
+      nodes.add({id: 'MicroMV', label: 'Micro MV', title: 'Medium Voltage point for micro-sim virtual LCHs', shape: 'image', image: DIR + 'svg/warning21.svg'});
+	  edges.add({from: 'ACH', to: 'MicroMV', value: 2, title: 'Power & Flex DR', color: edgeColor});
+	  
+      nodes.add({id: 'MesoMV', label: 'Meso MV', title: 'Medium Voltage point for meso-sim virtual LCHs', shape: 'image', image: DIR + 'svg/warning21.svg'});
+	  edges.add({from: 'ACH', to: 'MesoMV', value: 2, title: 'Power & Flex DR', color: edgeColor});
+	  
+      nodes.add({id: 'MixedMV', label: 'Mixed MV', title: 'Medium Voltage point for mixed virtual LCHs', shape: 'image', image: DIR + 'svg/warning21.svg'});
+	  edges.add({from: 'ACH', to: 'MixedMV', value: 2, title: 'Power & Flex DR', color: edgeColor});
+	  
+      nodes.add({id: 'PilotMV', label: 'Pilot MV', title: 'Medium Voltage point for pilot sites', shape: 'image', image: DIR + 'svg/warning21.svg'});
+	  edges.add({from: 'ACH', to: 'PilotMV', value: 2, title: 'Power & Flex DR', color: edgeColor});
+
+      //nodes.add({id: 'Coop', label: 'Cooperation', title: 'Cooperation', shape: 'image', image: DIR + 'svg/business128.svg'});
+	  //edges.add({from: 'Coop', to: 'MV', value: 1, title: '2.3040 MW', color: edgeColor});
+
+	  var lchID = 'certh';
+
+	  nodes.add({id: lchID, label: "\nCERTH Facility\n(pilot)", title: 'Actual Local Control Hub', shape: 'image', image: DIR + 'svg/building33.svg'});
+	  edges.add({id: lchID, from: 'PilotMV', to: lchID, value: 2, title: '2.3040 MW', color: edgeColor});
+	  
+      // create a network
+      var container = document.getElementById('mynetwork');
+      var data = {
+        nodes: nodes,
+        edges: edges,
+        groups: {
+        }
+      };
+      var options = {
+      edges:{fontStrokeWidth:2,color:'#3792d8'},
+      nodes:{fontStrokeWidth:2},
+        stabilize: false   // stabilize positions before displaying
+      };
+      network = new vis.Network(container, data, options);
+    }
 
     </script>
 
@@ -227,8 +311,9 @@
 }</textarea></td></tr>
 
         </table>
-        <div class="typeButton" onClick="simAgent.addMesoLCH()">Add Meso LCH <img src="./images/add.png"/></div> 
-        <div class="typeButton" onClick="simAgent.addMicroLCH()">Add Micro LCH <img src="./images/add.png"/></div>
+        <div class="typeButton" onClick="simAgent.addMesoLCH(network)">Add Meso LCH <img src="./images/add.png"/></div> 
+        <div class="typeButton" onClick="simAgent.addMicroLCH(network)">Add Micro LCH <img src="./images/add.png"/></div>
+  		<div id="mynetwork"></div>
         <div id="LCHContainer" class="subcontainer">
         </div>
     </div>

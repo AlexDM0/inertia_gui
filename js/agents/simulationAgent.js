@@ -14,6 +14,13 @@ function SimulationAgent(id) {
   this.DERid = 0;
   this.LCHdata = {};
   this.DERtemplates = {};
+  this.DERTypes = [
+	{name:'light', image:'svg/light-bulb6.svg'},
+	{name:'hvac', image:'svg/airconditioner.svg'},
+	{name:'outlet', image:'svg/electrical10.svg'},
+	{name:'storage', image:'svg/electric58.svg'},
+	{name:'generator', image: 'svg/engine.svg'}
+  ];
 }
 
 
@@ -161,20 +168,27 @@ SimulationAgent.prototype.removeLCH = function(id) {
   if(!confirm('Are you sure, permanently delete setup of LCH '+id+'?')) return;
   var div = document.getElementById(id + "_container")
   div.parentNode.removeChild(div);
+  
+  nodes.remove('lch_'+id);
+  edges.remove('lch_'+id);
+  network.zoomExtent();
+
   delete this.LCHdata[id];
 }
 
-//add DER in DOM and data
+// add DER in DOM and data
 SimulationAgent.prototype.resetDERFromTemplate = function(areaId, tplId) {
 	  var area = document.getElementById(areaId);
 	  area.setValue(this.DERTemplates[tplId]);
 }
 
-//add DER in DOM and data
+// add DER in DOM and data
 SimulationAgent.prototype.addDER = function(id) {
   var container = document.getElementById(id + "_DERcontainer");
   var div = document.createElement("div");
-  var areaID = 'lch_' + id + '_' + this.DERid + '_kv';
+  var lchID = 'lch_' + id;
+  var derID = lchID + '_' + this.DERid;
+  var areaID = derID + '_kv';
   var tplButtons = '&lArr; template: <select onChange="resetDERFromTemplate(\''+areaID+'\',this.value);">';
   for(var i in {'Lights':'bla','HVACs':'bla','Appliances':'bla','Generators':'bla'})
   {
@@ -217,6 +231,14 @@ SimulationAgent.prototype.addDER = function(id) {
   div.innerHTML = content;
   div.className = 'LCHwrapper';
   container.appendChild(div);
+  
+  var derIndex = Math.floor(Math.random()*this.DERTypes.length);
+  var derType = this.DERTypes[derIndex];
+  
+  // add node to graph
+  nodes.add({id: derID, label: "\nDER "+this.DERid+"\n("+derType.name+")", title: 'Distributed Energy Resource '+this.DERid+': '+derType.name, shape: 'image', image: DIR + derType.image});
+  edges.add({id: derID, from: lchID, to: derID, value: 0, title: '2.3040 MW', color: edgeColor});
+  network.zoomExtent();
 
   this.LCHdata[id]['DERs'][this.DERid] = {id: this.DERid, data: null, file: null};
   this.DERid += 1;
@@ -225,8 +247,14 @@ SimulationAgent.prototype.addDER = function(id) {
 // removce DER from data and DOM
 SimulationAgent.prototype.removeDER = function(LCHid, DERid) {
 	  if(!confirm('Are you sure, permanently delete setup of DER '+DERid+' from LCH '+LCHid+'?')) return;
-  var div = document.getElementById('lch_' + LCHid + '_' + DERid + '_div')
+	  var derID = 'lch_' + LCHid + '_' + DERid;
+	  var div = document.getElementById(derID + '_div')
   div.parentNode.removeChild(div);
+  
+  nodes.remove(derID);
+  edges.remove(derID);
+  network.zoomExtent();
+
   delete this.LCHdata[LCHid]["DERs"][DERid];
 }
 
@@ -234,10 +262,11 @@ SimulationAgent.prototype.removeDER = function(LCHid, DERid) {
 /**
  * adds a DOM element to the page for a MESO LCH
  */
-SimulationAgent.prototype.addMesoLCH = function() {
+SimulationAgent.prototype.addMesoLCH = function(network) {
   var container = document.getElementById("LCHContainer");
   var div = document.createElement("div");
-  var areaID = 'lch_' + this.LCHid + '_kv';
+  var lchID = 'lch_' + this.LCHid;
+  var areaID = lchID + '_kv';
   var tplButtons = '';
   for(var i in {'SmallArea':'bla','MediumArea':'bla','LargeArea':'bla'})
 	  tplButtons += 
@@ -283,7 +312,21 @@ SimulationAgent.prototype.addMesoLCH = function() {
   div.innerHTML = content;
   div.className = 'LCHwrapper';
   container.appendChild(div);
+  
+  // add node to graph
+  nodes.add({id: lchID, label: "\nFacility "+this.LCHid+"\n(emulator)", title: 'Meso Local Control Hub '+this.LCHid, shape: 'image', image: DIR + 'svg/building33.svg'});
+  edges.add({id: lchID, from: 'MesoMV', to: lchID, value: 2, title: '2.3040 MW', color: edgeColor});
+  network.zoomExtent();
 
+//  for(var i in this.DERTypes)
+//  {
+//	  var derType = this.DERTypes[i];
+//	  var derID = lchID + '_' + this.DERid;
+//	  nodes.add({id: derID, label: "\nDER "+this.DERid+"\n(Total "+derType.name+")", title: 'DER '+this.DERid+': Total '+derType.name, shape: 'image', image: DIR + derType.image});
+//	  edges.add({id: derID, from: lchID, to: derID, value: 0, label: "Power &\nFlex DR", title: '2.3040 MW'});
+//	  this.DERid++;
+//  }
+  
   this.LCHdata[this.LCHid] = {type:"meso"};
   this.LCHid += 1;
 }
@@ -294,6 +337,7 @@ SimulationAgent.prototype.addMesoLCH = function() {
  */
 SimulationAgent.prototype.addMicroLCH = function() {
   var container = document.getElementById("LCHContainer");
+  var lchID = 'lch_' + this.LCHid;
   var div = document.createElement("div");
   var content = 
     '<table class="LCHtable" width="100%">' +
@@ -306,6 +350,11 @@ SimulationAgent.prototype.addMicroLCH = function() {
   div.innerHTML = content;
   div.className = 'LCHwrapper';
   container.appendChild(div);
+  
+  // add node to graph
+  nodes.add({id: lchID, label: "\nFacility "+this.LCHid+"\n(simulator)", title: 'Virtual Local Control Hub '+this.LCHid, shape: 'image', image: DIR + 'svg/family24.svg'});
+  edges.add({id: lchID, from: 'MicroMV', to: lchID, value: 1, title: '2.3040 MW', color: edgeColor});
+  network.zoomExtent();
 
   this.LCHdata[this.LCHid] = {type:"micro", DERs:{}};
   this.LCHid += 1;
