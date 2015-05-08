@@ -133,6 +133,10 @@ div.inertiaContent {
     background-color: #ffffff;
 }
 
+div.inertiaContent.small{
+    min-height:320px;
+}
+
 div.stats {
     position:relative;
     width: 970px;
@@ -378,6 +382,14 @@ div.derUI.DERrange{
     border-left: 1px #cccccc solid;
 }
 
+input.configRange {
+    width:390px;
+}
+
+div.derUI.configure{
+    width:390px;
+}
+
 div.derUI.empty{
     border-left: 0px;
     border-right: 0px;
@@ -422,10 +434,11 @@ div.lightButton.off {
     background-image: url("../images/lightbulb_off.png");
 }
 
-#informationContent {
+div.informationContent {
     border: 1px #cccccc solid;
     overflow-y:scroll;
     height:270px;
+    width:598px;
     background-color:#ffffff;
 }
 
@@ -454,19 +467,56 @@ img.loadingImage {
     display:none;
     width:600px;
     height:300px;
-    margin: -70px auto 0px auto;
+    margin: -150px auto 0px auto;
     left:150px;
     background-color: rgb(255,255,255);
     border-radius:10px;
     padding:15px;
+
     box-shadow: 0px 0px 10px #000000;
     cursor:default;
 }
 
 #informationHeader {
+    /*margin-bottom:15px;*/
+}
+
+div.informationTab {
+    width:253px;
+    float:left;
+    height:28px;
     font-size:16px;
+    line-height:30px;
     font-weight:bold;
+    text-align:left;
+    color: #8b98ae;
+    height:100%;
+    padding:0px;
+    padding-left:10px;
+    background-color: #fbfbfb;
+    border-radius:1px;
+    border: 2px solid #eaeaea;
+    border-bottom:0px;
+    cursor:pointer;
+}
+
+div.informationTab.right {
+    padding-left:0px;
+    padding-right:10px;
+    text-align:right;
+    float:right;
+}
+
+div.informationTab.active {
     color: #385380;
+    background-color:#ffffff;
+    border: 2px solid #efefef;
+    border-bottom:0px;
+    cursor:default;
+ }
+
+div.headerWrapper {
+    height:30px;
 }
 
 #calendar_iframe {
@@ -682,4 +732,13 @@ a.link1 {
     font-style:italic;
     text-decoration: underline;
     cursor:pointer;
+}
+
+table.configureTable {
+    margin: auto auto auto auto;
+}
+
+
+tr.header {
+    font-weight:bold;
 }

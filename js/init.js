@@ -32,6 +32,7 @@ var subspaceAgents = {};
 var derAgents = {};
 var portalAgent = new PortalAgent('portalAgent');
 portalAgent.getMappings()
+  .then(function () {return portalAgent.getSensorLocations();})
   .then(function () {return portalAgent.getDERs();})
   .then(function () {colorAccordingToDers();})
   .catch(function (err) {

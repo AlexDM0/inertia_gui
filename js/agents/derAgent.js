@@ -1,4 +1,5 @@
-function DERagent(id, derId, inertiaId, locations) {
+"use strict";
+function DERagent(id, inertiaId, locations) {
   // execute super constructor
   eve.Agent.call(this, id);
   // extend the agent with RPC functionality
@@ -10,22 +11,35 @@ function DERagent(id, derId, inertiaId, locations) {
   this.type = 'light';
   this.inertiaId = inertiaId;
   this.locations = locations;
-  this.derId = derId;
+  if (this.locations.length === 0) {
+    this.locations = ['__noLocation__'];
+    console.log("NO LOCATION FOR:", inertiaId);
+  }
+
+  this.targetValue = '?';
 
   this.sensors = [];
   this.sensorsObj = {};
+  this.sensorsObjHistory = {};
   this.canDim = false;
   this.canSwitch = false;
   this.canSetTemperature = false;
   this.category = 'OTHER';
+  this.baseUpdateFrequency = 60000; // 1 min
+  this.fastUpdateFrequency = 5000; // 5 sec
 
-  this.artificialSensorData = undefined;
-  this.update().done();
-
+  //this.artificialSensorData = undefined;
   var me = this;
-  var updateFrequency = 60000;
-  setInterval(function() {me.update().done();}, updateFrequency);
+  this.getData()
+    .then(function() {return me.updateHistoricalData()})
+    .then(function() {return me.updateHistory()})
+    .done();
+  this.update().done();
+  this.updateInterval = undefined;
+  this.setUpdateFrequency(this.baseUpdateFrequency);
 }
+
+
 
 // extend the eve.Agent prototype
 DERagent.prototype = Object.create(eve.Agent.prototype);
@@ -38,91 +52,68 @@ DERagent.prototype.rpcFunctions = {};
 /**
  * bind the dataset events to eve back-and-forth
  */
-DERagent.prototype.bindData = function() {
-  this.artificialSensorData.temperature.on("*", this.sendArtificialToEve.bind(this, 'temperature'));
-  this.artificialSensorData.occupancy.on("*", this.sendArtificialToEve.bind(this, 'occupancy'));
-};
+DERagent.prototype.setUpdateFrequency = function(updateFrequency) {
+  if (this.updateInterval !== undefined) {
+    clearInterval(this.updateInterval);
+  }
+
+  var me = this;
+  this.updateInterval = setInterval(function() {me.update().done();}, updateFrequency);
+}
+
+
 
 /**
- * get artificial sensor data from eve
+ * Get the DER data from EVE and send to aggregator
+ * @returns {Promise}
  */
-DERagent.prototype.getArtificialFromEve = function() {
+DERagent.prototype.updateHistoricalData = function() {
   var me = this;
-  this.rpc.request(EVE_URL + this.inertiaId, {method:'getArtificialSensors', params:{}})
-    .then(function (reply) {
-      return new Promise(function (resolve, reject) {
-        // if the reply is an filled array
-        if (typeof reply == 'object' && reply.length > 0) {
-          var start, end, value;
-          // look through all types
-          for (var i = 0; i < reply.length; i++) {
-            var data = [];
-            // we need matching pairs
-            if (reply[i].values.length % 2 == 0) {
-              for (var j = 0; j < reply[i].values.length; j++) {
-                // every first entree is the start value, every second value is the end
-                if (j % 2 == 0) {
-                  start = reply[i].values[j].timestamp;
-                  value = reply[i].values[j].value;
-                }
-                else {
-                  end = reply[i].values[j].timestamp;
-                  data.push({start: start, end: end, content: value});
-                }
+  var historicalDataFields = ['consumption', 'temperature', 'occupancy', 'humidity']
+  return new Promise(function (resolve, reject) {
+    var promisesArray = []
+    for (var i = 0; i < historicalDataFields.length; i++) {
+      var promise = new Promise(function (resolve2, reject2) {
+        var sensor = me.sensorsObj[historicalDataFields[i]];
+        if (sensor !== undefined) {
+          me.rpc.request(EVE_URL + me.inertiaId, {method:'getHistoricalData', params:{entityName: sensor.entityName, propertyName: sensor.name}})
+            .then(function (history) {
+              if (history.historic) {
+                me.sensorsObjHistory[history.type] = history.historic;
               }
-              me.artificialSensorData[reply[i].type] = new vis.DataSet(data);
-            }
-            else {
-              reject(new Error("Error: data is not an even number"));
-            }
-          }
+              else {
+                console.log("no historical data", me);
+              }
+              resolve2();
+            }).catch(function (err) {
+              console.error('DERagent:getHistoricalData', me.inertiaId, sensor, err);
+              reject2(err);
+            }).done();
         }
-        resolve();
+        else {
+          resolve2();
+        }
       });
-    })
-    .then(function () {
-      me.bindData();
-    }).done();
-};
-
-
-/**
- * send sorted artificial sensors data to EVE
- * @param type
- */
-DERagent.prototype.sendArtificialToEve = function(type) {
-  var sendData = [];
-  var unit = 'people';
-  var data = this.artificialSensorData[type].get({returnType:'Array'});
-
-  for (var i = 0; i < data.length; i++) {
-    var end = data[i].end;
-    if (typeof data[i].end != 'number') {
-      end = data[i].end.valueOf();
+      promisesArray.push(promise);
     }
-    sendData.push({timestamp:data[i].start.valueOf(), value:data[i].content});
-    sendData.push({timestamp:end, value:0})
-  }
-  sendData.sort(function(a,b) {return a.timestamp - b.timestamp;});
 
-  if (type == 'temperature') {
-    unit = 'C';
-  }
-  var me = this;
-  this.rpc.request(EVE_URL + this.inertiaId, {method:'addArtificialSensor', params:{type:type,unit:unit, values:sendData}})
-    .then(function () {
-      return me.update();
-    }).done();
+    Promise.all(promisesArray).then(function (reply) {
+      resolve();
+    }).catch(function (err) {
+      reject(err)
+    })
+  });
 };
 
 
 /**
- * get artificial sensor data from EVE
- * @param type
+ * Get the DER data from EVE and send to aggregator
+ * @returns {Promise}
  */
-DERagent.prototype.getArtificialToEve = function(type) {
-  this.rpc.request(EVE_URL + this.inertiaId, {method:'getArtificialSensor', params:{type:type,unit:unit, values:sendData}});
-};
+DERagent.prototype.updateHistory = function() {
+  this.register(true);
+}
+
 
 
 /**
@@ -162,12 +153,6 @@ DERagent.prototype.getData = function() {
           me.sensorsObj[me.sensors[i].type] = me.sensors[i];
         }
 
-        //me.getLiveData = true;
-        if (me.category == "SENSORS") {
-          me.artificialSensorData = {temperature: new vis.DataSet(), occupancy: new vis.DataSet()};
-          me.getArtificialFromEve();
-        }
-
         resolve();
       }).catch(function (err) {
         console.error('DERagent:getData',err);
@@ -178,7 +163,10 @@ DERagent.prototype.getData = function() {
 };
 
 
-DERagent.prototype.register = function() {
+DERagent.prototype.register = function(history) {
+  if (history === undefined) {
+    history = false;
+  }
   for (var i = 0; i < this.locations.length; i++) {
     var location = this.locations[i];
     if (spaceAgents[this.locations[i]] !== undefined && subspaceAgents[this.locations[i]] === undefined) {
@@ -186,37 +174,78 @@ DERagent.prototype.register = function() {
     }
     this.rpc.request(location, {
       method: 'register',
-      params: {data: this.sensors, derType: this.category}
-    }).done();
+      params: {data: this.sensors, derType: this.category, history: history, historicalData: this.sensorsObjHistory}
+    }).catch(function (err) {
+      console.error(err)
+    });
   }
 };
 
 DERagent.prototype.getUIElement = function(temporaryToggle) {
   var temporary = '';
-  if (temporaryToggle == true) {
+  var blocked = false;
+  if (temporaryToggle === true) {
     temporary = ' temporary';
+    blocked = true;
   }
+
+  if (this.sensorsObj['state'] !== undefined) {
+    if (this.targetValue === '?') {
+      this.targetValue = this.sensorsObj['state'].value;
+    }
+
+    if (this.sensorsObj['state'].value !== this.targetValue) {
+      temporaryToggle = true;
+      temporary = ' temporary';
+      blocked = true;
+      this.setUpdateFrequency(this.fastUpdateFrequency);
+    }
+    else {
+      this.setUpdateFrequency(this.baseUpdateFrequency);
+    }
+  }
+
+  //console.log(this.category, this.sensorsObj)
+  
   var innerHTML = '';
   switch (this.category) {
     case 'LIGHTING':
     case 'HVAC':
+    case 'BATTERY':
     case 'OTHER':
+
       var disabledTag = "_disabled";
-      if (this.canSwitch == true) {
+      if (this.canSwitch === true) {
         disabledTag = '';
       }
       innerHTML = '<div class="derUI toggle' + temporary + '"><img src="';
-      if (this.sensorsObj['state'].value == 'on')
-        innerHTML += './images/toggleOn' + disabledTag + '.png"';
-      else if (this.sensorsObj['state'].value == 'unknown') {
-        innerHTML += './images/toggleUnknown' + disabledTag + '.png"';
+      if (this.sensorsObj['state'] !== undefined) {
+        if (this.sensorsObj['state'].value === 'on')
+          innerHTML += './images/toggleOn' + disabledTag + '.png"';
+        else if (this.sensorsObj['state'].value === 'unknown') {
+          innerHTML += './images/toggleUnknown' + disabledTag + '.png"';
+        }
+        else {
+          innerHTML += './images/toggleOff' + disabledTag + '.png"';
+        }
       }
       else {
-        innerHTML += './images/toggleOff' + disabledTag + '.png"';
+        innerHTML += './images/toggleUnknown' + disabledTag + '.png"';
       }
 
-      innerHTML += 'class="toggleImage" onclick="toggleDER(\'' + this.id + '\')"></div>';
-      innerHTML += '<div class="derUI derName' + temporary + '">' + this.derId + '</div>';
+      innerHTML += 'class="toggleImage" ';
+      if (blocked === false) {
+        innerHTML += 'onclick="toggleDER(\'' + this.id + '\')"'
+      }
+      innerHTML += '></div>';
+      innerHTML += '<div class="derUI derName' + temporary + '">'
+      if (temporaryToggle === true) {
+        innerHTML += this.inertiaId + ' .. waiting';
+      }
+      else {
+        innerHTML += this.inertiaId;
+      }
+      innerHTML += '</div>';
 
       if (this.sensorsObj['consumption'] !== undefined) {
         innerHTML += '<div class="derUI power' + temporary + '">' + this.sensorsObj['consumption'].value + ' ' + this.sensorsObj['consumption'].unit + '</div>';
@@ -233,11 +262,11 @@ DERagent.prototype.getUIElement = function(temporaryToggle) {
         innerHTML += '<div class="derUI sensorData' + temporary + '">' + this.sensorsObj['temperature'].value + ' ' + this.sensorsObj['temperature'].unit + '</div>';
       }
 
-      if (this.canDim == true && temporaryToggle != true) {
+      if (this.canDim === true && temporaryToggle !== true) {
         innerHTML += '<div class="derUI text' + temporary + '">Dimming:</div><div class="derUI DERrange' + temporary + '"><input type="range" min="0" max="100" step="1" id="range' + this.id + '" onchange="updateIndicator(\'' + this.id + '\', \'%\', true);" oninput="updateIndicator(\'' + this.id + '\',\'%\', false);" value="'+this.sensorsObj['dimLevel'].value+'" >' +
         '<span class="rangeAssistant"  id="rangeNumber' + this.id + '">' + this.sensorsObj['dimLevel'].value + '%</span>';
       }
-      else if (this.canSetTemperature == true && temporaryToggle != true) {
+      else if (this.canSetTemperature === true && temporaryToggle !== true) {
         innerHTML += '<div class="derUI text' + temporary + '">Set temp:</div><div class="derUI DERrange' + temporary + '"><input type="range" min="15" max="35"  step="1" id="range' + this.id + '" onchange="updateIndicator(\'' + this.id + '\',\'&deg;C\', true);" oninput="updateIndicator(\'' + this.id + '\',\'&deg;C\', false);" value="'+this.sensorsObj['setTemperature'].value+'">' +
         '<span class="rangeAssistant"  id="rangeNumber' + this.id + '">' + this.sensorsObj['setTemperature'].value + '&deg;C</span>';
       }
@@ -263,30 +292,32 @@ DERagent.prototype.rpcFunctions.getUIElement = function(params) {
 };
 
 DERagent.prototype.toggle = function() {
-  if (this.canSwitch == true && this.refreshedData == true) {
+  if (this.canSwitch === true && this.refreshedData === true) {
     var method = 'switchOff';
-    if (this.sensorsObj['state'].value == 'on') {
-      this.sensorsObj['state'].value = 'off';
+    if (this.sensorsObj['state'].value === 'on') {
+      this.targetValue = 'off';
+      //this.sensorsObj['state'].value = 'off';
     }
     else {
-      this.sensorsObj['state'].value = 'on';
+      this.targetValue = 'on';
+      //this.sensorsObj['state'].value = 'on';
       method = 'switchOn';
     }
-    this.updateDerUI();
+    this.updateDerUI(true);
     this.rpc.request(EVE_URL + this.inertiaId,{method:method, params:{}}).done();
   }
 };
 
 DERagent.prototype.updateRange = function(value) {
-  if (this.refreshedData == true) {
+  if (this.refreshedData === true) {
     var method = undefined;
     var paramName = undefined;
-    if (this.canDim == true) {
+    if (this.canDim === true) {
       method = 'setDimLevel';
       paramName = 'dimlevel';
       this.sensorsObj['dimLevel'].value = value;
     }
-    else if (this.canSetTemperature == true) {
+    else if (this.canSetTemperature === true) {
       method = 'setTemperature';
       paramName = 'temperature';
       this.sensorsObj['setTemperature'].value = value;
@@ -305,9 +336,4 @@ DERagent.prototype.updateDerUI = function(temporary) {
   if (divElement) {
     divElement.innerHTML = this.getUIElement(temporary);
   }
-};
-
-
-DERagent.prototype.getDataSet = function(type) {
-  return this.artificialSensorData[type];
 };

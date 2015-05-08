@@ -8,13 +8,14 @@ function FacilityManager(id) {
   // connect to all transports provided by the system
   this.connect(eve.system.transports.getAll());
 
-  this.profile = "pending"
-  this.profiles = ['Free running','Comfort optimization', 'Energy conservation', 'Contract'];
-  this.profilesLabels = ['Free running','Flexibility optimization', 'Energy conservation', 'Contract'];
+  this.profile = "pending";
+  this.profiles = ['Abstain','Vacant','Economy','Comfort'];
+  this.profilesLabels = ['Abstain','Vacant','Economy','Comfort'];
   this.information = {
-    'Free running': 'The GUI can be used to toggle DERs.',
-    'Comfort optimization': 'DERs are switched automatically to maximize flexibility through comfort optimization.',
-    'Energy conservation': 'DERs are switched automatically to conserve energy.',
+    'Abstain': 'Abstain, need explaination.',
+    'Vacant': 'Vacant, need explaination.',
+    'Economy': 'Economy, need explaination.',
+    'Comfort': 'Comfort, need explaination.',
     'Contract': 'Contract mode locked in. <a class="link1" onclick="loadContract()">View contract details here <img class="icon" src="./images/chart_curve.png" />.</a>'
   }
 
@@ -43,6 +44,7 @@ function FacilityManager(id) {
     }};
 
   this.getProfile();
+  this.getControlStrategy();
   var me = this;
   var updateFrequency = 2000;
   setInterval(function() {me.getProfile();}, updateFrequency);
@@ -66,7 +68,11 @@ FacilityManager.prototype.updateHTML = function() {
     if (this.profile == 'Contract') {
       lock = 'disabled';
     }
+
     var innerHTML ='<select onchange="updateFacilityProfile();" '+lock+' id="facilityProfileSelector">';
+    if (this.profile == 'Contract') {
+      innerHTML +='<option value="Contract" selected="selected">' + 'Contract' + '</option>';
+    }
     for (var i = 0; i < this.profiles.length; i++) {
       innerHTML +='<option value="' + this.profiles[i] +'" ' + (this.profile == this.profiles[i] ? 'selected="selected"' : '') + '>' + this.profilesLabels[i] + '</option>';
     }
@@ -105,10 +111,36 @@ FacilityManager.prototype.getProfile = function() {
   var me = this;
   this.rpc.request(EVE_URL + "holistic", {method:'getModus', params:{}})
     .then(function(reply) {
+      var updateHTML = true;
+      if (me.profile !== reply) {
+        updateHTLM = false;
+      }
       me.profile = reply;
       me.processProfile();
-      me.updateHTML();
+      if (updateHTML === true) {
+        me.updateHTML();
+      }
+
     }).done();
+}
+
+FacilityManager.prototype.getControlStrategy = function() {
+  this.rpc.request(EVE_URL + "mgr", {method:'getCategoryProportions', params:{}})
+    .then(function(reply) {
+      for (var key in reply) {
+        var range = document.getElementById("range" + key);
+        if (range) {
+          range.value = 100*reply[key];
+        }
+      }
+    }).done();
+}
+
+
+FacilityManager.prototype.setControlStrategy = function(rangeObject) {
+  var category = rangeObject.id.replace('range','');
+  var value = rangeObject.value / 100;
+  this.rpc.request(EVE_URL + "mgr", {method:'setCategoryProportions', params:{category:category, proportion:value}}).done();
 }
 
 FacilityManager.prototype.processData = function(data) {

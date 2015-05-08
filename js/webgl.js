@@ -4,7 +4,7 @@
 
 function loadJSON(path, success, error) {
   var xhr = new XMLHttpRequest();
-  xhr.onreadystatechange = function() {
+  xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
         success(xhr.responseText);
@@ -21,10 +21,12 @@ function loadJSON(path, success, error) {
 if (!window.requestAnimationFrame) {
   window.requestAnimationFrame =
     window.webkitRequestAnimationFrame ||
-      window.mozRequestAnimationFrame    ||
-      window.oRequestAnimationFrame      ||
-      window.msRequestAnimationFrame     ||
-      function(cb, element) {window.setTimeout(cb, 1000 / 60);};
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function (cb, element) {
+      window.setTimeout(cb, 1000 / 60);
+    };
 }
 
 var container;
@@ -36,14 +38,28 @@ var winHalfW;
 
 var activeFloorNumber = 0;
 var borderSize = 0;
-var focusOnClick = [1,1,1];
-var highlightFocus = {"0":[-6,-2,15],"1":[9.7,6.7,15]};
-var normalFocus = {"0":[4.95,-1.6,23],"1":[21,7,23]};
-var focus = {"0":[4.95,-1.6,23],"1":[21,7,23]};
+var focusOnClick = [1, 1, 1];
+var highlightFocus = {"0": [-6, -2, 15], "1": [9.7, 6.7, 15]};
+var normalFocus = {"0": [4.95, -1.6, 23], "1": [21, 7, 23]};
+var focus = {"0": [4.95, -1.6, 23], "1": [21, 7, 23]};
 var theta = 0.001;
 var phi = -0.5 * Math.PI;
 var selectedRoom = undefined;
+var showMap = true;
 
+
+
+function cleanupWebGl() {
+  document.getElementById("buildingHistory").style.display = 'none';
+  document.getElementById("otherDERs").style.display = 'none';
+  document.getElementById("loadingIndicator").style.display = "none";
+  vis.DOMutil.prepareElements(htmlContainer);
+  vis.DOMutil.cleanupElements(htmlContainer);
+  var oldCanvas = document.getElementById("webglMapping");
+  if (oldCanvas !== null) {
+    container.removeChild(oldCanvas)
+  }
+}
 
 /**
  *
@@ -51,6 +67,12 @@ var selectedRoom = undefined;
  * @param floorNumber
  */
 function webglInit(gbxmlData, floorNumber) {
+  cleanupWebGl();
+  showMap = true;
+
+  document.getElementById("buildingHistory").style.display = 'none';
+  document.getElementById("otherDERs").style.display = 'none';
+
   container = document.getElementById('mapContainer');
   winDims = [container.offsetWidth, container.offsetHeight];
   winHalfW = winDims[0] / 2;
@@ -61,43 +83,41 @@ function webglInit(gbxmlData, floorNumber) {
   activeFloorNumber = floorNumber;
 
   //setup renderer
-  renderer = new THREE.WebGLRenderer({antialias:true, alpha:false});
-  renderer.setSize((container.offsetWidth-2*borderSize), container.offsetHeight-2*borderSize);
-  renderer.setClearColor( 0xffffff, 0);
-
-  var oldCanvas = document.getElementById("webglMapping");
-  if (oldCanvas !== null) {
-    container.removeChild(oldCanvas)
-  }
+  renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
+  renderer.setSize((container.offsetWidth - 2 * borderSize), container.offsetHeight - 2 * borderSize);
+  renderer.setClearColor(0xffffff, 0);
 
   renderer.domElement.id = "webglMapping";
   container.insertBefore(renderer.domElement, container.children[0]);
 
-  camera = new THREE.PerspectiveCamera(45, (container.offsetWidth-2*borderSize)/(container.offsetHeight-2*borderSize), 0.1, 1000);
+  camera = new THREE.PerspectiveCamera(45, (container.offsetWidth - 2 * borderSize) / (container.offsetHeight - 2 * borderSize), 0.1, 1000);
   scene = new THREE.Scene();
 
   var group = new THREE.Group();
   group.position.y = 0;
-  scene.add( group );
+  scene.add(group);
 
-  document.getElementById("loadingIndicator").style.display = "none";
   for (var i = 0; i < rooms.length; i++) {
     var groundplane = new THREE.Shape();
     for (var j = 0; j < rooms[i].coordinates.length; j++) {
       var point = rooms[i].coordinates[j];
-      if (j == 0) {groundplane.moveTo(point.x, point.y);}
-      else        {groundplane.lineTo(point.x, point.y);}
+      if (j == 0) {
+        groundplane.moveTo(point.x, point.y);
+      }
+      else {
+        groundplane.lineTo(point.x, point.y);
+      }
     }
     var material = new THREE.MeshBasicMaterial({color: 0xbbbbbb, overdraw: 0});
-    var geometry = new THREE.ShapeGeometry( groundplane );
+    var geometry = new THREE.ShapeGeometry(groundplane);
     var geo = new THREE.Mesh(geometry, material);
     geo.spaceIdRef = rooms[i].spaceIdRef;
     geometryArray.push(geo);
     group.add(geo);
   }
 
-  camera.up = new THREE.Vector3(0,0,1);
-  renderer.domElement.addEventListener( 'mousedown', selectArea, false );
+  camera.up = new THREE.Vector3(0, 0, 1);
+  renderer.domElement.addEventListener('mousedown', selectArea, false);
   colorAccordingToDers();
   prepareCamera();
   renderer.render(scene, camera);
@@ -111,17 +131,17 @@ function webglInit(gbxmlData, floorNumber) {
 function selectArea(event) {
   var containerProps = container.getBoundingClientRect();
   var vector = new THREE.Vector3(
-    ( (event.x - containerProps.left) / containerProps.width ) * 2 - 1 ,
-    - ( (event.y - containerProps.top) / containerProps.height ) * 2 + 1 ,
+    ( (event.x - containerProps.left) / containerProps.width ) * 2 - 1,
+    -( (event.y - containerProps.top) / containerProps.height ) * 2 + 1,
     0.5
   );
   vector.unproject(camera);
 
-  var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize(),0,1000);
+  var ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize(), 0, 1000);
 
   var intersects = ray.intersectObjects(geometryArray);
 
-  if ( intersects.length > 0 ) {
+  if (intersects.length > 0) {
     clickedRoom(intersects[0].object.spaceIdRef);
     for (var i = 0; i < intersects.length; i++) {
       intersects[i].object.material.color.setHex(0xffb400);
@@ -157,7 +177,7 @@ function moveView() {
   prepareCamera();
   renderer.render(scene, camera);
   updateTextDivs();
-  setTimeout(updateTextDivs,0);
+  setTimeout(updateTextDivs, 0);
 }
 
 
@@ -165,7 +185,7 @@ function prepareCamera() {
   camera.position.x = Math.sin(theta) * Math.cos(phi) * focus[activeFloorNumber][2] + focus[activeFloorNumber][0];
   camera.position.y = Math.sin(theta) * Math.sin(phi) * focus[activeFloorNumber][2] + focus[activeFloorNumber][1];
   camera.position.z = Math.cos(theta) * focus[activeFloorNumber][2];
-  camera.lookAt(new THREE.Vector3(focus[activeFloorNumber][0],focus[activeFloorNumber][1],0));
+  camera.lookAt(new THREE.Vector3(focus[activeFloorNumber][0], focus[activeFloorNumber][1], 0));
 }
 
 function webglRender() {
@@ -174,10 +194,10 @@ function webglRender() {
   renderer.render(scene, camera);
 }
 
-function toScreenXY( position, camera, div ) {
+function toScreenXY(position, camera, div) {
   var pos = position.clone();
   projScreenMat = new THREE.Matrix4();
-  projScreenMat.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);
+  projScreenMat.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
   pos.applyProjection(projScreenMat);
   var boundingRect = div.getBoundingClientRect();
   var res = {
@@ -188,30 +208,31 @@ function toScreenXY( position, camera, div ) {
 }
 
 
-
 function updateTextDivs() {
-  vis.DOMutil.prepareElements(htmlContainer);
-  for (var i = 0; i < geometryArray.length; i++) {
-    if (geometryArray[i].spaceIdRef.indexOf("Column") == -1 && geometryArray[i].spaceIdRef.indexOf("WC") == -1 && geometryArray[i].spaceIdRef.indexOf("Storage") == -1) {
-      var posVector = new THREE.Vector3(geometryArray[i].geometry.boundingSphere.center.x, geometryArray[i].geometry.boundingSphere.center.y, 0);
-      var pos = toScreenXY(posVector, camera, container);
-      var div = vis.DOMutil.getDOMElement("div", htmlContainer, container, container.children[1]);
-      div.className = 'roomNames';
-      div.innerHTML = geometryArray[i].spaceIdRef.replace(/[_]/g, " ") + "<div class='arrowDiv'></div>";
-      div.x = pos.x - 0.5 * div.offsetWidth;
-      div.y = pos.y - 0.9*div.offsetHeight;
-      div.index = i;
-      div.style.left = div.x + 'px';
-      var offset = getOverlapAvoidanceOffset(div.x,div.y,div.x+div.offsetWidth,div.y+div.offsetHeight, i);
-      div.style.top = div.y + offset + 'px';
+  if (showMap === true) {
+    vis.DOMutil.prepareElements(htmlContainer);
+    for (var i = 0; i < geometryArray.length; i++) {
+      if (geometryArray[i].spaceIdRef.indexOf("Column") == -1 && geometryArray[i].spaceIdRef.indexOf("WC") == -1 && geometryArray[i].spaceIdRef.indexOf("Storage") == -1) {
+        var posVector = new THREE.Vector3(geometryArray[i].geometry.boundingSphere.center.x, geometryArray[i].geometry.boundingSphere.center.y, 0);
+        var pos = toScreenXY(posVector, camera, container);
+        var div = vis.DOMutil.getDOMElement("div", htmlContainer, container, container.children[1]);
+        div.className = 'roomNames';
+        div.innerHTML = geometryArray[i].spaceIdRef.replace(/[_]/g, " ") + "<div class='arrowDiv'></div>";
+        div.x = pos.x - 0.5 * div.offsetWidth;
+        div.y = pos.y - 0.9 * div.offsetHeight;
+        div.index = i;
+        div.style.left = div.x + 'px';
+        var offset = getOverlapAvoidanceOffset(div.x, div.y, div.x + div.offsetWidth, div.y + div.offsetHeight, i);
+        div.style.top = div.y + offset + 'px';
 
-      div.onclick = selectArea.bind(this);
+        div.onclick = selectArea.bind(this);
+      }
     }
+    vis.DOMutil.cleanupElements(htmlContainer);
   }
-  vis.DOMutil.cleanupElements(htmlContainer);
 }
 
-function getOverlapAvoidanceOffset(x1,y1,x2,y2, index) {
+function getOverlapAvoidanceOffset(x1, y1, x2, y2, index) {
   for (var i = 0; i < htmlContainer.div.used.length; i++) {
     var div = htmlContainer.div.used[i];
     var dx1 = div.x;
@@ -223,14 +244,14 @@ function getOverlapAvoidanceOffset(x1,y1,x2,y2, index) {
       //console.log("no overlap", div.index,index)
     }
     else if (div.index != index) {
-      var offset = 0.8*(y1 - dy1);
+      var offset = 0.8 * (y1 - dy1);
       if (Math.abs(offset) < 0.3 * div.offsetHeight) {
         offset = 0.6 * div.offsetHeight;
-        if (0.8*(y1 - dy1) < 0) {
+        if (0.8 * (y1 - dy1) < 0) {
           offset *= -1;
         }
       }
-      div.style.top = Number(div.style.top.replace("px","")) - offset + 'px';
+      div.style.top = Number(div.style.top.replace("px", "")) - offset + 'px';
       return offset;
     }
   }
@@ -264,11 +285,8 @@ function colorAccordingToDers() {
 
 
 function toggleFloorSelectors(floorNumber) {
-  document.getElementById("floorNumber0").className = document.getElementById("floorNumber0").className.replace("hidden", "");
-  document.getElementById("floorNumber1").className = document.getElementById("floorNumber1").className.replace("hidden", "");
+  clearFloorSelectors();
   if (floorNumber == '0') {
-    document.getElementById("floorNumber1").className = document.getElementById("floorNumber1").className.replace("active", "");
-    document.getElementById("floorNumber0").className = document.getElementById("floorNumber1").className.replace("active", "");
     document.getElementById("floorNumber0").className += " active";
     floorAgents['Floor_1'].overviewActive = false;
     floorAgents["Floor_1"].loadOverview();
@@ -276,12 +294,22 @@ function toggleFloorSelectors(floorNumber) {
     floorAgents["Floor_0"].loadOverview();
   }
   else {
-    document.getElementById("floorNumber0").className = document.getElementById("floorNumber0").className.replace("active", "");
-    document.getElementById("floorNumber1").className = document.getElementById("floorNumber0").className.replace("active", "");
     document.getElementById("floorNumber1").className += " active";
     floorAgents['Floor_0'].overviewActive = false;
     floorAgents["Floor_0"].loadOverview();
     floorAgents['Floor_1'].overviewActive = true;
     floorAgents["Floor_1"].loadOverview();
   }
+}
+
+function clearFloorSelectors() {
+  document.getElementById("floorNumber0").className = document.getElementById("floorNumber0").className.replace("hidden", "");
+  document.getElementById("floorNumber1").className = document.getElementById("floorNumber1").className.replace("hidden", "");
+  document.getElementById("history").className = document.getElementById("history").className.replace("hidden", "");
+  document.getElementById("rest").className = document.getElementById("rest").className.replace("hidden", "");
+
+  document.getElementById("floorNumber1").className = document.getElementById("floorNumber1").className.replace("active", "");
+  document.getElementById("floorNumber0").className = document.getElementById("floorNumber0").className.replace("active", "");
+  document.getElementById("history").className = document.getElementById("history").className.replace("active", "");
+  document.getElementById("rest").className = document.getElementById("rest").className.replace("active", "");
 }

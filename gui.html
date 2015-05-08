@@ -4,16 +4,16 @@
     <style>
         #floorIndicator {
             position:relative;
-            height:80px;
+            height:160px;
             margin-top:-359px;
             overflow:hidden;
-            width:40px;
+            width:60px;
         }
 
         div.floorNumber {
             position:relative;
             left:-10px;
-            width:40px;
+            width:60px;
             height:30px;
             background-color: #23324e;
             color:#ffffff;
@@ -34,12 +34,28 @@
             display:none;
         }
 
+        div.hidden {
+            display:none;
+        }
+
+        div.mapArea {
+            width:970px;
+            height:383px;
+        }
+
+        div.mapSubArea {
+            width:885px;
+            height:380px;
+            float:right;
+            overflow-y: auto;
+        }
     </style>
     <title>INERTIA GUI</title>
 
     <script language="javascript">
         "use strict"
         var EVE_URL = 'http://openid.almende.org:8081/agents/';
+//        var EVE_URL = 'http://10.10.1.145:8081/agents/';
         var htmlContainer = {};
 
         var randomUUID = function() {
@@ -62,7 +78,6 @@
     <link href="./css/input.css" rel="stylesheet" type="text/css" />
     <link href="./css/visgraphstyles.css" rel="stylesheet" type="text/css" />
     <link href="./css/vis.css" rel="stylesheet" type="text/css" />
-
     <link href="./css/global.css" rel="stylesheet" type="text/css" />
 
 
@@ -85,6 +100,8 @@
     <script language="JavaScript" src="./js/webgl.js"></script>
     <script language="JavaScript" src="./js/gui.js"></script>
     <script language="JavaScript" src="./js/visElements.js"></script>
+    <script language="JavaScript" src="./js/history.js"></script>
+    <script language="JavaScript" src="./js/rest.js"></script>
 
     <!-- init -->
     <script language="JavaScript" src="./js/init.js"></script>
@@ -92,46 +109,9 @@
 </head>
 <body onload="onLoad()">
 <div id="darkOverlay">
-    <div id="artificialSensor">
-        <div id="artificialSensorClose" class="closePopupButton" onclick="closeArtificialSensor();"></div>
-        <div class="overlayHeader">Setup Artificial Sensor</div>
-        <div id="artificialSensorPopup" class="artificialSensorPopup">
-            <div class="closePopupButton" onclick="closeArtificialSensorPopup();"></div>
-            <div class="popupHeader">Pick a value and a duration.</div>
-            <div class="popupText">Value:</div>
-            <div class="popupRange">
-                <span id="popupValueSpan">
-                    <select class="inertia" id="popupValue">
-                        <option value="25" selected="selected">25</option>
-                    </select>
-                </span>
-            </div>
-            <div class="popupText">Duration:</div>
-            <div class="popupRange">
-                <select id="popupDuration" class="inertia">
-                    <option value="5">5 min</option>
-                    <option value="10">10 min</option>
-                    <option value="15">15 min</option>
-                    <option value="20">20 min</option>
-                    <option value="25">25 min</option>
-                    <option value="30">30 min</option>
-                    <option value="45">45 min</option>
-                    <option value="60" selected="selected">1 hour</option>
-                    <option value="120">2 hours</option>
-                    <option value="180">3 hours</option>
-                    <option value="240">4 hours</option>
-                </select>
-            </div>
-            <div class="popupButton">
-                <input type="submit" value="Add artificial sensor value" class="saveButton" id="artificialSensorSaveBtn">
-            </div>
-        </div>
-        <div class="artificialSensorDescription">Doubletap on the timeline to create a sensor value and it's duration.</div>
-        <div id="artificialSensorTimelineContainer"></div>
-    </div>
     <div id="contractOverview">
         <div class="closePopupButton" onclick="closeContractOverview();"></div>
-            <div id="contractInformation"  class="overlayHeader">Showing current contract:</div>
+            <div id="contractInformation" class="overlayHeader">Showing current contract:</div>
             <div id="contractOverviewContainer"></div>
         </div>
     </div>
@@ -145,9 +125,9 @@
 <div class="topSubBanner"></div>
 <div class="topSubBanner2"></div>
 <div class="menuBanner" id="blueprint">
-    <a href="#modeSelector" class="transparent"><div class="menuItem">Modes</div></a>
-    <a href="#blueprint" class="transparent"><div class="menuItem">Blueprint</div></a>
+    <a href="#blueprint" class="transparent"><div class="menuItem">Overview</div></a>
     <a href="#calendar" class="transparent"><div class="menuItem">Calendar</div></a>
+    <a href="#configure" class="transparent"><div class="menuItem">Configure</div></a>
 </div>
 
 <div class="facilityManagerInfo main">
@@ -164,18 +144,30 @@
 </div>
 <div class="subsectionBanner1"></div>
 <div class="subsectionBanner2"></div>
-<div class="subsectionBanner3" id="modeSelector">Blueprint</div>
+<div class="subsectionBanner3" id="modeSelector">Overview</div>
 <div id="mapContainer">
+    <div id="buildingHistory" class="mapArea" style="display:none;">
+        <div id="historyContainer" class="mapSubArea"></div>
+    </div>
+    <div id="otherDERs" class="mapArea" style="display:none;">
+        <div id="otherDERoverview" class="mapSubArea"></div>
+    </div>
     <div id="loadingIndicator"><img class='loadingImage' src="./images/loading.gif" /></div>
     <div id="floorIndicator">
         <div class="floorNumber hidden" id='floorNumber1' onclick="webglInit(gbxmlData,1); deselect();">1</div>
         <div class="floorNumber hidden" id='floorNumber0' onclick="webglInit(gbxmlData,0); deselect();">0</div>
+        <div class="floorNumber hidden" id='rest' onclick="deselect(); showRest();">other</div>
+        <div class="floorNumber hidden" id='history' onclick="deselect(); showHistory();">history</div>
     </div>
     <div id="informationDiv" onclick="event.stopPropagation();">
         <div  class="closePopupButton" id="informationClose" onclick="hideInfoDiv(); deselect();"></div>
-        <div id="informationHeader"></div><br />
-        <div id="informationContent">
-
+        <div class="tab">
+            <div class="headerWrapper">
+                <div class="informationTab active" id="informationHeader" onclick="showSpaceOverview()"></div>
+                <div class="informationTab right" id="historyHeader" onclick="showSpaceHistory()">View History</div>
+            </div>
+            <div class="informationContent" id="informationContent" style="display:block;"></div>
+            <div class="informationContent" id="spaceHistory" style="display:none;"></div>
         </div>
 
     </div>
@@ -183,27 +175,6 @@
 <div class="stats">
     <div class="centerAlign" id="aggregatedInfo"></div>
 </div>
-<!--<div class="subsectionBanner1"></div>-->
-<!--<div class="subsectionBanner2"></div>-->
-<!--<div class="subsectionBanner3" id="details">Details</div>-->
-<!--<div class="inertiaContent">-->
-    <!--<div class='explaination' id="detailsDescription">We are in the process of gathering historical data.</div>-->
-    <!--&lt;!&ndash;<br /><br />&ndash;&gt;-->
-    <!--&lt;!&ndash;<div class='explaination' id="detailsDescription">Detailed view of aggregated data in building.</div>&ndash;&gt;-->
-    <!--&lt;!&ndash;<br />&ndash;&gt;-->
-    <!--&lt;!&ndash;<div id="Legend"></div>&ndash;&gt;-->
-    <!--&lt;!&ndash;<div class='smallGraph' id="barGraphSubWrapper1"><div class='smallGraphExp' id="barGraphSubWrapper1Exp"></div></div>&ndash;&gt;-->
-    <!--&lt;!&ndash;<div class='smallGraph' id="barGraphSubWrapper2"><div class='smallGraphExp' id="barGraphSubWrapper2Exp"></div></div>&ndash;&gt;-->
-    <!--&lt;!&ndash;<div class='smallGraph' id="barGraphSubWrapper3"><div class='smallGraphExp' id="barGraphSubWrapper3Exp"></div></div>&ndash;&gt;-->
-    <!--&lt;!&ndash;<div class='smallGraph' id="barGraphSubWrapper4"><div class='smallGraphExp' id="barGraphSubWrapper4Exp"></div></div>&ndash;&gt;-->
-    <!--&lt;!&ndash;<div id="barGraphWrapper"></div>&ndash;&gt;-->
-    <!--&lt;!&ndash;<div id="subLegend">&ndash;&gt;-->
-        <!--&lt;!&ndash;<div class="legendElementContainer2" id="plotEnergy"><img class="icon" src="./images/lightbulb.png"/> Energy</div>&ndash;&gt;-->
-        <!--&lt;!&ndash;<div class="legendElementContainer2 hidden" id="plotCost"><img class="icon" src="./images/coins.png"/> Cost</div>&ndash;&gt;-->
-
-    <!--&lt;!&ndash;</div>&ndash;&gt;-->
-
-<!--</div>-->
 <div class="subsectionBanner1"></div>
 <div class="subsectionBanner2"></div>
 <div class="subsectionBanner3" id="calendar">Calendar</div>
@@ -211,6 +182,22 @@
     <br />
 
     <iframe src="http://160.40.51.68:8080/INERTIA/web/week.php" id="calendar_iframe"></iframe>
+</div>
+<div class="subsectionBanner1"></div>
+<div class="subsectionBanner2"></div>
+<div class="subsectionBanner3" id="configure">Configure</div>
+<div class="inertiaContent small">
+    <br>
+    <br>
+    <table class="configureTable">
+        <tr class="header"><td colspan="2">Set the participation (in percentages) for each of the DER categories.</td></tr>
+        <tr><td>ALL</td>        <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangeALL" value=""></div></td></tr>
+        <tr><td>HVAC</td>       <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangeHVAC" value=""></div></td></tr>
+        <tr><td>LIGHTING</td>   <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangeLIGHTING" value=""></div></td></tr>
+        <tr><td>PRODUCTION</td> <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangePRODUCTION" value=""></div></td></tr>
+        <tr><td>OTHER</td>      <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangeOTHER" value=""></div></td></tr>
+        <tr><td>SIMULATED</td>  <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangeSIMULATED" value=""></div></td></tr>
+    </table>
 </div>
 <div class="bottomBanner1"></div>
 <div class="bottomBanner2"></div>

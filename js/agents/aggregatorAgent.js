@@ -1,3 +1,5 @@
+"use strict";
+
 function AggregatorAgent(id) {
   // execute super constructor
   eve.Agent.call(this, id);
@@ -10,12 +12,12 @@ function AggregatorAgent(id) {
 
   this.agentsToAggregate = {};
   this.aggregatedValues = [
-    {type:'consumption' , value: 0, method:'sum', unit:'W', counter: 0},
-    {type:'temperature' , value: 0, method:'avg', unit:'C', counter: 0},
-    {type:'occupancy'   , value: 0, method:'sum', unit:'people', counter: 0},
-    {type:'brightness'  , value: 0, method:'avg', unit:'lux', counter: 0},
-    {type:'humidity'    , value: 0, method:'avg', unit:'%', counter: 0},
-    {type:'co2level'    , value: 0, method:'avg', unit:'ppm', counter: 0}
+    {type:'consumption' , value: 0, method:'sum', unit:'W', counter: 0, history:{}},
+    {type:'temperature' , value: 0, method:'avg', unit:'C', counter: 0, history:{}},
+    {type:'occupancy'   , value: 0, method:'sum', unit:'people', counter: 0, history:{}},
+    {type:'brightness'  , value: 0, method:'avg', unit:'lux', counter: 0, history:{}},
+    {type:'humidity'    , value: 0, method:'avg', unit:'%', counter: 0, history:{}},
+    {type:'co2level'    , value: 0, method:'avg', unit:'ppm', counter: 0, history:{}},
     ];
   this.parent = undefined;
   this.overviewActive = false;
@@ -35,7 +37,7 @@ AggregatorAgent.prototype.setParent = function(parent) {
 
 AggregatorAgent.prototype.register = function() {
   if (this.parent !== undefined) {
-    this.rpc.request(this.parent,{method:'register',params:{data:this.aggregatedValues, derType:'AGGREGATOR'}}).done();
+    this.rpc.request(this.parent,{method:'register',params:{data:this.aggregatedValues, derType:'AGGREGATOR', history:false}}).done();
   }
 };
 
@@ -76,7 +78,7 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
       if (sensorType == "LIGHTING" || sensorType == "HVAC" || sensorType == "OTHER") {
         hasSubspaceDers = true;
       }
-      if (this.agentsToAggregate[agentId].derType != 'SENSORS') {
+      if (this.agentsToAggregate[agentId].derType !== 'SENSORS') {
         me.rpc.request(agentId, {method: 'getUIElement', params: {temporary:true}}).then(function (reply) {
           if (reply.content != '') {
             var derElement = document.createElement("div");
@@ -136,25 +138,6 @@ AggregatorAgent.prototype.loadDerInterface = function(container) {
 
 AggregatorAgent.prototype.loadOverview = function() {
   var container = document.getElementById("aggregatedInfo");
-  var allowArtificialSensor = false;
-  if (this.parent !== undefined) {
-    if (this.parent.indexOf("space_") != -1) {
-      allowArtificialSensor = true;
-    }
-  }
-
-  var sensorAgentId = undefined;
-  for (var agentId in this.agentsToAggregate) {
-    if (this.agentsToAggregate.hasOwnProperty(agentId)) {
-      if (this.agentsToAggregate[agentId].derType == 'SENSORS') {
-        sensorAgentId = agentId;
-        break;
-      }
-    }
-  }
-
-  allowArtificialSensor = allowArtificialSensor && sensorAgentId !== undefined;
-
   if (this.overviewActive == true) {
     var innerHTML = "" +
       '<span class="statsDescription">' + this.id.replace(/[_]/g, " ") + ' Status:</span>' +
@@ -170,8 +153,8 @@ AggregatorAgent.prototype.loadOverview = function() {
       '  </tr>' +
       '  <tr>' +
       '    <td>' + Math.round(this.aggregatedValues[0].value * 100) / 100 + ' ' + this.aggregatedValues[0].unit + '</td>' +
-      '    <td>' + Math.round(this.aggregatedValues[1].value * 100) / 100 + ' ' + this.aggregatedValues[1].unit + (allowArtificialSensor ? ' <img class="override" src="./images/cog_edit.png" onclick="openArtificialSensorSetup(\'temperature\',\'' + sensorAgentId + '\');">' : '') + '</td>' +
-      '    <td>' + Math.round(this.aggregatedValues[2].value * 100) / 100 + ' ' + this.aggregatedValues[2].unit + (allowArtificialSensor ? ' <img class="override" src="./images/cog_edit.png" onclick="openArtificialSensorSetup(\'occupancy\',\'' + sensorAgentId + '\');">' : '') + '</td>' +
+      '    <td>' + Math.round(this.aggregatedValues[1].value * 100) / 100 + ' ' + this.aggregatedValues[1].unit + '</td>' +
+      '    <td>' + Math.round(this.aggregatedValues[2].value * 100) / 100 + ' ' + this.aggregatedValues[2].unit + '</td>' +
       '    <td>' + Math.round(this.aggregatedValues[3].value * 100) / 100 + ' ' + this.aggregatedValues[3].unit + '</td>' +
       '    <td>' + Math.round(this.aggregatedValues[4].value * 100) / 100 + ' ' + this.aggregatedValues[4].unit + '</td>' +
       '    <td>' + Math.round(this.aggregatedValues[5].value * 100) / 100 + ' ' + this.aggregatedValues[5].unit + '</td>' +
@@ -199,7 +182,67 @@ AggregatorAgent.prototype.loadOverview = function() {
   }
 };
 
-AggregatorAgent.prototype.aggregate = function() {
+AggregatorAgent.prototype.aggregateHistory = function() {
+  var historyData = {};
+  var bucketSize = 15 * 60 * 1000; // 15 mins
+  var i,j;
+
+
+  for (i = 0; i < this.aggregatedValues.length; i++) {
+    var type = this.aggregatedValues[i].type;
+    // aggregate data
+    for (var agentId in this.agentsToAggregate) {
+      var agentData = this.agentsToAggregate[agentId].historicalData;
+      if (agentData !== undefined) {
+        if (Object.keys(agentData).length > 0) {
+          if (historyData[agentId] === undefined) {
+            historyData[agentId] = {};
+            historyData[agentId][type] = {};
+          }
+
+          if (agentData[type] !== undefined) {
+            var history = {};
+            var oldBucket = 0;
+            for (j = 0; j < agentData[type].length; j++) {
+              var datapoint = agentData[type][j];
+              var bucket = datapoint.time - datapoint.time % bucketSize;
+
+              // get the weight of this point
+              var startTime = bucket;
+              var endTime = bucket + bucketSize;
+              if (bucket === oldBucket) {
+                startTime = datapoint.time;
+              }
+              if (j < agentData[type].length - 1) {
+                var nextPoint = agentData[type][j+1];
+                var nextPointBucket = nextPoint.time - nextPoint.time % bucketSize;
+                if (nextPointBucket === bucket) {
+                  endTime = nextPoint.time;
+                }
+              }
+              var factor = (endTime - startTime)/bucketSize;
+
+              if (history[bucket] === undefined) {
+                history[bucket] = 0;
+              }
+              history[bucket] += datapoint.value * factor;
+              oldBucket = bucket;
+            }
+            historyData[agentId][type] = history;
+          }
+        }
+      }
+    }
+    this.aggregatedValues[i].history = historyData;
+  }
+}
+
+AggregatorAgent.prototype.aggregate = function(history) {
+  if (history === true) {
+    this.aggregateHistory();
+    return;
+  }
+
   // clear values;
   for (var i = 0; i < this.aggregatedValues.length; i++) {
       this.aggregatedValues[i].value   = 0;
@@ -221,12 +264,17 @@ AggregatorAgent.prototype.aggregate = function() {
             if (dataField.unit != "x") {
               this.aggregatedValues[j]['unit'] = dataField.unit;
             }
+
+            if (dataField.history !== undefined) {
+              this.mergeHistories(this.aggregatedValues[j].history, dataField.history);
+            }
             break;
           }
         }
       }
     }
   }
+
   //average over sensor values
   for (var i = 0; i < this.aggregatedValues.length; i++) {
     if (this.aggregatedValues[i].method == 'avg') {
@@ -237,6 +285,14 @@ AggregatorAgent.prototype.aggregate = function() {
   }
 };
 
+AggregatorAgent.prototype.mergeHistories = function(ownHistory, dataHistory) {
+  for (var agentId in dataHistory) {
+    if (ownHistory[agentId] === undefined) {
+      ownHistory[agentId] = dataHistory[agentId];
+    }
+  }
+}
+
 AggregatorAgent.prototype.propagate = AggregatorAgent.prototype.register;
 
 
@@ -244,10 +300,12 @@ AggregatorAgent.prototype.propagate = AggregatorAgent.prototype.register;
 
 AggregatorAgent.prototype.rpcFunctions.register = function(params, sender) {
   this.agentsToAggregate[sender] = params;
-  this.aggregate();
+  this.aggregate(params.history);
   this.propagate();
   this.loadOverview();
 };
+
+
 
 AggregatorAgent.prototype.rpcFunctions.getDERS = function(params, sender) {
   var DERs = [];
