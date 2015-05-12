@@ -12,10 +12,10 @@ function FacilityManager(id) {
   this.profiles = ['Abstain','Vacant','Economy','Comfort'];
   this.profilesLabels = ['Abstain','Vacant','Economy','Comfort'];
   this.information = {
-    'Abstain': 'Abstain, need explaination.',
-    'Vacant': 'Vacant, need explaination.',
-    'Economy': 'Economy, need explaination.',
-    'Comfort': 'Comfort, need explaination.',
+    'Abstain': 'No flexible power consumption being offered to power supplier.',
+    'Vacant':  'Room comfort flexibility is minimal (no control / off).',
+    'Comfort': 'Room comfort flexibility is optimal (partial control).',
+    'Economy': 'Room comfort flexibility is maximal (full control).',
     'Contract': 'Contract mode locked in. <a class="link1" onclick="loadContract()">View contract details here <img class="icon" src="./images/chart_curve.png" />.</a>'
   }
 
@@ -129,8 +129,10 @@ FacilityManager.prototype.getControlStrategy = function() {
     .then(function(reply) {
       for (var key in reply) {
         var range = document.getElementById("range" + key);
+        var span = document.getElementById("configRange" + key + 'span');
         if (range) {
           range.value = 100*reply[key];
+          span.innerHTML = 100*reply[key] + '%';
         }
       }
     }).done();

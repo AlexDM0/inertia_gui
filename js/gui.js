@@ -69,6 +69,10 @@ function updateIndicator(derId, unit, sendToEVE) {
   }
 }
 
+function updateIndicatorInput(rangeThis, inputId) {
+  document.getElementById(inputId).innerHTML = rangeThis.value + '%';
+}
+
 // used by the drop down mode box
 function updateFacilityProfile() {
   var facilityProfileSelector = document.getElementById("facilityProfileSelector");

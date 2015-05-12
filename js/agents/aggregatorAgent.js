@@ -209,7 +209,7 @@ AggregatorAgent.prototype.aggregateHistory = function() {
 
               // get the weight of this point
               var startTime = bucket;
-              var endTime = bucket + bucketSize;
+              var endTime = bucket + bucketSize < new Date().valueOf() ? bucket + bucketSize : new Date().valueOf();
               if (bucket === oldBucket) {
                 startTime = datapoint.time;
               }

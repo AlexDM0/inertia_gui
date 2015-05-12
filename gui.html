@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head><meta http-equiv="content-type" content="text/html; charset=UTF8">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF8">
     <style>
         #floorIndicator {
-            position:relative;
-            height:160px;
-            margin-top:-359px;
-            overflow:hidden;
-            width:60px;
+            position: relative;
+            height: 160px;
+            margin-top: -359px;
+            overflow: hidden;
+            width: 60px;
         }
 
         div.floorNumber {
-            position:relative;
-            left:-10px;
-            width:60px;
-            height:30px;
+            position: relative;
+            left: -10px;
+            width: 60px;
+            height: 30px;
             background-color: #23324e;
-            color:#ffffff;
-            border-radius:3px;
+            color: #ffffff;
+            border-radius: 3px;
             margin: 6px 6px 6px 6px;
-            text-align:center;
-            vertical-align:middle;
-            line-height:30px;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 30px;
             box-shadow: #ffffff 0px 0px 5px 1px;
-            cursor:pointer;
+            cursor: pointer;
         }
 
         div.floorNumber.active {
@@ -31,22 +32,22 @@
         }
 
         div.floorNumber.hidden {
-            display:none;
+            display: none;
         }
 
         div.hidden {
-            display:none;
+            display: none;
         }
 
         div.mapArea {
-            width:970px;
-            height:383px;
+            width: 970px;
+            height: 383px;
         }
 
         div.mapSubArea {
-            width:885px;
-            height:380px;
-            float:right;
+            width: 885px;
+            height: 380px;
+            float: right;
             overflow-y: auto;
         }
     </style>
@@ -55,10 +56,11 @@
     <script language="javascript">
         "use strict"
         var EVE_URL = 'http://openid.almende.org:8081/agents/';
-//        var EVE_URL = 'http://10.10.1.145:8081/agents/';
+//        var EVE_URL = 'ws://openid.almende.org:8081/ws/controlProxy/';
+        //var EVE_URL = 'http://10.10.1.145:8081/agents/';
         var htmlContainer = {};
 
-        var randomUUID = function() {
+        var randomUUID = function () {
             var S4 = function () {
                 return Math.floor(
                         Math.random() * 0x10000 /* 65536 */
@@ -75,10 +77,10 @@
     </script>
 
     <!-- css -->
-    <link href="./css/input.css" rel="stylesheet" type="text/css" />
-    <link href="./css/visgraphstyles.css" rel="stylesheet" type="text/css" />
-    <link href="./css/vis.css" rel="stylesheet" type="text/css" />
-    <link href="./css/global.css" rel="stylesheet" type="text/css" />
+    <link href="./css/input.css" rel="stylesheet" type="text/css"/>
+    <link href="./css/visgraphstyles.css" rel="stylesheet" type="text/css"/>
+    <link href="./css/vis.css" rel="stylesheet" type="text/css"/>
+    <link href="./css/global.css" rel="stylesheet" type="text/css"/>
 
 
     <!--main libraries-->
@@ -111,10 +113,10 @@
 <div id="darkOverlay">
     <div id="contractOverview">
         <div class="closePopupButton" onclick="closeContractOverview();"></div>
-            <div id="contractInformation" class="overlayHeader">Showing current contract:</div>
-            <div id="contractOverviewContainer"></div>
-        </div>
+        <div id="contractInformation" class="overlayHeader">Showing current contract:</div>
+        <div id="contractOverviewContainer"></div>
     </div>
+</div>
 </div>
 
 
@@ -125,9 +127,15 @@
 <div class="topSubBanner"></div>
 <div class="topSubBanner2"></div>
 <div class="menuBanner" id="blueprint">
-    <a href="#blueprint" class="transparent"><div class="menuItem">Overview</div></a>
-    <a href="#calendar" class="transparent"><div class="menuItem">Calendar</div></a>
-    <a href="#configure" class="transparent"><div class="menuItem">Configure</div></a>
+    <a href="#blueprint" class="transparent">
+        <div class="menuItem">Overview</div>
+    </a>
+    <a href="#calendar" class="transparent">
+        <div class="menuItem">Calendar</div>
+    </a>
+    <a href="#configure" class="transparent">
+        <div class="menuItem">Configure</div>
+    </a>
 </div>
 
 <div class="facilityManagerInfo main">
@@ -137,7 +145,7 @@
             Fetching from remote.
         </div>
         <div class="facilityManagerInfo information">
-            <img src="./images/information.png" class="icon" />
+            <img src="./images/information.png" class="icon"/>
             <span id="profileInformationSpan">Data is being fetched.</span>
         </div>
     </div>
@@ -152,7 +160,7 @@
     <div id="otherDERs" class="mapArea" style="display:none;">
         <div id="otherDERoverview" class="mapSubArea"></div>
     </div>
-    <div id="loadingIndicator"><img class='loadingImage' src="./images/loading.gif" /></div>
+    <div id="loadingIndicator"><img class='loadingImage' src="./images/loading.gif"/></div>
     <div id="floorIndicator">
         <div class="floorNumber hidden" id='floorNumber1' onclick="webglInit(gbxmlData,1); deselect();">1</div>
         <div class="floorNumber hidden" id='floorNumber0' onclick="webglInit(gbxmlData,0); deselect();">0</div>
@@ -160,7 +168,7 @@
         <div class="floorNumber hidden" id='history' onclick="deselect(); showHistory();">history</div>
     </div>
     <div id="informationDiv" onclick="event.stopPropagation();">
-        <div  class="closePopupButton" id="informationClose" onclick="hideInfoDiv(); deselect();"></div>
+        <div class="closePopupButton" id="informationClose" onclick="hideInfoDiv(); deselect();"></div>
         <div class="tab">
             <div class="headerWrapper">
                 <div class="informationTab active" id="informationHeader" onclick="showSpaceOverview()"></div>
@@ -179,7 +187,7 @@
 <div class="subsectionBanner2"></div>
 <div class="subsectionBanner3" id="calendar">Calendar</div>
 <div class="inertiaContent">
-    <br />
+    <br/>
 
     <iframe src="http://160.40.51.68:8080/INERTIA/web/week.php" id="calendar_iframe"></iframe>
 </div>
@@ -190,13 +198,63 @@
     <br>
     <br>
     <table class="configureTable">
-        <tr class="header"><td colspan="2">Set the participation (in percentages) for each of the DER categories.</td></tr>
-        <tr><td>ALL</td>        <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangeALL" value=""></div></td></tr>
-        <tr><td>HVAC</td>       <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangeHVAC" value=""></div></td></tr>
-        <tr><td>LIGHTING</td>   <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangeLIGHTING" value=""></div></td></tr>
-        <tr><td>PRODUCTION</td> <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangePRODUCTION" value=""></div></td></tr>
-        <tr><td>OTHER</td>      <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangeOTHER" value=""></div></td></tr>
-        <tr><td>SIMULATED</td>  <td><div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1" onchange="facilityManagerAgent.setControlStrategy(this);" id="rangeSIMULATED" value=""></div></td></tr>
+        <tr class="header">
+            <td colspan="2">Set the participation (in percentages) for each of the DER categories.</td>
+        </tr>
+        <tr>
+            <td>ALL</td>
+            <td>
+                <div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1"
+                                                    onchange="updateIndicatorInput(this,'configRangeALLspan'); facilityManagerAgent.setControlStrategy(this);"
+                                                    id="rangeALL" value=""></div>
+            </td>
+            <td><span class="rangeAssistant" id="configRangeALLspan"></span></td>
+            </td></tr>
+        <tr>
+            <td>HVAC</td>
+            <td>
+                <div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1"
+                                                    onchange="updateIndicatorInput(this,'configRangeHVACspan'); facilityManagerAgent.setControlStrategy(this);"
+                                                    id="rangeHVAC" value=""></div>
+            </td>
+            <td><span class="rangeAssistant" id="configRangeHVACspan"></span></td>
+            </td></tr>
+        <tr>
+            <td>LIGHTING</td>
+            <td>
+                <div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1"
+                                                    onchange="updateIndicatorInput(this,'configRangeLIGHTINGspan'); facilityManagerAgent.setControlStrategy(this);"
+                                                    id="rangeLIGHTING" value=""></div>
+            </td>
+            <td><span class="rangeAssistant" id="configRangeLIGHTINGspan"></span></td>
+            </td></tr>
+        <tr>
+            <td>PRODUCTION</td>
+            <td>
+                <div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1"
+                                                    onchange="updateIndicatorInput(this,'configRangePRODUCTIONspan'); facilityManagerAgent.setControlStrategy(this);"
+                                                    id="rangePRODUCTION" value=""></div>
+            </td>
+            <td><span class="rangeAssistant" id="configRangePRODUCTIONspan"></span></td>
+            </td></tr>
+        <tr>
+            <td>OTHER</td>
+            <td>
+                <div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1"
+                                                    onchange="updateIndicatorInput(this,'configRangeOTHERspan'); facilityManagerAgent.setControlStrategy(this);"
+                                                    id="rangeOTHER" value=""></div>
+            </td>
+            <td><span class="rangeAssistant" id="configRangeOTHERspan"></span></td>
+            </td></tr>
+        <tr style="display:none;">
+            <td>SIMULATED</td>
+            <td>
+                <div class="derUI configure"><input class="configRange" type="range" min="0" max="100" step="1"
+                                                    onchange="updateIndicatorInput(this,'configRangeSIMULATEDspan'); facilityManagerAgent.setControlStrategy(this);"
+                                                    id="rangeSIMULATED" value=""></div>
+            </td>
+            <td><span class="rangeAssistant" id="configRangeSIMULATEDspan"></span></td>
+            </td></tr>
     </table>
 </div>
 <div class="bottomBanner1"></div>
