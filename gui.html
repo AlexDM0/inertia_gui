@@ -50,6 +50,11 @@
             float: right;
             overflow-y: auto;
         }
+
+        div.row {
+            min-height:30px;
+            line-height:30px;
+        }
     </style>
     <title>INERTIA GUI</title>
 
@@ -78,10 +83,8 @@
 
     <!-- css -->
     <link href="./css/input.css" rel="stylesheet" type="text/css"/>
-    <link href="./css/visgraphstyles.css" rel="stylesheet" type="text/css"/>
     <link href="./css/vis.css" rel="stylesheet" type="text/css"/>
     <link href="./css/global.css" rel="stylesheet" type="text/css"/>
-
 
     <!--main libraries-->
     <script language="JavaScript" src="./js/polyfill-done.js"></script>
@@ -168,7 +171,7 @@
         <div class="floorNumber hidden" id='history' onclick="deselect(); showHistory();">history</div>
     </div>
     <div id="informationDiv" onclick="event.stopPropagation();">
-        <div class="closePopupButton" id="informationClose" onclick="hideInfoDiv(); deselect();"></div>
+        <div class="closePopupButton" id="informationClose" onclick="hideInfoDiv(); showSpaceOverview(); deselect();"></div>
         <div class="tab">
             <div class="headerWrapper">
                 <div class="informationTab active" id="informationHeader" onclick="showSpaceOverview()"></div>
@@ -181,6 +184,23 @@
     </div>
 </div>
 <div class="stats">
+    <div class="legend" id="historyLegend" style="display:none;">
+    <div class="row">
+        <div class="typeButton selected" id="historyUsage" onclick="loadConsumptionHistory(this)">Show Usage</div>
+        <div class="typeButton" id="historyCosts" onclick="loadCostHistory(this)">Show Costs</div>
+        <div class="typeButton" id="historyOccupancy" onclick="loadOccupancyHistory(this)">Show Occupancy</div><br>
+    </div>
+    <div class="row">
+        Show by:<select id="historyViewType" onclick="toggleHistoryCategories(this)">
+            <option value="der">DER type</option>
+            <option value="space">Space (Room)</option>
+        </select>
+    </div>
+        <div class="row">
+            <div class="typeButton" id="historyTemperature" onclick="loadTemperatureHistory(this)">External Temperature</div>
+            <div class="typeButton" id="historyHumidity" onclick="loadHumidityHistory(this)">External Humidity</div>
+        </div>
+    </div>
     <div class="centerAlign" id="aggregatedInfo"></div>
 </div>
 <div class="subsectionBanner1"></div>

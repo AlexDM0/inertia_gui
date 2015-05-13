@@ -53,6 +53,7 @@ function cleanupWebGl() {
   document.getElementById("buildingHistory").style.display = 'none';
   document.getElementById("otherDERs").style.display = 'none';
   document.getElementById("loadingIndicator").style.display = "none";
+  document.getElementById('historyLegend').style.display = 'none';
   vis.DOMutil.prepareElements(htmlContainer);
   vis.DOMutil.cleanupElements(htmlContainer);
   var oldCanvas = document.getElementById("webglMapping");

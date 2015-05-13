@@ -204,9 +204,6 @@ DERagent.prototype.getUIElement = function(temporaryToggle) {
       this.setUpdateFrequency(this.baseUpdateFrequency);
     }
   }
-
-  //console.log(this.category, this.sensorsObj)
-  
   var innerHTML = '';
   switch (this.category) {
     case 'LIGHTING':
@@ -262,11 +259,12 @@ DERagent.prototype.getUIElement = function(temporaryToggle) {
         innerHTML += '<div class="derUI sensorData' + temporary + '">' + this.sensorsObj['temperature'].value + ' ' + this.sensorsObj['temperature'].unit + '</div>';
       }
 
-      if (this.canDim === true && temporaryToggle !== true) {
+
+      if (this.canDim === true && temporaryToggle !== true && this.sensorsObj['dimLevel'] !== undefined) {
         innerHTML += '<div class="derUI text' + temporary + '">Dimming:</div><div class="derUI DERrange' + temporary + '"><input type="range" min="0" max="100" step="1" id="range' + this.id + '" onchange="updateIndicator(\'' + this.id + '\', \'%\', true);" oninput="updateIndicator(\'' + this.id + '\',\'%\', false);" value="'+this.sensorsObj['dimLevel'].value+'" >' +
         '<span class="rangeAssistant"  id="rangeNumber' + this.id + '">' + this.sensorsObj['dimLevel'].value + '%</span>';
       }
-      else if (this.canSetTemperature === true && temporaryToggle !== true) {
+      else if (this.canSetTemperature === true && temporaryToggle !== true && this.sensorsObj['setTemperature'] !== undefined) {
         innerHTML += '<div class="derUI text' + temporary + '">Set temp:</div><div class="derUI DERrange' + temporary + '"><input type="range" min="15" max="35"  step="1" id="range' + this.id + '" onchange="updateIndicator(\'' + this.id + '\',\'&deg;C\', true);" oninput="updateIndicator(\'' + this.id + '\',\'&deg;C\', false);" value="'+this.sensorsObj['setTemperature'].value+'">' +
         '<span class="rangeAssistant"  id="rangeNumber' + this.id + '">' + this.sensorsObj['setTemperature'].value + '&deg;C</span>';
       }

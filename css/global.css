@@ -742,3 +742,37 @@ table.configureTable {
 tr.header {
     font-weight:bold;
 }
+
+div.typeButton {
+    display:inline-block;
+    width:150px;
+    height:24px;
+    line-height:16px;
+    border:2px solid #ffffff;
+    border-radius: 40px;
+    text-align:center;
+    font-size:12px;
+    color: #000000;
+    padding-top:8px;
+    background-color: #e3e3e3;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor:pointer;
+    margin:5px;
+    box-shadow: rgba(50,50,50,0.3) 0px 0px 3px;
+}
+
+div.typeButton.selected {
+    background-color: #3792d8;
+    color: #ffffff;
+}
+
+
+div.legend {
+    text-align:center;
+    width:100%;
+}

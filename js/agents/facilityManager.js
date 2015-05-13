@@ -48,6 +48,8 @@ function FacilityManager(id) {
   var me = this;
   var updateFrequency = 2000;
   setInterval(function() {me.getProfile();}, updateFrequency);
+  this.kWhPrice = 0.17;
+  this.getCost();
 }
 
 // extend the eve.Agent prototype
@@ -57,6 +59,10 @@ FacilityManager.prototype.constructor = FacilityManager;
 // define RPC functions, preferably in a separated object to clearly distinct
 // exposed functions from local functions.
 FacilityManager.prototype.rpcFunctions = {};
+
+FacilityManager.prototype.getCost = function () {
+  this.rpc.request(EVE_URL + "mgr", {method:'getEurosPerKWh', params:{}}).then(function (reply) {this.kWhPrice = Number(reply);}).done();
+}
 
 FacilityManager.prototype.updateHTML = function() {
   var selectDiv = document.getElementById('facilityProfileDiv');

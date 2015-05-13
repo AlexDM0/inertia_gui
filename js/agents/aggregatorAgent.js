@@ -184,7 +184,7 @@ AggregatorAgent.prototype.loadOverview = function() {
 
 AggregatorAgent.prototype.aggregateHistory = function() {
   var historyData = {};
-  var bucketSize = 15 * 60 * 1000; // 15 mins
+  var bucketSize = 60 * 60 * 1000; // 60 mins
   var i,j;
 
 
@@ -203,29 +203,29 @@ AggregatorAgent.prototype.aggregateHistory = function() {
           if (agentData[type] !== undefined) {
             var history = {};
             var oldBucket = 0;
-            for (j = 0; j < agentData[type].length; j++) {
-              var datapoint = agentData[type][j];
-              var bucket = datapoint.time - datapoint.time % bucketSize;
+            for (j = agentData[type].length - 1; j > 0; j--) {
+              var dataPoint = agentData[type][j];
+              var nextPoint = agentData[type][j-1];
+              var bucket = dataPoint.time - dataPoint.time % bucketSize;
+              var nextPointBucket = nextPoint.time - nextPoint.time % bucketSize;
 
               // get the weight of this point
               var startTime = bucket;
               var endTime = bucket + bucketSize < new Date().valueOf() ? bucket + bucketSize : new Date().valueOf();
               if (bucket === oldBucket) {
-                startTime = datapoint.time;
+                startTime = dataPoint.time;
               }
-              if (j < agentData[type].length - 1) {
-                var nextPoint = agentData[type][j+1];
-                var nextPointBucket = nextPoint.time - nextPoint.time % bucketSize;
-                if (nextPointBucket === bucket) {
-                  endTime = nextPoint.time;
-                }
+              if (nextPointBucket === bucket) {
+                endTime = nextPoint.time;
               }
+
               var factor = (endTime - startTime)/bucketSize;
 
               if (history[bucket] === undefined) {
                 history[bucket] = 0;
               }
-              history[bucket] += datapoint.value * factor;
+
+              history[bucket] += dataPoint.value * factor;
               oldBucket = bucket;
             }
             historyData[agentId][type] = history;
@@ -324,3 +324,69 @@ AggregatorAgent.prototype.rpcFunctions.getUIElement = function(params) {
 }
 
 AggregatorAgent.prototype.rpcFunctions.update = AggregatorAgent.prototype.rpcFunctions.register;
+
+
+AggregatorAgent.prototype.getHistoricData = function(location,colors, type) {
+  var items = [];
+  var groups = [];
+  var agents;
+  var factor = 1;
+  switch (type) {
+    case 'cost':
+      factor = facilityManagerAgent.kWhPrice;
+      type = 'consumption';
+      agents = this.aggregatedValues[0].history;
+      break;
+    case 'occupancy':
+      agents = this.aggregatedValues[2].history;
+      break;
+    case 'temperature':
+      agents = this.aggregatedValues[1].history;
+      break;
+    case 'humidity':
+      agents = this.aggregatedValues[4].history;
+      break;
+    case 'consumption':
+    default:
+      type = 'consumption';
+      agents = this.aggregatedValues[0].history;
+      break;
+  }
+
+  var aggregatedData = {};
+  var totals = {};
+  var counter = 0;
+  for (var agentId in agents) {
+    var data = agents[agentId][type];
+    var aggragationField = derAgents[agentId].category;
+    var derLocation = derAgents[agentId].locations[0];
+    if (location === true) {
+      aggragationField = derLocation;
+    }
+    if (aggregatedData[aggragationField] === undefined) {
+      aggregatedData[aggragationField] = {};
+      groups.push({
+        id: aggragationField,
+        content: aggragationField,
+        style: 'fill:' + colors[counter % colors.length] + "; stroke:" + colors[counter]
+      });
+      counter++
+    }
+    for (var time in data) {
+      if (aggregatedData[aggragationField][time] === undefined) {
+        aggregatedData[aggragationField][time] = 0;
+        totals[time] = 0;
+      }
+      aggregatedData[aggragationField][time] += data[time];
+    }
+  }
+
+  for (var aggragationField in aggregatedData) {
+    for (var time in aggregatedData[aggragationField]) {
+      if (aggregatedData[aggragationField][time] !== 0) {
+        items.push({x: parseInt(time), y: aggregatedData[aggragationField][time] * factor, group: aggragationField});
+      }
+    }
+  }
+  return {groups:groups,items:items};
+}

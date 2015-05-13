@@ -7,8 +7,10 @@ function showRest() {
   var container = document.getElementById("otherDERs");
   var derContainer = document.getElementById("otherDERoverview");
   container.style.display = 'block';
+  document.getElementById('historyLegend').style.display = 'none';
   document.getElementById("rest").className += " active";
   spaceAgents['__noLocation__'].loadDerInterface(derContainer);
+
 }
 
 function showHistory() {
@@ -17,8 +19,9 @@ function showHistory() {
   clearFloorSelectors();
   document.getElementById("buildingHistory").style.display = 'block';
   document.getElementById("history").className += " active";
+  document.getElementById('historyLegend').style.display = 'block';
 
-  loadBuildingHistory(document.getElementById("historyContainer"));
+  loadBuildingHistory(historyType,document.getElementById("historyContainer"));
 }
 
 function showSpaceOverview() {
