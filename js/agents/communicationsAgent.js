@@ -178,7 +178,7 @@ CommunicationsAgent.prototype.setMeetingroom = function(mode) {
     .catch(function (err) {
       document.getElementById("meetingRoomStatus").innerHTML = "Error in request:" + err.message;
     })
-}
+};
 /**
  * toggle the third button, function call is onclick in the dom
  */
@@ -187,7 +187,7 @@ CommunicationsAgent.prototype.setAllModes = function(mode) {
     'Free running':document.getElementById('all_Free_running'),
     'Comfort optimization':document.getElementById('all_Comfort_optimization'),
     'Energy conservation':document.getElementById('all_Energy_conservation')
-  }
+  };
 
   dom['Free running'].className = dom['Free running'].className.replace("selected", "");
   dom['Comfort optimization'].className = dom['Comfort optimization'].className.replace("selected", "");
@@ -200,4 +200,4 @@ CommunicationsAgent.prototype.setAllModes = function(mode) {
     .catch(function (err) {
       document.getElementById("allStatus").innerHTML = "Error in request:" + err.message;
     })
-}
+};

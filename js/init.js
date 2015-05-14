@@ -23,11 +23,11 @@ buildingAgents['Building_ITI'] = new AggregatorAgent('Building_ITI');
 
 var floorAgents = {};
 floorAgents['Floor_0'] = new AggregatorAgent('Floor_0');
-floorAgents['Floor_0'].setParent('Building_ITI')
+floorAgents['Floor_0'].setParent('Building_ITI');
 floorAgents['Floor_1'] = new AggregatorAgent('Floor_1');
-floorAgents['Floor_1'].setParent('Building_ITI')
+floorAgents['Floor_1'].setParent('Building_ITI');
 
-var spaceAgents = {}
+var spaceAgents = {};
 var subspaceAgents = {};
 var derAgents = {};
 var portalAgent = new PortalAgent('portalAgent');

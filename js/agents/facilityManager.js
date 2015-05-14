@@ -17,7 +17,7 @@ function FacilityManager(id) {
     'Comfort': 'Room comfort flexibility is optimal (partial control).',
     'Economy': 'Room comfort flexibility is maximal (full control).',
     'Contract': 'Contract mode locked in. <a class="link1" onclick="loadContract()">View contract details here <img class="icon" src="./images/chart_curve.png" />.</a>'
-  }
+  };
 
   this.contractLength = 30 * 60 * 1000; // 15 mins in millis
   this.contractData = new vis.DataSet();
@@ -62,7 +62,7 @@ FacilityManager.prototype.rpcFunctions = {};
 
 FacilityManager.prototype.getCost = function () {
   this.rpc.request(EVE_URL + "mgr", {method:'getEurosPerKWh', params:{}}).then(function (reply) {this.kWhPrice = Number(reply);}).done();
-}
+};
 
 FacilityManager.prototype.updateHTML = function() {
   var selectDiv = document.getElementById('facilityProfileDiv');
@@ -88,7 +88,7 @@ FacilityManager.prototype.updateHTML = function() {
     var infoSpan = document.getElementById('profileInformationSpan');
     infoSpan.innerHTML = this.information[this.profile];
   }
-}
+};
 
 
 FacilityManager.prototype.setProfile = function(profile) {
@@ -97,7 +97,7 @@ FacilityManager.prototype.setProfile = function(profile) {
   this.rpc.request(EVE_URL + "holistic", {method:'setModus', params:{modus: this.profile}}).done();
   this.updateHTML();
 
-}
+};
 
 FacilityManager.prototype.processProfile = function() {
   if (this.profile == "Contract") {
@@ -105,13 +105,13 @@ FacilityManager.prototype.processProfile = function() {
     var dataCollecting = [
       this.rpc.request(EVE_URL + 'holistic', {method:'getRequestProfile',params:{}}),
       this.rpc.request(EVE_URL + 'holistic', {method:'getCurrentProfile',params:{}})
-    ]
+    ];
     Promise.all(dataCollecting)
       .then(function (values) {
         me.processData(values)
       }).done();
   }
-}
+};
 
 FacilityManager.prototype.getProfile = function() {
   var me = this;
@@ -128,7 +128,7 @@ FacilityManager.prototype.getProfile = function() {
       }
 
     }).done();
-}
+};
 
 FacilityManager.prototype.getControlStrategy = function() {
   this.rpc.request(EVE_URL + "mgr", {method:'getCategoryProportions', params:{}})
@@ -142,14 +142,14 @@ FacilityManager.prototype.getControlStrategy = function() {
         }
       }
     }).done();
-}
+};
 
 
 FacilityManager.prototype.setControlStrategy = function(rangeObject) {
   var category = rangeObject.id.replace('range','');
   var value = rangeObject.value / 100;
   this.rpc.request(EVE_URL + "mgr", {method:'setCategoryProportions', params:{category:category, proportion:value}}).done();
-}
+};
 
 FacilityManager.prototype.processData = function(data) {
   var visData = [];
@@ -185,5 +185,5 @@ FacilityManager.prototype.processData = function(data) {
 
   this.contractData.clear();
   this.contractData.add(visData);
-}
+};
 

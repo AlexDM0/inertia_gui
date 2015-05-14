@@ -59,7 +59,7 @@ DERagent.prototype.setUpdateFrequency = function(updateFrequency) {
 
   var me = this;
   this.updateInterval = setInterval(function() {me.update().done();}, updateFrequency);
-}
+};
 
 
 
@@ -69,9 +69,9 @@ DERagent.prototype.setUpdateFrequency = function(updateFrequency) {
  */
 DERagent.prototype.updateHistoricalData = function() {
   var me = this;
-  var historicalDataFields = ['consumption', 'temperature', 'occupancy', 'humidity']
+  var historicalDataFields = ['consumption', 'temperature', 'occupancy', 'humidity'];
   return new Promise(function (resolve, reject) {
-    var promisesArray = []
+    var promisesArray = [];
     for (var i = 0; i < historicalDataFields.length; i++) {
       var promise = new Promise(function (resolve2, reject2) {
         var sensor = me.sensorsObj[historicalDataFields[i]];
@@ -112,7 +112,7 @@ DERagent.prototype.updateHistoricalData = function() {
  */
 DERagent.prototype.updateHistory = function() {
   this.register(true);
-}
+};
 
 
 
@@ -235,7 +235,7 @@ DERagent.prototype.getUIElement = function(temporaryToggle) {
         innerHTML += 'onclick="toggleDER(\'' + this.id + '\')"'
       }
       innerHTML += '></div>';
-      innerHTML += '<div class="derUI derName' + temporary + '">'
+      innerHTML += '<div class="derUI derName' + temporary + '">';
       if (temporaryToggle === true) {
         innerHTML += this.inertiaId + ' .. waiting';
       }

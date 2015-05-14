@@ -134,7 +134,7 @@ function parseFloors(xml, spaceIdRef) {
     points.push(parseCartesianPoint(xml.children[i]))
   }
 
-  var floor = []
+  var floor = [];
   //for (var i = 0; i < points.length; i++) {
   //  var point = points[i];
   //  if (i == 0) {

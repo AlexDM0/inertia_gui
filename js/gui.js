@@ -91,13 +91,13 @@ function loadContract() {
   groups.add({id:'contract', content:'contract',className:'contractGraph', options: {
     shaded: {
       orientation: 'bottom'
-    }}})
+    }}});
   groups.add({id:'usage', content:'usage',className:'usageGraph', options: {
     shaded: false
-  }})
+  }});
   groups.add({id:'demand', content:'demand',className:'demandGraph', options: {
     shaded: false
-  }})
+  }});
 
   contractOverviewGraph2d = new vis.Graph2d(container, facilityManagerAgent.contractData, groups, facilityManagerAgent.contractOptions);
 

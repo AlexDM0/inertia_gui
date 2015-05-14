@@ -2,10 +2,10 @@
 
 if (typeof Promise.prototype.done !== 'function') {
   Promise.prototype.done = function (onFulfilled, onRejected) {
-    var self = arguments.length ? this.then.apply(this, arguments) : this
+    var self = arguments.length ? this.then.apply(this, arguments) : this;
     self.then(null, function (err) {
       setTimeout(function () {
-        console.error("done:",err)
+        console.error("done:",err);
         //if (typeof err == 'object') {
         //  if (err.stackTrace !== undefined) {
         //    for (var i = 0; i < err.stackTrace.length; i++) {

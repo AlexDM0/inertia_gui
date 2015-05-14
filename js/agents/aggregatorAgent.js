@@ -10,6 +10,7 @@ function AggregatorAgent(id) {
   // connect to all transports provided by the system
   this.connect(eve.system.transports.getAll());
 
+  this.bucketSizeSeconds = 3600;
   this.agentsToAggregate = {};
   this.aggregatedValues = [
     {type:'consumption' , value: 0, method:'sum', unit:'W', counter: 0, history:{}},
@@ -184,7 +185,7 @@ AggregatorAgent.prototype.loadOverview = function() {
 
 AggregatorAgent.prototype.aggregateHistory = function() {
   var historyData = {};
-  var bucketSize = 60 * 60 * 1000; // 60 mins
+  var bucketSize = this.bucketSizeSeconds * 1000; // 60 mins
   var i,j;
 
 
@@ -235,7 +236,7 @@ AggregatorAgent.prototype.aggregateHistory = function() {
     }
     this.aggregatedValues[i].history = historyData;
   }
-}
+};
 
 AggregatorAgent.prototype.aggregate = function(history) {
   if (history === true) {
@@ -291,7 +292,7 @@ AggregatorAgent.prototype.mergeHistories = function(ownHistory, dataHistory) {
       ownHistory[agentId] = dataHistory[agentId];
     }
   }
-}
+};
 
 AggregatorAgent.prototype.propagate = AggregatorAgent.prototype.register;
 
@@ -321,7 +322,7 @@ AggregatorAgent.prototype.rpcFunctions.getDERS = function(params, sender) {
 
 AggregatorAgent.prototype.rpcFunctions.getUIElement = function(params) {
   console.log("ERROR:", this)
-}
+};
 
 AggregatorAgent.prototype.rpcFunctions.update = AggregatorAgent.prototype.rpcFunctions.register;
 
@@ -333,7 +334,7 @@ AggregatorAgent.prototype.getHistoricData = function(location,colors, type) {
   var factor = 1;
   switch (type) {
     case 'cost':
-      factor = facilityManagerAgent.kWhPrice;
+      factor = (3600/this.bucketSizeSeconds) * facilityManagerAgent.kWhPrice / 1000; //per second, per hour, in KWh
       type = 'consumption';
       agents = this.aggregatedValues[0].history;
       break;
@@ -389,4 +390,4 @@ AggregatorAgent.prototype.getHistoricData = function(location,colors, type) {
     }
   }
   return {groups:groups,items:items};
-}
+};

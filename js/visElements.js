@@ -265,7 +265,7 @@ function populateExternalLegend() {
     if (graph2d.isGroupVisible(groupsData[i].id) == false && groupsData[i].id != 0) {
       containerDiv.className += " hidden";
     }
-    containerDiv.id = groupsData[i].id + "_legendContainer"
+    containerDiv.id = groupsData[i].id + "_legendContainer";
     iconDiv.className = "iconContainer";
     descriptionDiv.className = "descriptionContainer";
 
@@ -409,9 +409,9 @@ function updateEnergyPlot(type) {
    if (costContainer.className.indexOf("hidden") != -1) {
      energyContainer.className += " hidden";
      costContainer.className = costContainer.className.replace(" hidden","");
-     graph2dGroups.update({id:0, content: "Energy Cost (&euro;)"})
-     graph2dGroups.update({id:5, content: "HVAC (&euro;)"})
-     graph2dGroups.update({id:6, content: "Lighting (&euro;)"})
+     graph2dGroups.update({id:0, content: "Energy Cost (&euro;)"});
+     graph2dGroups.update({id:5, content: "HVAC (&euro;)"});
+     graph2dGroups.update({id:6, content: "Lighting (&euro;)"});
      graph2dGroups.update({id:7, content: "Office Appliances (&euro;)"})
    }
   }
@@ -419,9 +419,9 @@ function updateEnergyPlot(type) {
     if (energyContainer.className.indexOf("hidden") != -1) {
       costContainer.className += " hidden";
       energyContainer.className = energyContainer.className.replace(" hidden","");
-      graph2dGroups.update({id:0, content: "Energy Consumption (KW)"})
-      graph2dGroups.update({id:5, content: "HVAC (KW)"})
-      graph2dGroups.update({id:6, content: "Lighting (KW)"})
+      graph2dGroups.update({id:0, content: "Energy Consumption (KW)"});
+      graph2dGroups.update({id:5, content: "HVAC (KW)"});
+      graph2dGroups.update({id:6, content: "Lighting (KW)"});
       graph2dGroups.update({id:7, content: "Office Appliances (KW)"})
     }
   }

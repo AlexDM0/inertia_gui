@@ -22,17 +22,17 @@ function Space(id, options) {
 
 Space.prototype.setPreferences = function(preferences) {
 
-}
+};
 
 Space.prototype.generatePreferences = function(preferences) {
   this.preferences.temperature = Math.round(Math.random()*10 + 15);
   this.preferences.luminance = Math.round(Math.random()*200 + 200);
   this.preferences.humidity = Math.round(Math.random()*20 + 20);
-}
+};
 
 Space.prototype.setData = function(data) {
 
-}
+};
 
 Space.prototype.aggregateData = function(spaces) {
   this.data.energy = {hvac:[], lighting:[], other:[], total:[]};
@@ -68,7 +68,7 @@ Space.prototype.aggregateData = function(spaces) {
     this.data.luminance.push(Math.round(100*luminanceTotal / spaces.length)/100);
     this.data.temperature.push(Math.round(100*temperatureTotal / spaces.length)/100);
   }
-}
+};
 
 Space.prototype.generateData = function() {
   this.data.energy = {hvac:[], lighting:[], other:[], total:[]};
@@ -90,7 +90,7 @@ Space.prototype.generateData = function() {
     this.data.energy.total.push(Math.round((hvac + lighting + other)*100) / 100);
     this.data.occupancy.push(Math.round(Math.random()*20));
   }
-}
+};
 
 
 Space.prototype.loadDerInterface = function(container) {
@@ -126,8 +126,8 @@ Space.prototype.loadDerInterface = function(container) {
     lightDer.innerHTML = "<table class='lightingTable'><tr><th>Light " + i + ":</th>" +
       "<td class='description'>Consumption:</td><td class='smallDescription'>" + consumption + " W</td>" +
       "<td class='smallDescription'>Status:</td><td class='smallDescription'><div class='"+divclass+"' onclick='rooms[\"" + this.id + "\"].lightStatus["+i+"] = " + toggleVal + "; rooms[\"" + this.id + "\"].loadDerInterface();'></div>" +
-      "</td></tr></table>"
+      "</td></tr></table>";
     container.appendChild(lightDer);
   }
 
-}
+};
