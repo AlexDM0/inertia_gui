@@ -51,7 +51,7 @@ function loadBuildingHistory(type,location) {
   var labels = {
     occupancy:"Amount of people",
     consumption:"Average usage (W)",
-    cost:"Hourly costs (&Euro;)",
+    cost:"Hourly costs (&euro;)",
     temperature:"Outside Temperature (C)",
     humidity:"Outside Humidity (%)"
   };

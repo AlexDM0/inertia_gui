@@ -60,6 +60,12 @@ function toggleDER(derId) {
   derAgents[derId].toggle();
 }
 
+function setDERTime(derId) {
+  var hours = document.getElementById(derId + "_hourSelect");
+  var mins = document.getElementById(derId + "_minuteSelect");
+  derAgents[derId].setTime(hours , mins);
+}
+
 function updateIndicator(derId, unit, sendToEVE) {
   var range = document.getElementById("range" + derId);
   var indicator = document.getElementById("rangeNumber" + derId);

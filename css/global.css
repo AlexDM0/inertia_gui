@@ -361,6 +361,10 @@ div.derUI.text{
     border-left: 1px #cccccc solid;
 }
 
+div.derUI.longtext{
+    width:120px;
+    border-left: 1px #cccccc solid;
+}
 
 div.derUI.temporary{
     opacity:0.6;

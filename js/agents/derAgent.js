@@ -8,7 +8,6 @@ function DERagent(id, inertiaId, locations) {
   this.connect(eve.system.transports.getAll());
 
   this.getLiveData = false;
-  this.type = 'light';
   this.inertiaId = inertiaId;
   this.locations = locations;
   if (this.locations.length === 0) {
@@ -24,7 +23,9 @@ function DERagent(id, inertiaId, locations) {
   this.canDim = false;
   this.canSwitch = false;
   this.canSetTemperature = false;
+  this.canSetTime = true;
   this.category = 'OTHER';
+  this.historyUpdateFrequency = 600000; // 10 min
   this.baseUpdateFrequency = 60000; // 1 min
   this.fastUpdateFrequency = 5000; // 5 sec
 
@@ -37,6 +38,8 @@ function DERagent(id, inertiaId, locations) {
   this.update().done();
   this.updateInterval = undefined;
   this.setUpdateFrequency(this.baseUpdateFrequency);
+
+  setInterval(function() {me.updateHistory().done();}, this.historyUpdateFrequency);
 }
 
 
@@ -148,6 +151,8 @@ DERagent.prototype.getData = function() {
         me.canSetTemperature = UIdata.canSetTemperature;
         me.canSwitch = UIdata.canSwitch;
         me.sensors = UIdata.sensors;
+        me.canSetTime = UIdata.canSetTime;
+        me.time = UIdata.time;
 
         for (var i = 0; i < me.sensors.length; i++) {
           me.sensorsObj[me.sensors[i].type] = me.sensors[i];
@@ -204,6 +209,7 @@ DERagent.prototype.getUIElement = function(temporaryToggle) {
       this.setUpdateFrequency(this.baseUpdateFrequency);
     }
   }
+
   var innerHTML = '';
   switch (this.category) {
     case 'LIGHTING':
@@ -251,16 +257,35 @@ DERagent.prototype.getUIElement = function(temporaryToggle) {
         innerHTML += '<div class="derUI power' + temporary + '">?</div>';
       }
 
-
-      if (this.sensorsObj['temperature'] === undefined) {
-        innerHTML += '<div class="derUI sensorData' + temporary + '"></div>';
+      if (this.canSetTime === false) {
+        if (this.sensorsObj['temperature'] === undefined) {
+          innerHTML += '<div class="derUI sensorData' + temporary + '"></div>';
+        }
+        else {
+          innerHTML += '<div class="derUI sensorData' + temporary + '">' + this.sensorsObj['temperature'].value + ' ' + this.sensorsObj['temperature'].unit + '</div>';
+        }
       }
-      else {
-        innerHTML += '<div class="derUI sensorData' + temporary + '">' + this.sensorsObj['temperature'].value + ' ' + this.sensorsObj['temperature'].unit + '</div>';
+
+      if (this.canSetTime === true) {
+        innerHTML += '<div class="derUI longtext">Set ready time:</div><div class="derUI DERtime"><select id="'+this.id + '_hourSelect">';
+        for (var i = 0; i < 24; i++) {
+          innerHTML += '<option value="'+i+'"';
+          if (this.time.hours === i) {
+            innerHTML += ' selected="selected"'
+          }
+          innerHTML += '>' + (i < 10 ? '0' : '') + i + "</option>";
+        }
+        innerHTML += '</select>:<select id="'+this.id + '_minuteSelect">';
+        for (i = 0; i < 60; i++) {
+          innerHTML += '<option value="'+i+'"'
+          if (this.time.minutes === i) {
+            innerHTML += ' selected="selected"'
+          }
+          innerHTML += '>' + (i < 10 ? '0' : '') + i + '</option>';
+        }
+        innerHTML += "</select></div>"
       }
-
-
-      if (this.canDim === true && temporaryToggle !== true && this.sensorsObj['dimLevel'] !== undefined) {
+      else if (this.canDim === true && temporaryToggle !== true && this.sensorsObj['dimLevel'] !== undefined) {
         innerHTML += '<div class="derUI text' + temporary + '">Dimming:</div><div class="derUI DERrange' + temporary + '"><input type="range" min="0" max="100" step="1" id="range' + this.id + '" onchange="updateIndicator(\'' + this.id + '\', \'%\', true);" oninput="updateIndicator(\'' + this.id + '\',\'%\', false);" value="'+this.sensorsObj['dimLevel'].value+'" >' +
         '<span class="rangeAssistant"  id="rangeNumber' + this.id + '">' + this.sensorsObj['dimLevel'].value + '%</span>';
       }
@@ -335,3 +360,8 @@ DERagent.prototype.updateDerUI = function(temporary) {
     divElement.innerHTML = this.getUIElement(temporary);
   }
 };
+
+
+DERagent.prototype.setTime = function(hours, minutes) {
+  this.rpc.request(EVE_URL + this.inertiaId, {method: 'setTime', params: {time:'PT'+hours+'h'+minutes+'m'}}).done();
+}
