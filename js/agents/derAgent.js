@@ -28,6 +28,7 @@ function DERagent(id, inertiaId, locations) {
   this.historyUpdateFrequency = 600000; // 10 min
   this.baseUpdateFrequency = 60000; // 1 min
   this.fastUpdateFrequency = 5000; // 5 sec
+  this.lastData = undefined;
 
   //this.artificialSensorData = undefined;
   var me = this;
@@ -82,7 +83,9 @@ DERagent.prototype.updateHistoricalData = function() {
           me.rpc.request(EVE_URL + me.inertiaId, {method:'getHistoricalData', params:{entityName: sensor.entityName, propertyName: sensor.name}})
             .then(function (history) {
               if (history.historic) {
-                me.sensorsObjHistory[history.type] = history.historic;
+                if (history.type === 'consumption' && history.name === 'PowerConsumption' || history.type !== 'consumption') {
+                  me.sensorsObjHistory[history.type] = history.historic;
+                }
               }
               else {
                 console.log("no historical data", me);
@@ -146,21 +149,30 @@ DERagent.prototype.getData = function() {
   return new Promise(function (resolve, reject) {
     me.rpc.request(EVE_URL + me.inertiaId, {method:'getUIData', params:{livedata: me.getLiveData}})
       .then(function (UIdata) {
+        me.lastData = UIdata;
         me.category = UIdata.category;
         me.canDim = UIdata.canDim;
         me.canSetTemperature = UIdata.canSetTemperature;
         me.canSwitch = UIdata.canSwitch;
-        me.sensors = UIdata.sensors;
+        me.sensors = UIdata.sensors || [];
         me.canSetTime = UIdata.canSetTime;
+        me.canPause = UIdata.canPause;
         me.time = UIdata.time;
 
         for (var i = 0; i < me.sensors.length; i++) {
-          me.sensorsObj[me.sensors[i].type] = me.sensors[i];
+          if (me.sensors[i].type === 'consumption' && me.sensors[i].name === 'PowerConsumption' || me.sensors[i].type !== 'consumption') {
+            if (me.sensors[i].name === 'OperationalStatus') {
+              me.sensorsObj['operationalState'] = me.sensors[i];
+            }
+            else {
+              me.sensorsObj[me.sensors[i].type] = me.sensors[i];
+            }
+          }
         }
 
         resolve();
       }).catch(function (err) {
-        console.error('DERagent:getData',err);
+        console.error('DERagent:getData',me.lastData, me,err);
         reject(err);
       }).done();
     }
@@ -266,8 +278,19 @@ DERagent.prototype.getUIElement = function(temporaryToggle) {
         }
       }
 
+
+      if (this.canPause === true) {
+        if (this.sensorsObj['operationalState'] === 'pause') {
+          innerHTML += '<div class="derUI icon" onclick="resumeDER(\'' + this.id + '\')"><i class="fa fa-play"></i></div>';
+        }
+        else {
+          innerHTML += '<div class="derUI icon" onclick="pauseDER(\'' + this.id + '\')"><i class="fa fa-pause"></i></div>';
+        }
+        innerHTML += '<div class="derUI icon"  onclick="stopDER(\'' + this.id + '\')"><i class="fa fa-stop"></i></div>';
+      }
+
       if (this.canSetTime === true) {
-        innerHTML += '<div class="derUI longtext">Set ready time:</div><div class="derUI DERtime"><select id="'+this.id + '_hourSelect">';
+        innerHTML += '<div class="derUI icon"><i class="fa fa-clock-o"></i></div><div class="derUI DERtime"><select id="'+this.id + '_hourSelect">';
         for (var i = 0; i < 24; i++) {
           innerHTML += '<option value="'+i+'"';
           if (this.time.hours === i) {
@@ -285,6 +308,7 @@ DERagent.prototype.getUIElement = function(temporaryToggle) {
         }
         innerHTML += "</select></div>"
       }
+
       else if (this.canDim === true && temporaryToggle !== true && this.sensorsObj['dimLevel'] !== undefined) {
         innerHTML += '<div class="derUI text' + temporary + '">Dimming:</div><div class="derUI DERrange' + temporary + '"><input type="range" min="0" max="100" step="1" id="range' + this.id + '" onchange="updateIndicator(\'' + this.id + '\', \'%\', true);" oninput="updateIndicator(\'' + this.id + '\',\'%\', false);" value="'+this.sensorsObj['dimLevel'].value+'" >' +
         '<span class="rangeAssistant"  id="rangeNumber' + this.id + '">' + this.sensorsObj['dimLevel'].value + '%</span>';
@@ -330,6 +354,25 @@ DERagent.prototype.toggle = function() {
     this.rpc.request(EVE_URL + this.inertiaId,{method:method, params:{}}).done();
   }
 };
+
+DERagent.prototype.pause = function() {
+  this.sensorsObj['operationalState'] = 'pause';
+  this.updateDerUI();
+  this.rpc.request(EVE_URL + this.inertiaId,{method:'pause', params:{}}).done();
+};
+
+DERagent.prototype.resume = function() {
+  this.sensorsObj['operationalState'] = 'resumed';
+  this.updateDerUI();
+  this.rpc.request(EVE_URL + this.inertiaId,{method:'resume', params:{}}).done();
+};
+
+DERagent.prototype.stop = function() {
+  this.sensorsObj['operationalState'] = 'stopped';
+  this.updateDerUI();
+  this.rpc.request(EVE_URL + this.inertiaId,{method:'stop', params:{}}).done();
+};
+
 
 DERagent.prototype.updateRange = function(value) {
   if (this.refreshedData === true) {

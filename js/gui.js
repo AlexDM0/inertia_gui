@@ -60,6 +60,21 @@ function toggleDER(derId) {
   derAgents[derId].toggle();
 }
 
+
+function pauseDER(derId) {
+  derAgents[derId].pause();
+}
+
+
+function resumeDER(derId) {
+  derAgents[derId].resume();
+}
+
+
+function stopDER(derId) {
+  derAgents[derId].stop();
+}
+
 function setDERTime(derId) {
   var hours = document.getElementById(derId + "_hourSelect");
   var mins = document.getElementById(derId + "_minuteSelect");

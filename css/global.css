@@ -361,6 +361,15 @@ div.derUI.text{
     border-left: 1px #cccccc solid;
 }
 
+div.derUI.icon{
+    padding-left:6px;
+    padding-right:4px;
+    width:16px;
+    font-size:16px;
+    border-left: 1px #cccccc solid;
+    cursor:pointer;
+}
+
 div.derUI.longtext{
     width:120px;
     border-left: 1px #cccccc solid;

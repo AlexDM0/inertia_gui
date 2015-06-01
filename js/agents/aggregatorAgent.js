@@ -256,20 +256,22 @@ AggregatorAgent.prototype.aggregate = function(history) {
       var agentData = this.agentsToAggregate[agentId].data;
       for (var i = 0; i < agentData.length; i++) {
         var dataField = agentData[i];
-        for (var j = 0; j < this.aggregatedValues.length; j++) {
-          if (this.aggregatedValues[j]['type'] == dataField.type) {
-            if (this.aggregatedValues[j].method == 'avg' && dataField.value > 0 || this.aggregatedValues[j].method == 'sum') {
-              this.aggregatedValues[j]['value'] += dataField.value;
-              this.aggregatedValues[j]['counter'] += 1;
-            }
-            if (dataField.unit != "x") {
-              this.aggregatedValues[j]['unit'] = dataField.unit;
-            }
+        if (dataField.type === 'consumption' && (dataField.name === 'PowerConsumption' || dataField.name === undefined) || dataField.type !== 'consumption') {
+          for (var j = 0; j < this.aggregatedValues.length; j++) {
+            if (this.aggregatedValues[j]['type'] == dataField.type) {
+              if (this.aggregatedValues[j].method == 'avg' && dataField.value > 0 || this.aggregatedValues[j].method == 'sum') {
+                this.aggregatedValues[j]['value'] += dataField.value;
+                this.aggregatedValues[j]['counter'] += 1;
+              }
+              if (dataField.unit != "x") {
+                this.aggregatedValues[j]['unit'] = dataField.unit;
+              }
 
-            if (dataField.history !== undefined) {
-              this.mergeHistories(this.aggregatedValues[j].history, dataField.history);
+              if (dataField.history !== undefined) {
+                this.mergeHistories(this.aggregatedValues[j].history, dataField.history);
+              }
+              break;
             }
-            break;
           }
         }
       }
